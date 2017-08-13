@@ -1,0 +1,1346 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#ifndef APSTUDIO_INVOKED
+#include "targetver.h"
+#endif
+#include "afxres.h"
+#include "verrsrc.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#ifndef APSTUDIO_INVOKED\r\n"
+    "#include ""targetver.h""\r\n"
+    "#endif\r\n"
+    "#include ""afxres.h""\r\n"
+    "#include ""verrsrc.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#include ""res\\PotterDraw.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""      // Standard components\r\n"
+    "#include ""afxprint.rc""    // printing/print preview resources\r\n"
+    "#if !defined(_AFXDLL)\r\n"
+    "#include ""afxribbon.rc""        // MFC ribbon and control bar resources\r\n"
+    "#endif\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\PotterDraw.ico"
+IDR_POTTERDRAWTYPE      ICON                    "res\\PotterDrawDoc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+IDR_MAINFRAME_256       BITMAP                  "res\\Toolbar256.bmp"
+IDR_PROPERTIES          BITMAP                  "res\\properties.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_EDIT_UNDO
+    BUTTON      ID_EDIT_REDO
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_FILE_EXPORT
+    BUTTON      ID_FILE_RECORD
+    SEPARATOR
+    BUTTON      ID_VIEW_ROTATE_ABOVE
+    BUTTON      ID_VIEW_ROTATE_FRONT
+    BUTTON      ID_VIEW_ROTATE_BACK
+    BUTTON      ID_VIEW_ROTATE_TOP
+    BUTTON      ID_VIEW_ROTATE_BOTTOM
+    BUTTON      ID_VIEW_ROTATE_LEFT
+    BUTTON      ID_VIEW_ROTATE_RIGHT
+    SEPARATOR
+    BUTTON      ID_VIEW_ROTATE_AUTO
+    BUTTON      ID_VIEW_ROTATE_RESET
+    BUTTON      ID_VIEW_STYLE_ANIMATION
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+IDR_MAINFRAME_256 TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_EDIT_UNDO
+    BUTTON      ID_EDIT_REDO
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_FILE_EXPORT
+    BUTTON      ID_FILE_RECORD
+    SEPARATOR
+    BUTTON      ID_VIEW_ROTATE_ABOVE
+    BUTTON      ID_VIEW_ROTATE_FRONT
+    BUTTON      ID_VIEW_ROTATE_BACK
+    BUTTON      ID_VIEW_ROTATE_TOP
+    BUTTON      ID_VIEW_ROTATE_BOTTOM
+    BUTTON      ID_VIEW_ROTATE_LEFT
+    BUTTON      ID_VIEW_ROTATE_RIGHT
+    SEPARATOR
+    BUTTON      ID_VIEW_ROTATE_AUTO
+    BUTTON      ID_VIEW_ROTATE_RESET
+    BUTTON      ID_VIEW_STYLE_ANIMATION
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+IDR_PROPERTIES TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_EXPAND_ALL
+    BUTTON      ID_SORTPROPERTIES
+    BUTTON      ID_PROPERTIES1
+    BUTTON      ID_PROPERTIES2
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&View"
+    BEGIN
+        POPUP "&Toolbars and Docking Windows"
+        BEGIN
+            MENUITEM "<placeholder>",               ID_VIEW_TOOLBAR
+        END
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        POPUP "&Application Look"
+        BEGIN
+            MENUITEM "Windows &2000",               ID_VIEW_APPLOOK_WIN_2000
+            MENUITEM "Office &XP",                  ID_VIEW_APPLOOK_OFF_XP
+            MENUITEM "&Windows XP",                 ID_VIEW_APPLOOK_WIN_XP
+            MENUITEM "Office 200&3",                ID_VIEW_APPLOOK_OFF_2003
+            MENUITEM "Visual Studio 200&5",         ID_VIEW_APPLOOK_VS_2005
+            MENUITEM "Visual Studio 200&8",         ID_VIEW_APPLOOK_VS_2008
+            POPUP "Office 200&7"
+            BEGIN
+                MENUITEM "&Blue Style",                 ID_VIEW_APPLOOK_OFF_2007_BLUE
+                MENUITEM "B&lack Style",                ID_VIEW_APPLOOK_OFF_2007_BLACK
+                MENUITEM "&Silver Style",               ID_VIEW_APPLOOK_OFF_2007_SILVER
+                MENUITEM "&Aqua Style",                 ID_VIEW_APPLOOK_OFF_2007_AQUA
+            END
+            MENUITEM SEPARATOR
+            MENUITEM "&Tabs",                       ID_VIEW_APPLOOK_MDI_TABS
+        END
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "&Options...",                 ID_TOOLS_OPTIONS
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Help Topics",                ID_HELP_FINDER
+        MENUITEM "PotterDraw on the &Web",      ID_APP_HOME_PAGE
+        MENUITEM SEPARATOR
+        MENUITEM "&About PotterDraw...",        ID_APP_ABOUT
+    END
+END
+
+IDR_POTTERDRAWTYPE MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New",                        ID_FILE_NEW
+        MENUITEM "&Open...",                    ID_FILE_OPEN
+        MENUITEM "&Close",                      ID_FILE_CLOSE
+        MENUITEM SEPARATOR
+        MENUITEM "&Save",                       ID_FILE_SAVE
+        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
+        MENUITEM "&Export...",                  ID_FILE_EXPORT
+        MENUITEM "&Record...",                  ID_FILE_RECORD
+        MENUITEM SEPARATOR
+        MENUITEM "Print Set&up...",             ID_FILE_PRINT_SETUP
+        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
+        MENUITEM "&Print...",                   ID_FILE_PRINT
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Undo",                       ID_EDIT_UNDO
+        MENUITEM "R&edo",                       ID_EDIT_REDO
+        MENUITEM SEPARATOR
+        MENUITEM "Cu&t",                        ID_EDIT_CUT
+        MENUITEM "&Copy",                       ID_EDIT_COPY
+        MENUITEM "&Paste",                      ID_EDIT_PASTE
+        MENUITEM "&Delete",                     ID_EDIT_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Select &All",                 ID_EDIT_SELECT_ALL
+    END
+    POPUP "&View"
+    BEGIN
+        POPUP "&Toolbars and Docking Windows"
+        BEGIN
+            MENUITEM "<placeholder>",               ID_VIEW_TOOLBAR
+        END
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM "Record Stat&us",              ID_VIEW_RECORD_STATUS
+        POPUP "&Application Look"
+        BEGIN
+            MENUITEM "Windows &2000",               ID_VIEW_APPLOOK_WIN_2000
+            MENUITEM "Office &XP",                  ID_VIEW_APPLOOK_OFF_XP
+            MENUITEM "&Windows XP",                 ID_VIEW_APPLOOK_WIN_XP
+            MENUITEM "Office 200&3",                ID_VIEW_APPLOOK_OFF_2003
+            MENUITEM "Visual Studio 200&5",         ID_VIEW_APPLOOK_VS_2005
+            MENUITEM "Visual Studio 200&8",         ID_VIEW_APPLOOK_VS_2008
+            POPUP "Office 200&7"
+            BEGIN
+                MENUITEM "&Blue Style",                 ID_VIEW_APPLOOK_OFF_2007_BLUE
+                MENUITEM "B&lack Style",                ID_VIEW_APPLOOK_OFF_2007_BLACK
+                MENUITEM "&Silver Style",               ID_VIEW_APPLOOK_OFF_2007_SILVER
+                MENUITEM "&Aqua Style",                 ID_VIEW_APPLOOK_OFF_2007_AQUA
+            END
+            MENUITEM SEPARATOR
+            MENUITEM "&Tabs",                       ID_VIEW_APPLOOK_MDI_TABS
+        END
+        MENUITEM SEPARATOR
+        POPUP "&Rotate"
+        BEGIN
+            MENUITEM "&Above",                      ID_VIEW_ROTATE_ABOVE
+            MENUITEM "&Front",                      ID_VIEW_ROTATE_FRONT
+            MENUITEM "Ba&ck",                       ID_VIEW_ROTATE_BACK
+            MENUITEM "&Top",                        ID_VIEW_ROTATE_TOP
+            MENUITEM "&Bottom",                     ID_VIEW_ROTATE_BOTTOM
+            MENUITEM "&Left",                       ID_VIEW_ROTATE_LEFT
+            MENUITEM "Righ&t",                      ID_VIEW_ROTATE_RIGHT
+            MENUITEM SEPARATOR
+            MENUITEM "A&uto Rotate",                ID_VIEW_ROTATE_AUTO
+            MENUITEM "&Zero Rotation",              ID_VIEW_ROTATE_RESET
+            MENUITEM "&Edit Rotation...",           ID_VIEW_ROTATE_EDIT
+        END
+        POPUP "&Pan"
+        BEGIN
+            MENUITEM "&Up",                         ID_VIEW_PAN_UP
+            MENUITEM "&Down",                       ID_VIEW_PAN_DOWN
+            MENUITEM "&Left",                       ID_VIEW_PAN_LEFT
+            MENUITEM "&Right",                      ID_VIEW_PAN_RIGHT
+            MENUITEM SEPARATOR
+            MENUITEM "&Edit Panning...",            ID_VIEW_PAN_EDIT
+        END
+        MENUITEM "Zoom &In",                    ID_VIEW_ZOOM_IN
+        MENUITEM "Zoom &Out",                   ID_VIEW_ZOOM_OUT
+        MENUITEM "Zoom R&eset",                 ID_VIEW_ZOOM_RESET
+        MENUITEM SEPARATOR
+        MENUITEM "&Wireframe",                  ID_VIEW_STYLE_WIREFRAME
+        MENUITEM "&Gouraud",                    ID_VIEW_STYLE_GOURAUD
+        MENUITEM "&Highlights",                 ID_VIEW_STYLE_HIGHLIGHTS
+        MENUITEM "&Culling",                    ID_VIEW_STYLE_CULLING
+        MENUITEM "Te&xture",                    ID_VIEW_STYLE_TEXTURE
+        MENUITEM "A&nimation",                  ID_VIEW_STYLE_ANIMATION
+        MENUITEM "&Bounds",                     ID_VIEW_STYLE_BOUNDS
+    END
+    POPUP "&Spline"
+    BEGIN
+        MENUITEM "&Translate...",               ID_SPLINE_TRANSLATE
+        MENUITEM "&Scale...",                   ID_SPLINE_SCALE
+        MENUITEM "&Rotate...",                  ID_SPLINE_ROTATE
+        MENUITEM SEPARATOR
+        MENUITEM "Flip &Vertical",              ID_SPLINE_FLIP_VERTICAL
+        MENUITEM "Flip &Horizontal",            ID_SPLINE_FLIP_HORIZONTAL
+        MENUITEM SEPARATOR
+        MENUITEM "Show &Grid",                  ID_SPLINE_SHOW_GRID
+        MENUITEM "S&nap to Grid",               ID_SPLINE_SNAP_TO_GRID
+        MENUITEM "Show R&ulers",                ID_SPLINE_SHOW_RULERS
+        MENUITEM "Opposite &Wall",              ID_SPLINE_SHOW_HORZ_MIRROR
+        MENUITEM SEPARATOR
+        MENUITEM "Gri&d Setup...",              ID_SPLINE_GRID_SETUP
+        MENUITEM "&Import...",                  ID_SPLINE_IMPORT
+        MENUITEM "&Export...",                  ID_SPLINE_EXPORT
+        MENUITEM SEPARATOR
+        POPUP "N&ode Type"
+        BEGIN
+            MENUITEM "&Cusp",                       ID_SPLINE_NODE_TYPE1_CUSP
+            MENUITEM "&Smooth",                     ID_SPLINE_NODE_TYPE2_SMOOTH
+            MENUITEM "Sy&mmetrical",                ID_SPLINE_NODE_TYPE3_SYMMETRICAL
+        END
+        POPUP "Seg&ment Type"
+        BEGIN
+            MENUITEM "&Curve",                      ID_SPLINE_SEGMENT_TYPE1_CURVE
+            MENUITEM "&Line",                       ID_SPLINE_SEGMENT_TYPE2_LINE
+        END
+        POPUP "&Zoom"
+        BEGIN
+            MENUITEM "&In",                         ID_SPLINE_ZOOM_IN
+            MENUITEM "&Out",                        ID_SPLINE_ZOOM_OUT
+            MENUITEM "&Reset",                      ID_SPLINE_ZOOM_RESET
+        END
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "&Options...",                 ID_TOOLS_OPTIONS
+        MENUITEM "&Mesh Information...",        ID_TOOLS_MESH_INFO
+    END
+    POPUP "&Window"
+    BEGIN
+        MENUITEM "&New Window",                 ID_WINDOW_NEW
+        MENUITEM "&Cascade",                    ID_WINDOW_CASCADE
+        MENUITEM "Tile &Horizontal",            ID_WINDOW_TILE_HORZ
+        MENUITEM "Tile &Vertical",              ID_WINDOW_TILE_VERT
+        MENUITEM "&Arrange Icons",              ID_WINDOW_ARRANGE
+        MENUITEM SEPARATOR
+        MENUITEM "&Full Screen",                ID_WINDOW_FULL_SCREEN
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Help Topics",                ID_HELP_FINDER
+        MENUITEM "PotterDraw on the &Web",      ID_APP_HOME_PAGE
+        MENUITEM SEPARATOR
+        MENUITEM "&About PotterDraw...",        ID_APP_ABOUT
+    END
+END
+
+IDR_POPUP_EDIT MENU
+BEGIN
+    POPUP "Edit"
+    BEGIN
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+    END
+END
+
+IDR_THEME_MENU MENU
+BEGIN
+    MENUITEM "Office 2007 (&Blue Style)",   ID_VIEW_APPLOOK_OFF_2007_BLUE
+    MENUITEM "Office 2007 (B&lack Style)",  ID_VIEW_APPLOOK_OFF_2007_BLACK
+    MENUITEM "Office 2007 (&Silver Style)", ID_VIEW_APPLOOK_OFF_2007_SILVER
+    MENUITEM "Office 2007 (&Aqua Style)",   ID_VIEW_APPLOOK_OFF_2007_AQUA
+    MENUITEM "Win&dows 7",                  ID_VIEW_APPLOOK_WINDOWS_7
+END
+
+IDR_PALETTE_BAR MENU
+BEGIN
+    POPUP "Edit"
+    BEGIN
+        MENUITEM "Cu&t",                        ID_EDIT_CUT
+        MENUITEM "&Copy",                       ID_EDIT_COPY
+        MENUITEM "&Paste",                      ID_EDIT_PASTE
+        MENUITEM SEPARATOR
+        MENUITEM "&Insert",                     ID_EDIT_INSERT
+        MENUITEM "&Delete",                     ID_EDIT_DELETE
+    END
+END
+
+IDR_SPLINE MENU
+BEGIN
+    POPUP ""
+    BEGIN
+        MENUITEM "&Add Node",                   ID_SPLINE_ADD_NODE
+        MENUITEM "&Delete Node",                ID_SPLINE_DELETE_NODE
+        MENUITEM SEPARATOR
+        MENUITEM "C&usp",                       ID_SPLINE_NODE_TYPE1_CUSP
+        MENUITEM "&Smooth",                     ID_SPLINE_NODE_TYPE2_SMOOTH
+        MENUITEM "Sy&mmetrical",                ID_SPLINE_NODE_TYPE3_SYMMETRICAL
+        MENUITEM SEPARATOR
+        MENUITEM "&Curve",                      ID_SPLINE_SEGMENT_TYPE1_CURVE
+        MENUITEM "&Line",                       ID_SPLINE_SEGMENT_TYPE2_LINE
+        MENUITEM SEPARATOR
+        MENUITEM "Show &Grid",                  ID_SPLINE_SHOW_GRID
+        MENUITEM "S&nap To Grid",               ID_SPLINE_SNAP_TO_GRID
+        MENUITEM "Show &Rulers",                ID_SPLINE_SHOW_RULERS
+        MENUITEM SEPARATOR
+        MENUITEM "C&opy",                       ID_EDIT_COPY
+        MENUITEM "Cu&t",                        ID_EDIT_CUT
+        MENUITEM "&Paste",                      ID_EDIT_PASTE
+        MENUITEM "D&elete",                     ID_EDIT_DELETE
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    VK_DELETE,      ID_EDIT_DELETE,         VIRTKEY, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_EDIT_SELECT_ALL,     VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_FILE_EXPORT,         VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_FILE_RECORD,         VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    "G",            ID_SPLINE_SHOW_GRID,    VIRTKEY, CONTROL, NOINVERT
+    "W",            ID_SPLINE_SHOW_HORZ_MIRROR, VIRTKEY, CONTROL, NOINVERT
+    "U",            ID_SPLINE_SHOW_RULERS,  VIRTKEY, CONTROL, NOINVERT
+    "G",            ID_SPLINE_SNAP_TO_GRID, VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "O",            ID_TOOLS_OPTIONS,       VIRTKEY, SHIFT, NOINVERT
+    VK_DOWN,        ID_VIEW_PAN_DOWN,       VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_VIEW_PAN_EDIT,       VIRTKEY, CONTROL, ALT, NOINVERT
+    VK_LEFT,        ID_VIEW_PAN_LEFT,       VIRTKEY, CONTROL, NOINVERT
+    VK_RIGHT,       ID_VIEW_PAN_RIGHT,      VIRTKEY, CONTROL, NOINVERT
+    VK_UP,          ID_VIEW_PAN_UP,         VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_VIEW_ROTATE_ABOVE,   VIRTKEY, SHIFT, NOINVERT
+    "R",            ID_VIEW_ROTATE_AUTO,    VIRTKEY, SHIFT, NOINVERT
+    "F",            ID_VIEW_ROTATE_BACK,    VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "T",            ID_VIEW_ROTATE_BOTTOM,  VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "R",            ID_VIEW_ROTATE_EDIT,    VIRTKEY, CONTROL, ALT, NOINVERT
+    "F",            ID_VIEW_ROTATE_FRONT,   VIRTKEY, SHIFT, NOINVERT
+    "S",            ID_VIEW_ROTATE_LEFT,    VIRTKEY, SHIFT, NOINVERT
+    "Z",            ID_VIEW_ROTATE_RESET,   VIRTKEY, SHIFT, NOINVERT
+    "S",            ID_VIEW_ROTATE_RIGHT,   VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "T",            ID_VIEW_ROTATE_TOP,     VIRTKEY, SHIFT, NOINVERT
+    "N",            ID_VIEW_STYLE_ANIMATION, VIRTKEY, SHIFT, NOINVERT
+    "B",            ID_VIEW_STYLE_BOUNDS,   VIRTKEY, SHIFT, NOINVERT
+    "C",            ID_VIEW_STYLE_CULLING,  VIRTKEY, SHIFT, NOINVERT
+    "G",            ID_VIEW_STYLE_GOURAUD,  VIRTKEY, SHIFT, NOINVERT
+    "H",            ID_VIEW_STYLE_HIGHLIGHTS, VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_VIEW_STYLE_TEXTURE,  VIRTKEY, SHIFT, NOINVERT
+    "W",            ID_VIEW_STYLE_WIREFRAME, VIRTKEY, SHIFT, NOINVERT
+    VK_OEM_PLUS,    ID_VIEW_ZOOM_IN,        VIRTKEY, CONTROL, NOINVERT
+    VK_OEM_MINUS,   ID_VIEW_ZOOM_OUT,       VIRTKEY, CONTROL, NOINVERT
+    "0",            ID_VIEW_ZOOM_RESET,     VIRTKEY, CONTROL, NOINVERT
+    VK_F11,         ID_WINDOW_FULL_SCREEN,  VIRTKEY, NOINVERT
+    VK_F1,          ID_HELP_FINDER,         VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 240, 100
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About PotterDraw"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,7,20,20
+    LTEXT           "PotterDraw 1.0",IDC_ABOUT_VERSION,40,7,135,8,SS_NOPREFIX
+    LTEXT           "Copyleft 2017 Chris Korda",IDC_STATIC,40,20,135,8
+    DEFPUSHBUTTON   "OK",IDOK,183,7,50,14,WS_GROUP
+    EDITTEXT        IDC_ABOUT_LICENSE,7,38,226,55,ES_MULTILINE | ES_READONLY | WS_VSCROLL
+END
+
+IDD_OPTIONS DIALOGEX 0, 0, 311, 227
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Options"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_OPTIONS_GRID,"MfcPropertyGrid",WS_TABSTOP | 0x100,7,7,297,193
+    DEFPUSHBUTTON   "OK",IDOK,199,206,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,254,206,50,14
+    PUSHBUTTON      "&Reset All",IDC_OPTIONS_RESET_ALL,7,206,50,14
+END
+
+IDD_RECORD DIALOGEX 0, 0, 219, 130
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Record"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    GROUPBOX        "&Duration",IDC_STATIC,7,7,130,37
+    EDITTEXT        IDC_RECORD_DURATION,14,19,60,14,ES_AUTOHSCROLL
+    CONTROL         "&Time",IDC_RECORD_DURATION_UNIT,"Button",BS_AUTORADIOBUTTON | WS_GROUP,86,15,33,10
+    CONTROL         "&Frames",IDC_RECORD_DURATION_UNIT2,"Button",BS_AUTORADIOBUTTON,86,29,41,10
+    LTEXT           "Frame &Rate:",IDC_STATIC,149,9,42,8
+    EDITTEXT        IDC_RECORD_FRAME_RATE,149,19,40,14,ES_AUTOHSCROLL
+    LTEXT           "Frame &Size:",IDC_STATIC,7,47,41,8
+    COMBOBOX        IDC_RECORD_FRAME_SIZE,7,57,100,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "&Width:",IDC_RECORD_FRAME_WIDTH_CAP,116,47,23,8
+    EDITTEXT        IDC_RECORD_FRAME_WIDTH,116,57,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "&Height:",IDC_RECORD_FRAME_HEIGHT_CAP,164,47,24,8
+    EDITTEXT        IDC_RECORD_FRAME_HEIGHT,164,57,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Fil&e Format:",IDC_STATIC,7,76,41,8
+    COMBOBOX        IDC_RECORD_FILE_FORMAT,7,87,60,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Auto Rotate",IDC_RECORD_AUTO_ROTATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,87,87,54,10
+    CONTROL         "A&nimation",IDC_RECORD_ANIMATION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,151,87,49,10
+    DEFPUSHBUTTON   "OK",IDOK,106,109,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,162,109,50,14
+END
+
+IDD_RECORD_STATUS DIALOGEX 0, 0, 201, 91
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Record Status"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_RECORD_STATUS_PROGRESS,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,7,187,14
+    RTEXT           "Duration:",IDC_STATIC,15,27,50,14,SS_CENTERIMAGE
+    LTEXT           "",IDC_RECORD_STATUS_DURATION,69,27,108,14,SS_CENTERIMAGE | SS_SUNKEN
+    RTEXT           "Completed:",IDC_STATIC,15,47,50,14,SS_CENTERIMAGE
+    LTEXT           "",IDC_RECORD_STATUS_COMPLETED,69,47,108,14,SS_CENTERIMAGE | SS_SUNKEN
+    DEFPUSHBUTTON   "Abort",IDOK,75,70,50,14
+END
+
+IDD_ROTATE DIALOGEX 0, 0, 120, 84
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Rotate"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    RTEXT           "&X:",IDC_STATIC,15,7,16,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_ROTATE_X,34,7,60,14,ES_AUTOHSCROLL
+    RTEXT           "&Y:",IDC_STATIC,15,24,16,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_ROTATE_Y,34,24,60,14,ES_AUTOHSCROLL
+    RTEXT           "&Z:",IDC_STATIC,15,41,16,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_ROTATE_Z,34,41,60,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,7,63,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,63,63,50,14
+END
+
+IDD_GRID_SETUP DIALOGEX 0, 0, 118, 62
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Grid Setup"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "Grid spacing:",IDC_STATIC,28,7,44,8
+    EDITTEXT        IDC_GRID_SPACING,28,17,40,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,7,41,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,61,41,50,14
+END
+
+IDD_SCALE_2D DIALOGEX 0, 0, 119, 124
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Scale"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    RTEXT           "&Width:",IDC_SCALE_WIDTH_CAPTION,7,7,32,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_SCALE_WIDTH,43,7,40,14,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_STATIC,86,7,8,12,SS_CENTERIMAGE
+    RTEXT           "&Height:",IDC_SCALE_HEIGHT_CAPTION,7,24,32,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_SCALE_HEIGHT,43,24,40,14,ES_AUTOHSCROLL
+    LTEXT           "%",IDC_SCALE_HEIGHT_UNIT,86,24,8,12,SS_CENTERIMAGE
+    CONTROL         "Scale &Proportionally",IDC_SCALE_PROPORTIONALLY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,18,42,81,10
+    CONTROL         "&Origin",IDC_SCALE_RELATIVE_TO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,18,68,35,10
+    CONTROL         "&Center of Selection",IDC_SCALE_RELATIVE_TO2,"Button",BS_AUTORADIOBUTTON,18,81,78,10
+    GROUPBOX        "Relative to",IDC_STATIC,7,56,105,42,WS_GROUP
+    DEFPUSHBUTTON   "OK",IDOK,7,103,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,62,103,50,14
+END
+
+IDD_ROTATE_2D DIALOGEX 0, 0, 119, 95
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Rotate"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    RTEXT           "&Angle:",IDC_STATIC,7,7,28,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_ROTATE_ANGLE,39,7,40,14,ES_AUTOHSCROLL
+    LTEXT           "degrees",IDC_STATIC,82,7,27,12,SS_CENTERIMAGE
+    CONTROL         "&Origin",IDC_SCALE_RELATIVE_TO,"Button",BS_AUTORADIOBUTTON | WS_GROUP,18,39,35,10
+    CONTROL         "&Center of Selection",IDC_SCALE_RELATIVE_TO2,"Button",BS_AUTORADIOBUTTON,18,52,78,10
+    GROUPBOX        "Relative to",IDC_STATIC,7,27,105,42,WS_GROUP
+    DEFPUSHBUTTON   "OK",IDOK,7,74,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,62,74,50,14
+END
+
+IDD_TRANSLATE_2D DIALOGEX 0, 0, 119, 68
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Translate"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    RTEXT           "&X:",IDC_STATIC,15,7,16,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_TRANSLATE_X,34,7,60,14,ES_AUTOHSCROLL
+    RTEXT           "&Y:",IDC_STATIC,15,24,16,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_TRANSLATE_Y,34,24,60,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,7,47,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,62,47,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Anal Software"
+            VALUE "FileDescription", "PotterDraw"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "PotterDraw.exe"
+            VALUE "LegalCopyright", "Copyleft 2017 Chris Korda"
+            VALUE "OriginalFilename", "PotterDraw.exe"
+            VALUE "ProductName", "PotterDraw"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 233
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 93
+    END
+
+    IDD_OPTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 304
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 220
+    END
+
+    IDD_RECORD, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 212
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 123
+    END
+
+    IDD_RECORD_STATUS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 194
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 84
+    END
+
+    IDD_ROTATE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 113
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 77
+    END
+
+    IDD_GRID_SETUP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 111
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 55
+    END
+
+    IDD_SCALE_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 112
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 117
+    END
+
+    IDD_ROTATE_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 112
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_TRANSLATE_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 112
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 61
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CURSOR_MAGNIFIER    CURSOR                  "res\\magnifier.cur"
+IDC_DRAG_SINGLE         CURSOR                  "res\\dragsingle.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_OPTIONS DLGINIT
+BEGIN
+    IDC_OPTIONS_GRID, 0x37c, 414, 0
+0x4d3c, 0x4346, 0x7250, 0x706f, 0x7265, 0x7974, 0x7247, 0x6469, 0x485f, 
+0x6165, 0x6564, 0x4372, 0x7274, 0x3e6c, 0x5254, 0x4555, 0x2f3c, 0x464d, 
+0x5043, 0x6f72, 0x6570, 0x7472, 0x4779, 0x6972, 0x5f64, 0x6548, 0x6461, 
+0x7265, 0x7443, 0x6c72, 0x3c3e, 0x464d, 0x5043, 0x6f72, 0x6570, 0x7472, 
+0x4779, 0x6972, 0x5f64, 0x6544, 0x6373, 0x6972, 0x7470, 0x6f69, 0x416e, 
+0x6572, 0x3e61, 0x4146, 0x534c, 0x3c45, 0x4d2f, 0x4346, 0x7250, 0x706f, 
+0x7265, 0x7974, 0x7247, 0x6469, 0x445f, 0x7365, 0x7263, 0x7069, 0x6974, 
+0x6e6f, 0x7241, 0x6165, 0x3c3e, 0x464d, 0x5043, 0x6f72, 0x6570, 0x7472, 
+0x4779, 0x6972, 0x5f64, 0x6c41, 0x6870, 0x6261, 0x7465, 0x6369, 0x6f4d, 
+0x6564, 0x463e, 0x4c41, 0x4553, 0x2f3c, 0x464d, 0x5043, 0x6f72, 0x6570, 
+0x7472, 0x4779, 0x6972, 0x5f64, 0x6c41, 0x6870, 0x6261, 0x7465, 0x6369, 
+0x6f4d, 0x6564, 0x3c3e, 0x464d, 0x5043, 0x6f72, 0x6570, 0x7472, 0x4779, 
+0x6972, 0x5f64, 0x6f4d, 0x6964, 0x6966, 0x6465, 0x7250, 0x706f, 0x7265, 
+0x6974, 0x7365, 0x463e, 0x4c41, 0x4553, 0x2f3c, 0x464d, 0x5043, 0x6f72, 
+0x6570, 0x7472, 0x4779, 0x6972, 0x5f64, 0x6f4d, 0x6964, 0x6966, 0x6465, 
+0x7250, 0x706f, 0x7265, 0x6974, 0x7365, 0x3c3e, 0x464d, 0x5043, 0x6f72, 
+0x6570, 0x7472, 0x4779, 0x6972, 0x5f64, 0x5356, 0x6f44, 0x4e74, 0x7465, 
+0x6f4c, 0x6b6f, 0x543e, 0x5552, 0x3c45, 0x4d2f, 0x4346, 0x7250, 0x706f, 
+0x7265, 0x7974, 0x7247, 0x6469, 0x565f, 0x4453, 0x746f, 0x654e, 0x4c74, 
+0x6f6f, 0x3e6b, 0x4d3c, 0x4346, 0x7250, 0x706f, 0x7265, 0x7974, 0x7247, 
+0x6469, 0x445f, 0x7365, 0x7263, 0x7069, 0x6974, 0x6e6f, 0x6f52, 0x7377, 
+0x303e, 0x2f3c, 0x464d, 0x5043, 0x6f72, 0x6570, 0x7472, 0x4779, 0x6972, 
+0x5f64, 0x6544, 0x6373, 0x6972, 0x7470, 0x6f69, 0x526e, 0x776f, 0x3e73, 
+
+    0
+END
+
+IDD_RECORD DLGINIT
+BEGIN
+    IDC_RECORD_FILE_FORMAT, 0x403, 4, 0
+0x4d42, 0x0050, 
+    IDC_RECORD_FILE_FORMAT, 0x403, 4, 0
+0x4e50, 0x0047, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_APP_HELP_FILE_MISSING "Can't find help file '%1'."
+    IDS_APP_LICENSE         "This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.  You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA."
+    IDS_APP_UNKNOWN_SYSTEM_ERROR "Unknown system error %d (0x%X)"
+    IDS_DDV_PCT_CANT_BE_100 "Enter a percentage other than 100."
+    IDS_DDV_PCT_MUST_BE_GT_ZERO "Percentage must be greater than zero."
+    IDS_DDV_VAL_CANT_BE_ZERO "Enter a non-zero value."
+    IDS_DOC_BAD_FORMAT      "'%1' has an invalid format."
+    IDS_DOC_NEWER_VERSION   "'%1' is from a newer document version. Some of its features may not be supported."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_EDIT_MENU           "Edit"
+    IDS_EDIT_REDO_FMT       "&Redo %s"
+    IDS_EDIT_UNDO_FMT       "&Undo %s"
+    IDS_ERR_BAD_EXPORT_TYPE "Undefined export type."
+    IDS_ERR_CANT_COPY_TEXTURE_FILE "Error copying texture file."
+    IDS_ERR_CANT_CREATE_DIRECT3D "Can't create Direct3D."
+    IDS_ERR_CANT_CREATE_DIRECT3D_DEVICE "Can't create Direct3D device."
+    IDS_ERR_CANT_CREATE_MM_TIMER "Can't create multimedia timer."
+    IDS_ERR_CANT_CREATE_MM_TIMER_PERIOD 
+                            "Can't create multimedia timer period."
+    IDS_ERR_CANT_CREATE_TEXTURE_BITMAP "Can't create texture bitmap."
+    IDS_ERR_CANT_WRITE_TEXTURE_BITMAP "Can't write texture bitmap."
+    IDS_ERR_EXPORT_FAILED   "Export failed."
+    IDS_ERR_SPLINE_DUPLICATE_Y 
+                            "Spline intersects a y-coordinate more than once."
+    IDS_ERR_SPLINE_EMPTY    "Spline is empty."
+    IDS_ERR_SPLINE_NEGATIVE_X "Spline has at least one negative x-coordinate."
+    IDS_ERR_TEXTURE_FILE_NOT_FOUND "Texture file not found."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_EXPLORER            "Explorer"
+    IDS_EXPORT              "Export"
+    IDS_HLINK_CANT_LAUNCH   "Can't launch browser."
+    IDS_MODULATION_BAR      "Modulation"
+    IDS_MOD_DESC_fAmplitude "Modulation amplitude"
+    IDS_MOD_DESC_fBias      "Offset added to modulation"
+    IDS_MOD_DESC_fFrequency "Modulation frequency"
+    IDS_MOD_DESC_fPhase     "Initial phase of modulation; normalized from 0 to 1"
+    IDS_MOD_DESC_fPhaseSpeed 
+                            "Modulation phase delta during animation, in Hertz"
+    IDS_MOD_DESC_fPower     "Base of power function, or zero if none"
+    IDS_MOD_DESC_iMotif     "Function applied to modulation waveform"
+    IDS_MOD_DESC_iOperation "Operation of modulation on target property"
+    IDS_MOD_DESC_iRange     "Range of modulation"
+    IDS_MOD_DESC_iTarget    "Target property to be modulated"
+    IDS_MOD_DESC_iWaveform  "Type of waveform"
+    IDS_MOD_GROUP_MAIN      "Main"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_MOD_NAME_fAmplitude "Amplitude"
+    IDS_MOD_NAME_fBias      "Bias"
+    IDS_MOD_NAME_fFrequency "Frequency"
+    IDS_MOD_NAME_fPhase     "Phase"
+    IDS_MOD_NAME_fPhaseSpeed "Phase Speed"
+    IDS_MOD_NAME_fPower     "Power"
+    IDS_MOD_NAME_iMotif     "Motif"
+    IDS_MOD_NAME_iOperation "Operation"
+    IDS_MOD_NAME_iRange     "Range"
+    IDS_MOD_NAME_iTarget    "Target"
+    IDS_MOD_NAME_iWaveform  "Waveform"
+    IDS_MOD_OPT_OPER_ADD    "Add"
+    IDS_MOD_OPT_OPER_DIVIDE "Divide"
+    IDS_MOD_OPT_OPER_MULTIPLY "Multiply"
+    IDS_MOD_OPT_OPER_SUBTRACT "Subtract"
+    IDS_MOD_OPT_RANGE_BIPOLAR "Bipolar"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_MOD_OPT_RANGE_UNIPOLAR "Unipolar"
+    IDS_MOD_OPT_WAVE_NONE   "None"
+    IDS_MOD_OPT_WAVE_RAMP_DOWN "Ramp Down"
+    IDS_MOD_OPT_WAVE_RAMP_UP "Ramp Up"
+    IDS_MOD_OPT_WAVE_SINE   "Sine"
+    IDS_MOD_OPT_WAVE_SQUARE "Square"
+    IDS_MOD_OPT_WAVE_TRIANGLE "Triangle"
+    IDS_OPT_DESC_bCustomImageSize 
+                            "If true, image export uses custom size instead of view size"
+    IDS_OPT_DESC_bPlotAllModulations 
+                            "If true, show all modulations in oscilloscope bar"
+    IDS_OPT_DESC_bPropertyDescrips 
+                            "If true, show descriptions area in properties bar"
+    IDS_OPT_DESC_bVertexColor 
+                            "If true, PLY export uses vertex color instead of texture map"
+    IDS_OPT_DESC_fDragRotateStep 
+                            "Drag rotation step size, in degrees per pixel"
+    IDS_OPT_DESC_fPanStep   "Panning step size, in view coordinates"
+    IDS_OPT_DESC_fSplineZoomStep "Spline zoom step size, as a percentage"
+    IDS_OPT_DESC_fZoomStep  "Zoom step size, as a percentage"
+    IDS_OPT_DESC_nCustomImageHeight 
+                            "Height of exported image if using custom size, in pixels"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_OPT_DESC_nCustomImageWidth 
+                            "Width of exported image if using custom size, in pixels"
+    IDS_OPT_DESC_nFloatPrecision 
+                            "Number of digits after decimal point for OBJ export"
+    IDS_OPT_GROUP_EXPORT    "Export"
+    IDS_OPT_GROUP_GENERAL   "General"
+    IDS_OPT_GROUP_OSCILLOSCOPE "Oscilloscope"
+    IDS_OPT_GROUP_SPLINE    "Spline"
+    IDS_OPT_GROUP_VIEW      "View"
+    IDS_OPT_NAME_bCustomImageSize "Use Custom Image Size"
+    IDS_OPT_NAME_bPlotAllModulations "Plot All Modulations"
+    IDS_OPT_NAME_bPropertyDescrips "Show Property Descriptions"
+    IDS_OPT_NAME_bVertexColor "Use Vertex Color"
+    IDS_OPT_NAME_fDragRotateStep "Drag Rotate Step"
+    IDS_OPT_NAME_fPanStep   "Pan Step"
+    IDS_OPT_NAME_fSplineZoomStep "Zoom Step"
+    IDS_OPT_NAME_fZoomStep  "Zoom Step"
+    IDS_OPT_NAME_nCustomImageHeight "Custom Image Height"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_OPT_NAME_nCustomImageWidth "Custom Image Width"
+    IDS_OPT_NAME_nFloatPrecision "Floating-Point Precision"
+    IDS_OSCILLOSCOPE_BAR    "Oscilloscope"
+    IDS_PALETTE_BAR         "Palette"
+    IDS_PALETTE_BAR_APPLY   "Apply"
+    IDS_PALETTE_BAR_DELETE  "Delete"
+    IDS_PALETTE_BAR_INSERT  "Insert"
+    IDS_PDR_DESC_bAnimation "Enables animation"
+    IDS_PDR_DESC_clrBackground "Background color of view window"
+    IDS_PDR_DESC_fAspectRatio 
+                            "Width scaling for elliptical shapes; 1 for normal, > 1 for wider, < 1 for narrower"
+    IDS_PDR_DESC_fAutoRotatePitch 
+                            "Pitch speed when auto-rotating view, in degrees per second"
+    IDS_PDR_DESC_fAutoRotateRoll 
+                            "Roll speed when auto-rotating view, in degrees per second"
+    IDS_PDR_DESC_fAutoRotateYaw 
+                            "Yaw speed when auto-rotating view, in degrees per second"
+    IDS_PDR_DESC_fBendDepth "Depth of each bend"
+    IDS_PDR_DESC_fBendPhase "Initial phase of bends; normalized from 0 to 1"
+    IDS_PDR_DESC_fBendPolePhase 
+                            "Initial phase of bend poles; normalized from 0 to 1"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_DESC_fBendPoles "Number of bend poles"
+    IDS_PDR_DESC_fBends     "Number of bends"
+    IDS_PDR_DESC_fColorCycles "Number of times to cycle through palette"
+    IDS_PDR_DESC_fCyclesV   "Number of times to cycle V coordinate through its normalized range"
+    IDS_PDR_DESC_fFrameRate "Frame rate in frames per second"
+    IDS_PDR_DESC_fHelixAmplitude "Magnitude of local origin's spiral"
+    IDS_PDR_DESC_fHelixFrequency "Number of turns in local origin's spiral"
+    IDS_PDR_DESC_fOffsetU   "Offset applied to U coordinate for texture mapping; normalized from 0 to 1"
+    IDS_PDR_DESC_fOffsetV   "Offset applied to V coordinate for texture mapping; normalized from 0 to 1"
+    IDS_PDR_DESC_fPetals    "Number of petals"
+    IDS_PDR_DESC_fRadius    "Radius scaling factor"
+    IDS_PDR_DESC_fRippleDepth "Depth of each ripple"
+    IDS_PDR_DESC_fRipplePhase 
+                            "Initial phase of ripples; normalized from 0 to 1"
+    IDS_PDR_DESC_fRipples   "Number of ripples"
+    IDS_PDR_DESC_fScallopDepth "Depth of each scallop"
+    IDS_PDR_DESC_fScallops  "Number of scallops"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_DESC_fStripeAmplitude "Amplitude of stripe waves"
+    IDS_PDR_DESC_fStripeFrequency 
+                            "Frequency of stripe waves, normalized to number of waves per height"
+    IDS_PDR_DESC_fStripePhase 
+                            "Initial phase of stripe waves; normalized from 0 to 1"
+    IDS_PDR_DESC_fTwist     "Corkscrew effect, normalized so that 1 twists 360 degrees from bottom to top"
+    IDS_PDR_DESC_fWallThickness "Distance between inner and outer wall"
+    IDS_PDR_DESC_iBendMotif "Function applied to bend waveform"
+    IDS_PDR_DESC_iBendPoleMotif "Function applied to bend pole waveform"
+    IDS_PDR_DESC_iColorPattern "Type of color pattern"
+    IDS_PDR_DESC_iPaletteType "Type of palette"
+    IDS_PDR_DESC_iRippleMotif "Function applied to ripple waveform"
+    IDS_PDR_DESC_iScallopMotif "Function applied to scallop waveform"
+    IDS_PDR_DESC_nColorSharpness 
+                            "Sharpness of stripes; 1 is fuzziest, 100 is sharpest"
+    IDS_PDR_DESC_nColors    "Number of colors in palette"
+    IDS_PDR_DESC_nRings     "Number of rings"
+    IDS_PDR_DESC_nSides     "Number of sides in each ring"
+    IDS_PDR_DESC_sTexturePath 
+                            "Path of file to use as texture, if any; if specified, overrides palette"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_GROUP_MESH      "Mesh"
+    IDS_PDR_GROUP_TEXTURE   "Texture"
+    IDS_PDR_GROUP_VIEW      "View"
+    IDS_PDR_NAME_bAnimation "Animation"
+    IDS_PDR_NAME_clrBackground "Background Color"
+    IDS_PDR_NAME_fAspectRatio "Aspect Ratio"
+    IDS_PDR_NAME_fAutoRotatePitch "Auto Rotate Pitch"
+    IDS_PDR_NAME_fAutoRotateRoll "Auto Rotate Roll"
+    IDS_PDR_NAME_fAutoRotateYaw "Auto Rotate Yaw"
+    IDS_PDR_NAME_fBendDepth "Bend Depth"
+    IDS_PDR_NAME_fBendPhase "Bend Phase"
+    IDS_PDR_NAME_fBendPolePhase "Bend Pole Phase"
+    IDS_PDR_NAME_fBendPoles "Bend Poles"
+    IDS_PDR_NAME_fBends     "Bends"
+    IDS_PDR_NAME_fColorCycles "Color Cycles"
+    IDS_PDR_NAME_fCyclesV   "Cycles V"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_fFrameRate "Frame Rate"
+    IDS_PDR_NAME_fHelixAmplitude "Helix Amplitude"
+    IDS_PDR_NAME_fHelixFrequency "Helix Frequency"
+    IDS_PDR_NAME_fOffsetU   "U Offset"
+    IDS_PDR_NAME_fOffsetV   "V Offset"
+    IDS_PDR_NAME_fPetals    "Petals"
+    IDS_PDR_NAME_fRadius    "Radius"
+    IDS_PDR_NAME_fRippleDepth "Ripple Depth"
+    IDS_PDR_NAME_fRipplePhase "Ripple Phase"
+    IDS_PDR_NAME_fRipples   "Ripples"
+    IDS_PDR_NAME_fScallopDepth "Scallop Depth"
+    IDS_PDR_NAME_fScallops  "Scallops"
+    IDS_PDR_NAME_fStripeAmplitude "Stripe Amplitude"
+    IDS_PDR_NAME_fStripeFrequency "Stripe Frequency"
+    IDS_PDR_NAME_fStripePhase "Stripe Phase"
+    IDS_PDR_NAME_fTwist     "Twist"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_fWallThickness "Wall Thickness"
+    IDS_PDR_NAME_iBendMotif "Bend Motif"
+    IDS_PDR_NAME_iBendPoleMotif "Bend Pole Motif"
+    IDS_PDR_NAME_iColorPattern "Color Pattern"
+    IDS_PDR_NAME_iPaletteType "Palette Type"
+    IDS_PDR_NAME_iRippleMotif "Ripple Motif"
+    IDS_PDR_NAME_iScallopMotif "Scallop Motif"
+    IDS_PDR_NAME_nColorSharpness "Color Sharpness"
+    IDS_PDR_NAME_nColors    "Colors"
+    IDS_PDR_NAME_nRings     "Rings"
+    IDS_PDR_NAME_nSides     "Sides"
+    IDS_PDR_NAME_sTexturePath "Texture Path"
+    IDS_PDR_OPT_COLPAT_PETALS "Petals"
+    IDS_PDR_OPT_COLPAT_POLAR "Polar"
+    IDS_PDR_OPT_COLPAT_RINGS "Rings"
+    IDS_PDR_OPT_COLPAT_STRIPES "Stripes"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_OPT_MOTIF_FLUTES "Flutes"
+    IDS_PDR_OPT_MOTIF_NONE  "None"
+    IDS_PDR_OPT_MOTIF_PARTED_FLUTES "Parted Flutes"
+    IDS_PDR_OPT_MOTIF_PARTED_REEDS "Parted Reeds"
+    IDS_PDR_OPT_MOTIF_REEDS "Reeds"
+    IDS_PDR_OPT_PALTYPE_COMPLEMENT "Complement"
+    IDS_PDR_OPT_PALTYPE_LINEAR "Linear"
+    IDS_PDR_OPT_PALTYPE_SPLIT "Split"
+    IDS_PROPERTIES_BAR      "Properties"
+    IDS_PROPS_MORE_COLORS   "More Colors..."
+    IDS_RECDLG_CUSTOM       "Custom"
+    IDS_RECORD_FOLDER       "Record Folder"
+    IDS_RESET_ALL_OPTIONS   "Reset all options to default values?"
+    IDS_SCALE_2D_SCALE      "&Scale:"
+    IDS_SCALE_2D_WIDTH      "&Width:"
+    IDS_SPLINE_BAR          "Spline"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SPLINE_NM_ADD_NODE  "Add Node"
+    IDS_SPLINE_NM_CHANGED   "Spline"
+    IDS_SPLINE_NM_CUT       "Cut"
+    IDS_SPLINE_NM_DELETE    "Delete"
+    IDS_SPLINE_NM_DELETE_NODE "Delete Node"
+    IDS_SPLINE_NM_FLIP_HORIZONTAL "Flip Horizontal"
+    IDS_SPLINE_NM_FLIP_VERTICAL "Flip Vertical"
+    IDS_SPLINE_NM_IMPORT    "Import"
+    IDS_SPLINE_NM_NODE_TYPE "Node Type"
+    IDS_SPLINE_NM_PASTE     "Paste"
+    IDS_SPLINE_NM_ROTATE    "Rotate"
+    IDS_SPLINE_NM_SCALE     "Scale"
+    IDS_SPLINE_NM_SEGMENT_TYPE "Segment Type"
+    IDS_SPLINE_NM_TRANSLATE "Translate"
+    IDS_TEXT_FILES_FILTER   "Text Files (*.txt)|*.txt|All Files (*.*)|*.*||"
+    IDS_TOOLBAR_CUSTOMIZE   "Customize..."
+END
+
+STRINGTABLE
+BEGIN
+    IDS_TOOLBAR_STANDARD    "Standard"
+    IDS_VIEW_PAN            "Pan"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_HOME_PAGE        "Go to the ChordEase home page\nHome Page"
+    ID_EDIT_DELETE          "Delete selected items\nDelete"
+    ID_EDIT_DESELECT        "Clear selection\nDeselect"
+    ID_FILE_EXPORT          "Export image or 3D model\nExport"
+    ID_FILE_RECORD          "Record video as sequence of bitmaps\nRecord"
+    ID_INDICATOR_FRAME_RATE "00000000"
+    ID_INDICATOR_RESOLUTION "00000 x 00000"
+    ID_INDICATOR_ZOOM       "0000000000"
+END
+
+STRINGTABLE
+BEGIN
+    ID_SPLINE_ADD_NODE      "Add node to spline\nAdd Node"
+    ID_SPLINE_DELETE_NODE   "Delete selected node\nDelete Node"
+    ID_SPLINE_EXPORT        "Export spline to file\nExport Spline"
+    ID_SPLINE_FLIP_HORIZONTAL 
+                            "Flip selected segments horizontally\nFlip Horizontal"
+    ID_SPLINE_FLIP_VERTICAL "Flip selected segments vertically\nFlip Vertical"
+    ID_SPLINE_GRID_SETUP    "Edit grid settings\nGrid Setup"
+    ID_SPLINE_IMPORT        "Import spline from file\nImport Spline"
+    ID_SPLINE_NODE_TYPE1_CUSP "Set type of selected nodes to cusp\nCusp"
+    ID_SPLINE_NODE_TYPE2_SMOOTH "Set type of selected nodes to smooth\nSmooth"
+    ID_SPLINE_NODE_TYPE3_SYMMETRICAL 
+                            "Set type of selected nodes to symmetrical\nSymmetrical"
+    ID_SPLINE_ROTATE        "Rotate selected segments\nRotate"
+    ID_SPLINE_SCALE         "Scale selected segments\nScale"
+    ID_SPLINE_SEGMENT_TYPE1_CURVE 
+                            "Set type of selected segments to curve\nCurve"
+    ID_SPLINE_SEGMENT_TYPE2_LINE "Set type of selected segments to line\nLine"
+    ID_SPLINE_SHOW_GRID     "Show or hide grid\nShow Grid"
+    ID_SPLINE_SHOW_HORZ_MIRROR "Horizontally mirror spline\nOpposite Wall"
+END
+
+STRINGTABLE
+BEGIN
+    ID_SPLINE_SHOW_RULERS   "Show or hide rulers\nShow Rulers"
+    ID_SPLINE_SNAP_TO_GRID  "Toggle snap to grid\nSnap to Grid"
+    ID_SPLINE_TRANSLATE     "Translate selected segments\translate"
+    ID_SPLINE_ZOOM_IN       "Zoom in\nZoom In"
+    ID_SPLINE_ZOOM_OUT      "Zoom out\nZoom Out"
+    ID_SPLINE_ZOOM_RESET    "Reset zoom\nReset Zoom"
+    ID_TOOLS_MESH_INFO      "Show mesh information\nMesh Info"
+    ID_TOOLS_OPTIONS        "Edit options\nOptions"
+    ID_VIEW_APPLOOK_MDI_TABS "Use MDI tabs\nMDI Tabs"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_CUSTOMIZE       " "
+    ID_VIEW_PAN_DOWN        "Pan view down\nPan Down"
+    ID_VIEW_PAN_EDIT        "Edit panning numerically\nEdit Panning"
+    ID_VIEW_PAN_LEFT        "Pan view left\nPan Left"
+    ID_VIEW_PAN_RIGHT       "Pan view right\nPan Right"
+    ID_VIEW_PAN_UP          "Pan view up\nPan Up"
+    ID_VIEW_RECORD_STATUS   "Show or hide the record status dialog\nRecord Status"
+    ID_VIEW_ROTATE_ABOVE    "View from above\nAbove View"
+    ID_VIEW_ROTATE_AUTO     "Automatically rotate view\nAuto Rotate View"
+    ID_VIEW_ROTATE_BACK     "View from back\nBack View"
+    ID_VIEW_ROTATE_BOTTOM   "View from bottom\nBottom View"
+    ID_VIEW_ROTATE_EDIT     "Edit rotation numerically\nEdit Rotation"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_ROTATE_FRONT    "View from front\nFront View"
+    ID_VIEW_ROTATE_LEFT     "View from left\nLeft View"
+    ID_VIEW_ROTATE_RESET    "Reset view rotation and panning\nReset View"
+    ID_VIEW_ROTATE_RIGHT    "View from right\nRight View"
+    ID_VIEW_ROTATE_TOP      "View from top\nTop View"
+    ID_VIEW_STYLE_ANIMATION "Enable animation\nAnimation"
+    ID_VIEW_STYLE_BOUNDS    "Show bounding box\nBounds"
+    ID_VIEW_STYLE_CULLING   "Cull hidden surfaces\nCulling"
+    ID_VIEW_STYLE_GOURAUD   "Use Gouraud shading\nGouraud"
+    ID_VIEW_STYLE_HIGHLIGHTS "Show specular highlights\nHighlights"
+    ID_VIEW_STYLE_TEXTURE   "Show texture map\nTexture"
+    ID_VIEW_STYLE_WIREFRAME "Show wireframe\nWireframe"
+    ID_VIEW_ZOOM_IN         "Zoom in to center of view\nZoom In"
+    ID_VIEW_ZOOM_OUT        "Zoom out from center of view\nZoom Out"
+    ID_VIEW_ZOOM_RESET      "Reset zoom and panning to defaults\nReset Zoom"
+    ID_WINDOW_FULL_SCREEN   "Toggle full screen mode\nFull Screen"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_MANAGER       "&Windows..."
+END
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "PotterDraw"
+    IDR_POTTERDRAWTYPE      "\nPotterDraw\nPotterDraw\nPotterDraw Files (*.pdr)\n.pdr\nPotterDraw.Document\nPotterDraw.Document"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "PotterDraw"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
+    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
+    ID_FILE_PRINT           "Print the active document\nPrint"
+    ID_FILE_PRINT_DIRECT    "Print the active document using current options\nQuick Print"
+    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+    ID_HELP_FINDER          "List help topics\nHelp Topics"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this document"
+    ID_FILE_MRU_FILE2       "Open this document"
+    ID_FILE_MRU_FILE3       "Open this document"
+    ID_FILE_MRU_FILE4       "Open this document"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_NEW           "Open another window for the active document\nNew Window"
+    ID_WINDOW_ARRANGE       "Arrange icons at the bottom of the window\nArrange Icons"
+    ID_WINDOW_CASCADE       "Arrange windows so they overlap\nCascade Windows"
+    ID_WINDOW_TILE_HORZ     "Arrange windows as non-overlapping tiles\nTile Windows"
+    ID_WINDOW_TILE_VERT     "Arrange windows as non-overlapping tiles\nTile Windows"
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle Status Bar"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+    AFX_IDS_MDICHILD        "Activate this window"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE 9, 1
+#include "res\PotterDraw.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"      // Standard components
+#include "afxprint.rc"    // printing/print preview resources
+#if !defined(_AFXDLL)
+#include "afxribbon.rc"        // MFC ribbon and control bar resources
+#endif
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

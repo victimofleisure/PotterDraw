@@ -1,0 +1,410 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{0a8c37ba-22b0-4c76-9560-86c3e3f4cd68}</ProjectGuid>
+    <RootNamespace>PotterDraw</RootNamespace>
+    <Keyword>MFCProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Static</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Direct3D9.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Direct3D9.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Direct3D9.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="Direct3D9.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(Direct3D9)\Include</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(Direct3D9)\Lib\x86\d3d9.lib;$(Direct3D9)\Lib\x86\d3dx9.lib;$(Direct3D9)\Lib\x86\dxerr9.lib;version.lib;winmm.lib;htmlhelp.lib</AdditionalDependencies>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>true</ValidateAllParameters>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy "$(Direct3D9)\Bin\x86\d3dx9_26.dll" "$(OutputPath)"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>copy Direct3D9 DLL from SDK to output folder</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(Direct3D9)\Include</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>$(Direct3D9)\Lib\x64\d3d9.lib;$(Direct3D9)\Lib\x64\d3dx9.lib;$(Direct3D9)\Lib\x64\dxerr9.lib;version.lib;winmm.lib;htmlhelp.lib</AdditionalDependencies>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy "$(Direct3D9)\Bin\x64\d3dx9_26.dll" "$(OutputPath)"</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>copy Direct3D9 DLL from SDK to output folder</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(Direct3D9)\Include</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(Direct3D9)\Lib\x86\d3d9.lib;$(Direct3D9)\Lib\x86\d3dx9.lib;$(Direct3D9)\Lib\x86\dxerr9.lib;version.lib;winmm.lib;htmlhelp.lib</AdditionalDependencies>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <ValidateAllParameters>true</ValidateAllParameters>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy "$(Direct3D9)\Bin\x86\d3dx9_26.dll" "$(OutputPath)"</Command>
+      <Message>copy Direct3D9 DLL from SDK to output folder</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4100</DisableSpecificWarnings>
+      <AdditionalIncludeDirectories>$(Direct3D9)\Include</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>$(Direct3D9)\Lib\x64\d3d9.lib;$(Direct3D9)\Lib\x64\d3dx9.lib;$(Direct3D9)\Lib\x64\dxerr9.lib;version.lib;winmm.lib;htmlhelp.lib</AdditionalDependencies>
+      <GenerateMapFile>true</GenerateMapFile>
+    </Link>
+    <Midl>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0409</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command>copy "$(Direct3D9)\Bin\x64\d3dx9_26.dll" "$(OutputPath)"</Command>
+      <Message>copy Direct3D9 DLL from SDK to output folder</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.h" />
+    <ClInclude Include="ArrayEx.h" />
+    <ClInclude Include="Benchmark.h" />
+    <ClInclude Include="BoundArray.h" />
+    <ClInclude Include="ChildFrm.h" />
+    <ClInclude Include="Clipboard.h" />
+    <ClInclude Include="D3DGraphics.h" />
+    <ClInclude Include="DataTipCtrl.h" />
+    <ClInclude Include="Dib.h" />
+    <ClInclude Include="DibEx.h" />
+    <ClInclude Include="DocIter.h" />
+    <ClInclude Include="DoubleBufDC.h" />
+    <ClInclude Include="DPoint.h" />
+    <ClInclude Include="DRect.h" />
+    <ClInclude Include="FixedArray.h" />
+    <ClInclude Include="FocusEdit.h" />
+    <ClInclude Include="FolderDialog.h" />
+    <ClInclude Include="FrameSizeDef.h" />
+    <ClInclude Include="Globals.h" />
+    <ClInclude Include="GridSetupDlg.h" />
+    <ClInclude Include="HelpIDs.h" />
+    <ClInclude Include="HelpResMap.h" />
+    <ClInclude Include="Hyperlink.h" />
+    <ClInclude Include="IniFile.h" />
+    <ClInclude Include="MidiWrap.h" />
+    <ClInclude Include="ModelessDlg.h" />
+    <ClInclude Include="ModulationBar.h" />
+    <ClInclude Include="ModulationProps.h" />
+    <ClInclude Include="ModulationPropsDef.h" />
+    <ClInclude Include="Options.h" />
+    <ClInclude Include="OptionsDef.h" />
+    <ClInclude Include="OptionsDlg.h" />
+    <ClInclude Include="OscilloscopeBar.h" />
+    <ClInclude Include="PaletteBar.h" />
+    <ClInclude Include="PersistDlg.h" />
+    <ClInclude Include="PlotCtrl.h" />
+    <ClInclude Include="PotGraphics.h" />
+    <ClInclude Include="PotProperties.h" />
+    <ClInclude Include="PotPropsDef.h" />
+    <ClInclude Include="Properties.h" />
+    <ClInclude Include="PropertiesBar.h" />
+    <ClInclude Include="PropertiesGrid.h" />
+    <ClInclude Include="Range.h" />
+    <ClInclude Include="RecordDlg.h" />
+    <ClInclude Include="RecordStatusDlg.h" />
+    <ClInclude Include="RefPtr.h" />
+    <ClInclude Include="RegTempl.h" />
+    <ClInclude Include="RegTemplTypes.h" />
+    <ClInclude Include="Rotate2DDlg.h" />
+    <ClInclude Include="RotateDlg.h" />
+    <ClInclude Include="RulerCtrl.h" />
+    <ClInclude Include="Scale2DDlg.h" />
+    <ClInclude Include="Spline.h" />
+    <ClInclude Include="SplineBar.h" />
+    <ClInclude Include="SplineMsgDef.h" />
+    <ClInclude Include="SplineWnd.h" />
+    <ClInclude Include="StringUtil.h" />
+    <ClInclude Include="PotterDraw.h" />
+    <ClInclude Include="PotterDrawDoc.h" />
+    <ClInclude Include="PotterDrawView.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="PathStr.h" />
+    <ClInclude Include="Persist.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="Round.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="Translate2DDlg.h" />
+    <ClInclude Include="Undoable.h" />
+    <ClInclude Include="UndoCodeData.h" />
+    <ClInclude Include="UndoCodes.h" />
+    <ClInclude Include="UndoManager.h" />
+    <ClInclude Include="UndoState.h" />
+    <ClInclude Include="VariantHelper.h" />
+    <ClInclude Include="Version.h" />
+    <ClInclude Include="VersionInfo.h" />
+    <ClInclude Include="Win32Console.h" />
+    <ClInclude Include="WObject.h" />
+    <ClInclude Include="Wrapx64.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutDlg.cpp" />
+    <ClCompile Include="ArrayEx.cpp" />
+    <ClCompile Include="Benchmark.cpp" />
+    <ClCompile Include="ChildFrm.cpp" />
+    <ClCompile Include="Clipboard.cpp" />
+    <ClCompile Include="D3DGraphics.cpp" />
+    <ClCompile Include="DataTipCtrl.cpp" />
+    <ClCompile Include="Dib.cpp" />
+    <ClCompile Include="DibEx.cpp" />
+    <ClCompile Include="DocIter.cpp" />
+    <ClCompile Include="DoubleBufDC.cpp" />
+    <ClCompile Include="DPoint.cpp" />
+    <ClCompile Include="DRect.cpp" />
+    <ClCompile Include="FocusEdit.cpp" />
+    <ClCompile Include="FolderDialog.cpp" />
+    <ClCompile Include="GridSetupDlg.cpp" />
+    <ClCompile Include="Hyperlink.cpp" />
+    <ClCompile Include="IniFile.cpp" />
+    <ClCompile Include="MidiWrap.cpp" />
+    <ClCompile Include="ModelessDlg.cpp" />
+    <ClCompile Include="ModulationBar.cpp" />
+    <ClCompile Include="ModulationProps.cpp" />
+    <ClCompile Include="Options.cpp" />
+    <ClCompile Include="OptionsDlg.cpp" />
+    <ClCompile Include="OscilloscopeBar.cpp" />
+    <ClCompile Include="PaletteBar.cpp" />
+    <ClCompile Include="PersistDlg.cpp" />
+    <ClCompile Include="PlotCtrl.cpp" />
+    <ClCompile Include="PotGraphics.cpp" />
+    <ClCompile Include="PotProperties.cpp" />
+    <ClCompile Include="Properties.cpp" />
+    <ClCompile Include="PropertiesBar.cpp" />
+    <ClCompile Include="PropertiesGrid.cpp" />
+    <ClCompile Include="RecordDlg.cpp" />
+    <ClCompile Include="RecordStatusDlg.cpp" />
+    <ClCompile Include="Rotate2DDlg.cpp" />
+    <ClCompile Include="RotateDlg.cpp" />
+    <ClCompile Include="RulerCtrl.cpp" />
+    <ClCompile Include="Scale2DDlg.cpp" />
+    <ClCompile Include="Spline.cpp" />
+    <ClCompile Include="SplineBar.cpp" />
+    <ClCompile Include="SplineWnd.cpp" />
+    <ClCompile Include="StringUtil.cpp" />
+    <ClCompile Include="PotterDraw.cpp" />
+    <ClCompile Include="PotterDrawDoc.cpp" />
+    <ClCompile Include="PotterDrawView.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="PathStr.cpp" />
+    <ClCompile Include="Persist.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Translate2DDlg.cpp" />
+    <ClCompile Include="Undoable.cpp" />
+    <ClCompile Include="UndoManager.cpp" />
+    <ClCompile Include="UndoState.cpp" />
+    <ClCompile Include="VersionInfo.cpp" />
+    <ClCompile Include="Win32Console.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\dragsingle.cur" />
+    <None Include="res\magnifier.cur" />
+    <None Include="PotterDraw.reg" />
+    <None Include="res\PotterDraw.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PotterDraw.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\classview.bmp" />
+    <Image Include="res\classview_hc.bmp" />
+    <Image Include="res\class_view.ico" />
+    <Image Include="res\class_view_hc.ico" />
+    <Image Include="res\explorer.bmp" />
+    <Image Include="res\explorer_hc.bmp" />
+    <Image Include="res\fileview.bmp" />
+    <Image Include="res\fileview_hc.bmp" />
+    <Image Include="res\file_view.ico" />
+    <Image Include="res\file_view_hc.ico" />
+    <Image Include="res\PotterDraw.ico" />
+    <Image Include="res\PotterDrawDoc.ico" />
+    <Image Include="res\menuimages.bmp" />
+    <Image Include="res\menuimages_hc.bmp" />
+    <Image Include="res\output_wnd.ico" />
+    <Image Include="res\output_wnd_hc.ico" />
+    <Image Include="res\properties.bmp" />
+    <Image Include="res\properties_hc.bmp" />
+    <Image Include="res\properties_wnd.ico" />
+    <Image Include="res\properties_wnd_hc.ico" />
+    <Image Include="res\sort.bmp" />
+    <Image Include="res\sort_hc.bmp" />
+    <Image Include="res\Toolbar.bmp" />
+    <Image Include="res\Toolbar256.bmp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="PotterDraw.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
