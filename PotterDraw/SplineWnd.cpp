@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      13jun17	initial version
+		01		05sep17	add changing notification
  
 */
 
@@ -788,6 +789,7 @@ void CSplineWnd::OnMouseMove(UINT nFlags, CPoint point)
 				m_arrSpline.Translate(m_sel, ptOffset, TF_TRANSLATE_ADJACENT_CTRLS);
 			}
 			Invalidate();
+			Notify(NM_SPLINE_CHANGING);
 		}
 		break;
 	case DS_PAN:

@@ -8,7 +8,14 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
-		
+		01		24aug17	add OnDropFiles handler to load texture files
+		02		24aug17	make bar IDs constants instead of resource IDs 
+		03		24aug17	store app look as index instead of resource ID
+		04		25aug17	add check for updates
+		05		01sep17	remove property help handler
+		06		05sep17	in OnUpdate, add spline special case
+		07		05sep17	fix pSender to match tests in OnUpdate
+
 */
 
 // MainFrm.cpp : implementation of the CMainFrame class
@@ -25,6 +32,7 @@
 #include "RecordStatusDlg.h"
 #include "DocIter.h"
 #include "FocusEdit.h"
+#include "DllWrap.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -51,12 +59,46 @@ static UINT indicators[] =
 
 #define RK_MDI_TABS	_T("MDITabs")
 
+// docking bar IDs should have been relative to AFX_IDW_CONTROLBAR_FIRST
+// but it's too late to change them now, and it doesn't seem to matter
+enum {	// docking bar IDs; don't change, else bar placement won't be restored
+	ID_BAR_PROPERTIES = 392,
+	ID_BAR_PALETTE = 291,
+	ID_BAR_SPLINE = 399,
+	ID_BAR_MODULATION = 227,
+	ID_BAR_OSCILLOSCOPE = 290,
+};
+
+enum {	// application looks; alpha order to match corresponding resource IDs
+	APPLOOK_OFF_2003,
+	APPLOOK_OFF_2007_AQUA,
+	APPLOOK_OFF_2007_BLACK,
+	APPLOOK_OFF_2007_BLUE,
+	APPLOOK_OFF_2007_SILVER,
+	APPLOOK_OFF_XP, 
+	APPLOOK_VS_2005,
+	APPLOOK_VS_2008,
+	APPLOOK_WINDOWS_7,
+	APPLOOK_WIN_2000,
+	APPLOOK_WIN_XP,
+	APP_LOOKS
+};
+
+#define ID_VIEW_APPLOOK_FIRST ID_VIEW_APPLOOK_OFF_2003
+#define ID_VIEW_APPLOOK_LAST ID_VIEW_APPLOOK_WIN_XP
+#define ID_LEGACY_APPLOOK_FIRST 32809	// from initial release's resource.h
+
 // CMainFrame construction/destruction
 
 CMainFrame::CMainFrame()
 {
 	// TODO: add member initialization code here
-	theApp.m_nAppLook = theApp.GetInt(_T("ApplicationLook"), ID_VIEW_APPLOOK_VS_2008);
+	theApp.m_nAppLook = theApp.GetInt(_T("ApplicationLook"), APPLOOK_VS_2008);
+	// the default MFC code stores the app look as a resource ID, which sucks because
+	// renumbering resources corrupts the app look; later versions store the app look
+	// as an index instead, but the initial release stored a resource ID, so fix that
+	if (theApp.m_nAppLook >= APP_LOOKS)	// if app look is out range, assume resource ID
+		theApp.m_nAppLook -= ID_LEGACY_APPLOOK_FIRST;	// convert legacy app look from resource ID to index
 	m_pActiveView = NULL;
 	m_pRecordStatusDlg = NULL;
 	m_bMDITabs = theApp.GetInt(RK_MDI_TABS, TRUE) != 0;
@@ -78,7 +120,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	BOOL bNameValid;
 	// set the visual manager and style based on persisted value
-	OnApplicationLook(theApp.m_nAppLook);
+	OnApplicationLook(theApp.m_nAppLook + ID_VIEW_APPLOOK_FIRST);
 
 	m_mdiTabParams.m_style = CMFCTabCtrl::STYLE_3D_ONENOTE; // other styles available...
 	m_mdiTabParams.m_bActiveTabCloseButton = TRUE;      // set to FALSE to place close button at right of tab area
@@ -219,6 +261,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	EnableFullScreenMainMenu(false);
 
 //	theApp.GetContextMenuManager()->AddMenu(_T("View"), IDR_POPUP_EDIT);
+	PostMessage(UWM_DELAYEDCREATE);
 
 	return 0;
 }
@@ -241,7 +284,7 @@ BOOL CMainFrame::CreateDockingWindows()
 	DWORD	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_LEFT | CBRS_FLOAT_MULTI;
 	CPotProperties	props;
 	m_wndPropertiesBar.SetInitialProperties(props);
-	if (!m_wndPropertiesBar.Create(sTitle, this, CRect(0, 0, 300, 200), TRUE, IDS_PROPERTIES_BAR, dwStyle))
+	if (!m_wndPropertiesBar.Create(sTitle, this, CRect(0, 0, 300, 200), TRUE, ID_BAR_PROPERTIES, dwStyle))
 	{
 		TRACE0("Failed to create properties bar\n");
 		return FALSE; // failed to create
@@ -252,7 +295,7 @@ BOOL CMainFrame::CreateDockingWindows()
 	CModulationProps	ModProps;
 	ModProps.SetDefault();
 	m_wndModulationBar.SetInitialProperties(ModProps);
-	if (!m_wndModulationBar.Create(sTitle, this, CRect(0, 0, 300, 200), TRUE, IDS_MODULATION_BAR, dwStyle))
+	if (!m_wndModulationBar.Create(sTitle, this, CRect(0, 0, 300, 200), TRUE, ID_BAR_MODULATION, dwStyle))
 	{
 		TRACE0("Failed to create modulation bar\n");
 		return FALSE; // failed to create
@@ -260,7 +303,7 @@ BOOL CMainFrame::CreateDockingWindows()
 	// create palette bar
 	sTitle.LoadString(IDS_PALETTE_BAR);
 	dwStyle = WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT | CBRS_FLOAT_MULTI;
-	if (!m_wndPaletteBar.Create(sTitle, this, CRect(0, 0, 450, 200), TRUE, IDS_PALETTE_BAR, dwStyle))
+	if (!m_wndPaletteBar.Create(sTitle, this, CRect(0, 0, 450, 200), TRUE, ID_BAR_PALETTE, dwStyle))
 	{
 		TRACE0("Failed to create palette bar\n");
 		return FALSE; // failed to create
@@ -268,7 +311,7 @@ BOOL CMainFrame::CreateDockingWindows()
 	// create oscilloscope bar
 	sTitle.LoadString(IDS_OSCILLOSCOPE_BAR);
 	dwStyle = WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT | CBRS_FLOAT_MULTI;
-	if (!m_wndOscilloscopeBar.Create(sTitle, this, CRect(0, 0, 300, 200), TRUE, IDS_OSCILLOSCOPE_BAR, dwStyle))
+	if (!m_wndOscilloscopeBar.Create(sTitle, this, CRect(0, 0, 300, 200), TRUE, ID_BAR_OSCILLOSCOPE, dwStyle))
 	{
 		TRACE0("Failed to create oscilloscope bar\n");
 		return FALSE; // failed to create
@@ -276,7 +319,7 @@ BOOL CMainFrame::CreateDockingWindows()
 	// create spline bar
 	sTitle.LoadString(IDS_SPLINE_BAR);
 	dwStyle = WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | CBRS_RIGHT | CBRS_FLOAT_MULTI;
-	if (!m_wndSplineBar.Create(sTitle, this, CRect(0, 0, 300, 200), TRUE, IDS_SPLINE_BAR, dwStyle))
+	if (!m_wndSplineBar.Create(sTitle, this, CRect(0, 0, 300, 200), TRUE, ID_BAR_SPLINE, dwStyle))
 	{
 		TRACE0("Failed to create spline bar\n");
 		return FALSE; // failed to create
@@ -317,17 +360,26 @@ void CMainFrame::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 //	printf("CMainFrame::OnUpdate pSender=%Ix lHint=%Id pHint=%Ix\n", pSender, lHint, pHint);
 	CPotterDrawDoc	*pDoc = GetActiveMDIDoc();
 	if (pDoc != NULL) {
-		if (pSender != reinterpret_cast<CView *>(&m_wndPropertiesBar)) {	// if sender isn't properties bar
-			m_wndPropertiesBar.SetProperties(*pDoc);	// update properties bar
-		}
-		if (pSender != reinterpret_cast<CView *>(&m_wndPaletteBar)) {	// if sender isn't palette bar
-			m_wndPaletteBar.SetPalette(pDoc->m_arrPalette, pDoc->m_iPaletteCurSel);	// update palette bar
-		}
-		if (pSender != reinterpret_cast<CView *>(&m_wndModulationBar)) {	// if sender isn't modulation bar
-			UpdateModulationBar(pDoc);
-		}
-		if (pSender != reinterpret_cast<CView *>(&m_wndSplineBar)) {	// if sender isn't spline bar
-			m_wndSplineBar.m_wndSpline.SetState(pDoc->m_arrSpline);
+		switch (lHint) {
+		case CPotterDrawDoc::HINT_SPLINE:
+			if (pSender != reinterpret_cast<CView *>(&m_wndSplineBar)) {	// if sender isn't spline bar
+				m_wndSplineBar.m_wndSpline.SetState(pDoc->m_arrSpline);	// update spline bar
+			}
+			// spline doesn't affect other bars, so don't waste time updating them needlessly
+			break;
+		default:
+			if (pSender != reinterpret_cast<CView *>(&m_wndPropertiesBar)) {	// if sender isn't properties bar
+				m_wndPropertiesBar.SetProperties(*pDoc);	// update properties bar
+			}
+			if (pSender != reinterpret_cast<CView *>(&m_wndPaletteBar)) {	// if sender isn't palette bar
+				m_wndPaletteBar.SetPalette(pDoc->m_arrPalette, pDoc->m_iPaletteCurSel);	// update palette bar
+			}
+			if (pSender != reinterpret_cast<CView *>(&m_wndModulationBar)) {	// if sender isn't modulation bar
+				UpdateModulationBar(pDoc);	// update modulation bar
+			}
+			if (pSender != reinterpret_cast<CView *>(&m_wndSplineBar)) {	// if sender isn't spline bar
+				m_wndSplineBar.m_wndSpline.SetState(pDoc->m_arrSpline);	// update spline bar
+			}
 		}
 	} else {	// no active document
 		CPotProperties	props;
@@ -486,6 +538,73 @@ void CMainFrame::GotoNextPane(bool bPrev)
 	pPane->SetFocus();	// focus next/prev pane
 }
 
+#ifdef _WIN64
+#define RK_UNINSTALL _T("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{D65830A7-9872-41E4-A8F6-40CB90327636}")
+#else // x86
+#define RK_UNINSTALL _T("SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{95AD1475-2445-4C31-B440-F464BE2F7A9E}")
+#endif
+
+bool CMainFrame::CheckForUpdates(bool Explicit)
+{
+	// check for updates DLL exports a single function; note that target app name
+	// is declared as LPCSTR instead of LPCTSTR to avoid forking DLL for Unicode
+	typedef UINT (CALLBACK *CKUPDATE_PTR)(HWND hWnd, LPCSTR TargetAppName, UINT Flags);
+	enum {	// update check flags
+		UF_EXPLICIT	= 0x01,	// explicit check (as opposed to automatic)
+		UF_X64		= 0x02,	// target application is 64-bit
+		UF_PORTABLE	= 0x04,	// target application is portable (no installer)
+	};
+	CPathStr	DLLPath(theApp.GetAppFolder());
+	DLLPath.Append(_T("CKUpdate.dll"));
+	CDLLWrap	dll;
+	if (!dll.LoadLibrary(DLLPath)) {	// if we can't load DLL
+		if (Explicit) {
+			CString	msg;
+			AfxFormatString2(msg, IDS_CKUP_CANT_LOAD_DLL, DLLPath,
+				GetLastErrorString());
+			AfxMessageBox(msg);
+		}
+		return(FALSE);
+	}
+	LPCTSTR	ProcName = _T("CKUpdate");
+	CKUPDATE_PTR	CKUpdate = (CKUPDATE_PTR)dll.GetProcAddress(ProcName);
+	if (CKUpdate == NULL) {	// if we can't get address
+		if (Explicit) {
+			CString	msg;
+			AfxFormatString2(msg, IDS_CKUP_CANT_GET_ADDR, ProcName,
+				GetLastErrorString());
+			AfxMessageBox(msg);
+		}
+		return(FALSE);
+	}
+	UINT	flags = 0;
+	if (Explicit)
+		flags |= UF_EXPLICIT;	// explicit check (as opposed to automatic)
+#ifdef _WIN64
+	flags |= UF_X64;	// target application is 64-bit
+#endif
+	CRegKey	key;	// if our uninstaller not found
+	if (key.Open(HKEY_LOCAL_MACHINE, RK_UNINSTALL, KEY_READ) != ERROR_SUCCESS)
+		flags |= UF_PORTABLE;	// target application is portable (no installer)
+	USES_CONVERSION;	// convert target app name to ANSI
+	UINT	retc = CKUpdate(m_hWnd, T2CA(theApp.m_pszAppName), flags);
+	return(retc != 0);
+}
+
+UINT CMainFrame::CheckForUpdatesThreadFunc(LPVOID Param)
+{
+	CMainFrame	*pMain = (CMainFrame *)Param;
+	TRY {
+		Sleep(1000);	// give app a chance to finish initializing
+		pMain->CheckForUpdates(FALSE);	// automatic check
+	}
+	CATCH (CException, e) {
+		e->ReportError();
+	}
+	END_CATCH
+	return(0);
+}
+
 // CMainFrame diagnostics
 
 #ifdef _DEBUG
@@ -507,8 +626,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWndEx)
 	ON_COMMAND(ID_WINDOW_MANAGER, OnWindowManager)
 	ON_COMMAND(ID_VIEW_CUSTOMIZE, OnViewCustomize)
 	ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, OnToolbarCreateNew)
-	ON_COMMAND_RANGE(ID_VIEW_APPLOOK_OFF_2003, ID_VIEW_APPLOOK_WIN_XP, OnApplicationLook)
-	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_APPLOOK_OFF_2003, ID_VIEW_APPLOOK_WIN_XP, OnUpdateApplicationLook)
+	ON_COMMAND_RANGE(ID_VIEW_APPLOOK_FIRST, ID_VIEW_APPLOOK_LAST, OnApplicationLook)
+	ON_UPDATE_COMMAND_UI_RANGE(ID_VIEW_APPLOOK_FIRST, ID_VIEW_APPLOOK_LAST, OnUpdateApplicationLook)
 	ON_WM_SETTINGCHANGE()
 	ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_SETUP, OnUpdateFilePrintSetup)
 	ON_WM_CLOSE()
@@ -529,7 +648,6 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWndEx)
 	ON_MESSAGE(UWM_MODELESSDESTROY, OnModelessDestroy)
 	ON_MESSAGE(UWM_PROPERTY_CHANGE, OnPropertyChange)
 	ON_MESSAGE(UWM_PROPERTY_SELECT, OnPropertySelect)
-	ON_MESSAGE(UWM_PROPERTY_HELP, OnPropertyHelp)
 	ON_MESSAGE(UWM_PALETTE_CHANGE, OnPaletteChange)
 	ON_MESSAGE(UWM_PALETTE_SELECTION, OnPaletteSelection)
 	ON_MESSAGE(UWM_DEFERRED_SIZING, OnDeferredSizing)
@@ -538,6 +656,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CMDIFrameWndEx)
 	ON_UPDATE_COMMAND_UI(ID_VIEW_RECORD_STATUS, OnUpdateViewRecordStatus)
 	ON_COMMAND(ID_NEXT_PANE, OnNextPane)
 	ON_COMMAND(ID_PREV_PANE, OnPrevPane)
+	ON_WM_DROPFILES()
+	ON_MESSAGE(UWM_DELAYEDCREATE, OnDelayedCreate)
+	ON_COMMAND(ID_APP_CHECK_FOR_UPDATES, OnAppCheckForUpdates)
 END_MESSAGE_MAP()
 
 // CMainFrame message handlers
@@ -578,39 +699,39 @@ void CMainFrame::OnApplicationLook(UINT id)
 {
 	CWaitCursor wait;
 
-	theApp.m_nAppLook = id;
+	theApp.m_nAppLook = id - ID_VIEW_APPLOOK_FIRST;
 
 	switch (theApp.m_nAppLook)
 	{
-	case ID_VIEW_APPLOOK_WIN_2000:
+	case APPLOOK_WIN_2000:
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManager));
 		break;
 
-	case ID_VIEW_APPLOOK_OFF_XP:
+	case APPLOOK_OFF_XP:
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerOfficeXP));
 		break;
 
-	case ID_VIEW_APPLOOK_WIN_XP:
+	case APPLOOK_WIN_XP:
 		CMFCVisualManagerWindows::m_b3DTabsXPTheme = TRUE;
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
 		break;
 
-	case ID_VIEW_APPLOOK_OFF_2003:
+	case APPLOOK_OFF_2003:
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerOffice2003));
 		CDockingManager::SetDockingMode(DT_SMART);
 		break;
 
-	case ID_VIEW_APPLOOK_VS_2005:
+	case APPLOOK_VS_2005:
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerVS2005));
 		CDockingManager::SetDockingMode(DT_SMART);
 		break;
 
-	case ID_VIEW_APPLOOK_VS_2008:
+	case APPLOOK_VS_2008:
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerVS2008));
 		CDockingManager::SetDockingMode(DT_SMART);
 		break;
 
-	case ID_VIEW_APPLOOK_WINDOWS_7:
+	case APPLOOK_WINDOWS_7:
 		CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows7));
 		CDockingManager::SetDockingMode(DT_SMART);
 		break;
@@ -618,19 +739,19 @@ void CMainFrame::OnApplicationLook(UINT id)
 	default:
 		switch (theApp.m_nAppLook)
 		{
-		case ID_VIEW_APPLOOK_OFF_2007_BLUE:
+		case APPLOOK_OFF_2007_BLUE:
 			CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_LunaBlue);
 			break;
 
-		case ID_VIEW_APPLOOK_OFF_2007_BLACK:
+		case APPLOOK_OFF_2007_BLACK:
 			CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_ObsidianBlack);
 			break;
 
-		case ID_VIEW_APPLOOK_OFF_2007_SILVER:
+		case APPLOOK_OFF_2007_SILVER:
 			CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_Silver);
 			break;
 
-		case ID_VIEW_APPLOOK_OFF_2007_AQUA:
+		case APPLOOK_OFF_2007_AQUA:
 			CMFCVisualManagerOffice2007::SetStyle(CMFCVisualManagerOffice2007::Office2007_Aqua);
 			break;
 		}
@@ -646,7 +767,8 @@ void CMainFrame::OnApplicationLook(UINT id)
 
 void CMainFrame::OnUpdateApplicationLook(CCmdUI* pCmdUI)
 {
-	pCmdUI->SetRadio(theApp.m_nAppLook == pCmdUI->m_nID);
+	UINT	nAppLook = pCmdUI->m_nID - ID_VIEW_APPLOOK_FIRST;
+	pCmdUI->SetRadio(theApp.m_nAppLook == nAppLook);
 }
 
 BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParentWnd, CCreateContext* pContext) 
@@ -785,7 +907,7 @@ LRESULT CMainFrame::OnPropertyChange(WPARAM wParam, LPARAM lParam)
 			if (pDoc->m_iPaletteCurSel >= pDoc->m_nColors)
 				pDoc->m_iPaletteCurSel = -1;
 			CPotterDrawDoc::CPropertyHint	hint(iProp);
-			CView	*pSender = reinterpret_cast<CView *>(this);
+			CView	*pSender = reinterpret_cast<CView *>(&m_wndPropertiesBar);
 			pDoc->UpdateAllViews(pSender, CPotterDrawDoc::HINT_PROPERTY, &hint);
 			pDoc->SetModifiedFlag();
 		} else if (pWnd == &m_wndModulationBar) {	// if notifier is modulation bar
@@ -800,7 +922,7 @@ LRESULT CMainFrame::OnPropertyChange(WPARAM wParam, LPARAM lParam)
 					pDoc->NotifyUndoableEdit(MAKELONG(iProp, iTarget), UCODE_MODULATION);
 					m_wndModulationBar.GetProperties(pDoc->m_Mod[iTarget]);	// after undo notification
 					CPotterDrawDoc::CModulationHint	hint(iTarget, iProp);
-					CView	*pSender = reinterpret_cast<CView *>(this);
+					CView	*pSender = reinterpret_cast<CView *>(&m_wndModulationBar);
 					pDoc->UpdateAllViews(pSender, CPotterDrawDoc::HINT_MODULATION, &hint);
 					pDoc->SetModifiedFlag();
 				}
@@ -826,26 +948,6 @@ LRESULT CMainFrame::OnPropertySelect(WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-LRESULT CMainFrame::OnPropertyHelp(WPARAM wParam, LPARAM lParam)
-{
-	int	iProp = INT64TO32(wParam);
-	CWnd	*pWnd = reinterpret_cast<CWnd*>(lParam);
-	int	nID = 0;
-	if (pWnd == &m_wndPropertiesBar) {	// if notifier is properties bar
-		if (iProp >= 0 && iProp < CPotProperties::PROPERTIES)	// if valid property index
-			nID = CPotProperties::m_Info[iProp].nNameID;	// get property name resource ID
-		else
-			nID = IDS_PROPERTIES_BAR;
-	} else if (pWnd == &m_wndModulationBar) {	// if notifier is modulation bar
-		if (iProp >= 0 && iProp < CModulationProps::PROPERTIES)	// if valid property index
-			nID = CModulationProps::m_Info[iProp].nNameID;	// get property name resource ID
-		else
-			nID = IDS_MODULATION_BAR;
-	}
-	theApp.WinHelp(nID);
-	return 0;
-}
-
 LRESULT CMainFrame::OnPaletteChange(WPARAM wParam, LPARAM lParam)
 {
 	CPotterDrawDoc	*pDoc = GetActiveMDIDoc();
@@ -859,7 +961,7 @@ LRESULT CMainFrame::OnPaletteChange(WPARAM wParam, LPARAM lParam)
 			m_wndPaletteBar.GetPalette(pDoc->m_arrPalette);
 			pDoc->m_nColors = pDoc->m_arrPalette.GetSize();
 		}
-		CView	*pSender = reinterpret_cast<CView *>(this); 
+		CView	*pSender = reinterpret_cast<CView *>(&m_wndPaletteBar); 
 		pDoc->UpdateAllViews(pSender, CPotterDrawDoc::HINT_PALETTE);
 		pDoc->SetModifiedFlag();
 	}
@@ -984,4 +1086,37 @@ void CMainFrame::OnUpdateWindowCascade(CCmdUI* pCmdUI)
 void CMainFrame::OnWindowFullScreen()
 {
 	FullScreen(!IsFullScreen());
+}
+
+void CMainFrame::OnDropFiles(HDROP hDropInfo)
+{
+	if (m_pActiveView != NULL) {
+		TCHAR	szPath[MAX_PATH];
+		if (DragQueryFile(hDropInfo, 0, szPath, MAX_PATH)) {	// get path of dropped file
+			LPCTSTR	pszExt = PathFindExtension(szPath);
+			if (pszExt != NULL) {	// if extension found
+				int	nExts = CPotterDrawDoc::m_nTextureFileExts;
+				for (int iExt = 0; iExt < nExts; iExt++) {	// for each texture file extension
+					if (!_tcsicmp(CPotterDrawDoc::m_arrTextureFileExt[iExt], pszExt)) {	// if extension matches
+						m_pActiveView->GetDocument()->LoadTexture(szPath);	// create texture from dropped file
+						return;
+					}
+				}
+			}
+		}
+	}
+	CMDIFrameWndEx::OnDropFiles(hDropInfo);
+}
+
+LRESULT	CMainFrame::OnDelayedCreate(WPARAM wParam, LPARAM lParam)
+{
+	if (theApp.m_Options.m_bAutoCheckUpdates)	// if automatically checking for updates
+		AfxBeginThread(CheckForUpdatesThreadFunc, this);	// launch thread to check
+	return(0);
+}
+
+void CMainFrame::OnAppCheckForUpdates() 
+{
+	CWaitCursor	wc;
+	CheckForUpdates(TRUE);	// explicit check
 }

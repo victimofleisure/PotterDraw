@@ -8,6 +8,8 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		25aug17	add check for updates
+		02		05sep17	add view spline drag
 		
 */
 
@@ -35,7 +37,9 @@ PROPDEF(	EXPORT,		VAR,		int,		nCustomImageHeight,		768,			1,			USHRT_MAX,	NULL,	
 PROPDEF(	EXPORT,		VAR,		int,		nFloatPrecision,		6,				3,			17,			NULL,		0)
 PROPDEF(	OSCILLOSCOPE,	VAR,	bool,		bPlotAllModulations,	0,				0,			0,			NULL,		0)
 PROPDEF(	SPLINE,		VAR,		double,		fSplineZoomStep,		10.0,			1.0,		100.0,		NULL,		0)
+PROPDEF(	SPLINE,		VAR,		bool,		bViewSplineDrag,		0,				0,			0,			NULL,		0)
 PROPDEF(	GENERAL,	VAR,		bool,		bPropertyDescrips,		1,				0,			0,			NULL,		0)
+PROPDEF(	GENERAL,	VAR,		bool,		bAutoCheckUpdates,		1,				0,			0,			NULL,		0)
 
 #undef PROPDEF
 #endif

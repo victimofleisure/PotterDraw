@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      05apr17	initial version
+        01      01sep17	add property help
 		
 */
 
@@ -38,4 +39,5 @@ protected:
 	virtual BOOL OnInitDialog();
 	virtual void OnOK();
 	afx_msg void OnClickedResetAll();
+	afx_msg LRESULT OnCommandHelp(WPARAM wParam, LPARAM lParam);
 };

@@ -231,6 +231,7 @@
     <ClInclude Include="DataTipCtrl.h" />
     <ClInclude Include="Dib.h" />
     <ClInclude Include="DibEx.h" />
+    <ClInclude Include="DLLWrap.h" />
     <ClInclude Include="DocIter.h" />
     <ClInclude Include="DoubleBufDC.h" />
     <ClInclude Include="DPoint.h" />
@@ -311,6 +312,7 @@
     <ClCompile Include="DataTipCtrl.cpp" />
     <ClCompile Include="Dib.cpp" />
     <ClCompile Include="DibEx.cpp" />
+    <ClCompile Include="DLLWrap.cpp" />
     <ClCompile Include="DocIter.cpp" />
     <ClCompile Include="DoubleBufDC.cpp" />
     <ClCompile Include="DPoint.cpp" />

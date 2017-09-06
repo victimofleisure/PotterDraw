@@ -8,6 +8,8 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
+		01		24aug17	add OnDropFiles handler to load texture files
+		02		25aug17	add check for updates
 		
 */
 
@@ -66,6 +68,7 @@ public:
 	void	UpdateToolbar();
 	void	OnRecord(bool bEnable);
 	void	ShowRecordStatusDlg(bool bShow);
+	bool	CheckForUpdates(bool Explicit);
 
 // Overrides
 public:
@@ -115,6 +118,7 @@ protected:
 	void	UpdateOptions();
 	void	UpdateModulationBar(const CPotterDrawDoc *pDoc);
 	void	GotoNextPane(bool bPrev = false);
+	static	UINT	CheckForUpdatesThreadFunc(LPVOID Param);
 
 // Generated message map functions
 protected:
@@ -140,7 +144,6 @@ protected:
 	afx_msg void OnUpdateWindowCascade(CCmdUI* pCmdUI);
 	afx_msg LRESULT OnPropertyChange(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnPropertySelect(WPARAM wParam, LPARAM lParam);
-	afx_msg LRESULT OnPropertyHelp(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnPaletteChange(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnPaletteSelection(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT	OnHandleDlgKey(WPARAM wParam, LPARAM lParam);
@@ -151,6 +154,9 @@ protected:
 	afx_msg void OnUpdateViewRecordStatus(CCmdUI *pCmdUI);
 	afx_msg void OnNextPane();
 	afx_msg void OnPrevPane();
+	afx_msg void OnDropFiles(HDROP hDropInfo);
+	afx_msg void OnAppCheckForUpdates();
+	afx_msg LRESULT	OnDelayedCreate(WPARAM wParam, LPARAM lParam);
 };
 
 inline CPotterDrawView *CMainFrame::GetActiveMDIView()

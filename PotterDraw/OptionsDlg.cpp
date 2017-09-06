@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      05apr17	initial version
+        01      01sep17	add property help
 		
 */
 
@@ -41,6 +42,7 @@ void COptionsDlg::DoDataExchange(CDataExchange* pDX)
 
 BEGIN_MESSAGE_MAP(COptionsDlg, CDialog)
 	ON_BN_CLICKED(IDC_OPTIONS_RESET_ALL, OnClickedResetAll)
+	ON_MESSAGE(WM_COMMANDHELP, OnCommandHelp)
 END_MESSAGE_MAP()
 
 // COptionsDlg message handlers
@@ -79,4 +81,16 @@ void COptionsDlg::OnClickedResetAll()
 		m_Grid.SetProperties(opt);
 		GotoDlgCtrl(GetDlgItem(IDOK));
 	}
+}
+
+LRESULT COptionsDlg::OnCommandHelp(WPARAM wParam, LPARAM lParam)
+{
+	int	iProp = m_Grid.GetCurSelIdx();
+	int	nID = 0;
+	if (iProp >= 0 && iProp < COptions::PROPERTIES)	// if valid property index
+		nID = COptions::m_Info[iProp].nNameID;	// get property name resource ID
+	else
+		nID = IDD_OPTIONS;
+	theApp.WinHelp(nID);
+	return TRUE;
 }

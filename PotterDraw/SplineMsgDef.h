@@ -8,9 +8,11 @@
 		revision history:
 		rev		date	comments
         00      13jun17	initial version
+		01		05sep17	add changing notification
  
 */
 
+SPLINEMSGDEF(CHANGING)
 SPLINEMSGDEF(CHANGED)
 SPLINEMSGDEF(ADD_NODE)
 SPLINEMSGDEF(DELETE_NODE)

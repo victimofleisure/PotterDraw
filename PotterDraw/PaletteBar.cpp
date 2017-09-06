@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      30mar17	initial version
+		01		05sep17	in Delete and Insert, add OnColorChange
 		
 */
 
@@ -168,6 +169,7 @@ void CPaletteBar::CMyColorBar::Insert(COLORREF c)
 		iSel = GetColorCount();
 	m_colors.InsertAt(iSel, c);
 	SetCurSel(iSel);
+	OnColorChange();
 	NotifyPaletteChange();
 }
 
@@ -199,6 +201,7 @@ void CPaletteBar::CMyColorBar::Delete()
 	int	iSel = GetCurSel();
 	if (iSel >= 0)  {
 		m_colors.RemoveAt(iSel);
+		OnColorChange();
 		NotifyPaletteChange();
 	}
 }

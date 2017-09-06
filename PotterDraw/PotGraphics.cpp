@@ -8,6 +8,8 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
+		01		24aug17	in CalcPotMesh, add scallop phase
+		02		25aug17	copy outer wall's texture coords to inner wall
 
 */
 
@@ -264,12 +266,13 @@ void CPotGraphics::CalcPotMesh()
 				vOrigin.y = float(cos(fHelixTheta) * m_fHelixAmplitude);
 			}
 			for (iSide = 0; iSide < nSides; iSide++) {	// for each side
+				CVertex&	v = m_arrVert[iVert];
 				double	fSide = double(iSide) / nSides;	// normalized side
 				double	fRad;
 				if (iWall == WALL_OUTER) {	// if outer wall
 					fRad = fRingRad;
 					if (bScallops) {
-						double	r = cos(fSide * M_PI * 2 * m_fScallops) * m_fScallopDepth;
+						double	r = cos((fSide * m_fScallops + m_fScallopPhase) * M_PI * 2) * m_fScallopDepth;
 						ApplyMotif(m_iScallopMotif, r);
 						fRad += r;
 					}
@@ -279,6 +282,7 @@ void CPotGraphics::CalcPotMesh()
 						fRad += r;
 					}
 					faOuterRad[iRing][iSide] = fRad;	// store outer radius for 2nd pass
+					GetTexture(fRing, fSide, v.t);	// get texture coords
 				} else {	// inner wall
 					double	fSlope;
 					if (iRing && iRing < nRings - 1)
@@ -288,15 +292,14 @@ void CPotGraphics::CalcPotMesh()
 					double	a = atan(fSlope);
 					fRad = faOuterRad[iRing][iSide] - m_fWallThickness / cos(a);
 					fRad = max(fRad, 0);	// avoid negative radius
+					v.t = m_arrVert[iVert - nWallStride].t;	// copy outer wall's texture coords
 				}
-				CVertex&	v = m_arrVert[iVert];
 				double	fTheta = fDelta * iSide + fRingTwist;
 				double	x = sin(fTheta) * m_fAspectRatio;
 				double	y = cos(fTheta);
 				double	z = (fRing - 0.5) * fHeight;
 				v.pt = D3DXVECTOR3(float(x * fRad) + vOrigin.x, float(y * fRad) + vOrigin.y, float(z));
 				D3DXVec3TransformCoord(&v.pt, &v.pt, &matRot);
-				GetTexture(fRing, fSide, v.t);
 				iVert++;
 			}
 			CVertex&	v = m_arrVert[iVert];	// ring's final vertex
@@ -497,19 +500,25 @@ bool CPotGraphics::UpdateTexture()
 	CHECK(m_pMesh->LockVertexBuffer(0, (void **)&pVert));
 	int	iVert = 0;
 	int	nStride = m_nSides + 1;
-	for (int iWall = 0; iWall < WALLS; iWall++) {	// for each wall
-		for (int iRing = 0; iRing < m_nRings; iRing++) {
-			double	fRing = double(iRing) / (m_nRings - 1);	// normalized ring
-			if (nMods)
-				ApplyModulations(fRing);
-			for (int iSide = 0; iSide < nStride; iSide++) {	// for each side
-				double	fSide = double(iSide) / m_nSides;	// normalized side
-				CVertex&	vert = pVert[iVert];
-				GetTexture(fRing, fSide, vert.t);
-				m_arrVert[iVert].t = vert.t;
-				iVert++;
-			}
+	for (int iRing = 0; iRing < m_nRings; iRing++) {	// for each ring
+		double	fRing = double(iRing) / (m_nRings - 1);	// normalized ring
+		if (nMods)
+			ApplyModulations(fRing);
+		for (int iSide = 0; iSide < nStride; iSide++) {	// for each side
+			double	fSide = double(iSide) / m_nSides;	// normalized side
+			CVertex&	vert = pVert[iVert];
+			GetTexture(fRing, fSide, vert.t);
+			m_arrVert[iVert].t = vert.t;
+			iVert++;
 		}
+	}
+	int	nWallStride = m_nRings * nStride;
+	int	iInnerVert = nWallStride;
+	for (iVert = 0; iVert < nWallStride; iVert++) {	// for outer wall's vertices
+		const CVertex&	vert = m_arrVert[iVert];
+		pVert[iInnerVert].t = vert.t;	// copy texture coords to inner wall
+		m_arrVert[iInnerVert].t = vert.t;
+		iInnerVert++;
 	}
 	CHECK(m_pMesh->UnlockVertexBuffer());
 	if (nMods)

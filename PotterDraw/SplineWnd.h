@@ -64,8 +64,17 @@ public:
 		CLR_MIRROR,
 		COLORS
 	};
+	enum {	// drag states
+		DS_NONE,		// not dragging
+		DS_TRACK,		// waiting for drag to begin
+		DS_DRAG,		// dragging
+		DS_PAN,			// panning view
+		DS_CONTEXT,		// tracking context menu
+		DRAG_STATES
+	};
 
 // Attributes
+	const CSplineArray&	GetSpline() const;
 	int		GetSegmentCount() const;
 	void	GetState(CSplineState& arrSpline) const;
 	void	SetState(const CSplineState& arrSpline);
@@ -87,6 +96,7 @@ public:
 	void	SetZoomStep(double fZoomStep);
 	COLORREF	GetColor(int iColor) const;
 	void	SetColor(int iColor, COLORREF color);
+	int		GetDragState() const;
 
 // Operations
 	static	void	MakeSquare(POINT ptCenter, int nSize, CRect& rSquare);
@@ -117,14 +127,6 @@ protected:
 	enum {	// node type IDs; assumes resource IDs are alpha sorted
 		ID_NODE_TYPE_FIRST = ID_SPLINE_NODE_TYPE1_CUSP,
 		ID_NODE_TYPE_LAST = ID_SPLINE_NODE_TYPE3_SYMMETRICAL,
-	};
-	enum {	// drag states
-		DS_NONE,		// not dragging
-		DS_TRACK,		// waiting drag to begin
-		DS_DRAG,		// dragging
-		DS_PAN,			// panning view
-		DS_CONTEXT,		// tracking context menu
-		DRAG_STATES
 	};
 	enum {	// rulers
 		RULER_HORZ,
@@ -217,6 +219,11 @@ protected:
 	afx_msg void OnZoomReset();
 };
 
+inline const CSplineArray& CSplineWnd::GetSpline() const
+{
+	return m_arrSpline;
+}
+
 inline int CSplineWnd::GetSegmentCount() const
 {
 	return m_arrSpline.GetSize();
@@ -278,4 +285,9 @@ inline void CSplineWnd::SetColor(int iColor, COLORREF color)
 {
 	ASSERT(iColor >= 0 && iColor < COLORS);
 	m_arrColor[iColor] = color;
+}
+
+inline int CSplineWnd::GetDragState() const
+{
+	return m_iDragState;
 }

@@ -212,6 +212,7 @@ BEGIN
     BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM "PotterDraw on the &Web",      ID_APP_HOME_PAGE
+        MENUITEM "Check for &Updates...",       ID_APP_CHECK_FOR_UPDATES
         MENUITEM SEPARATOR
         MENUITEM "&About PotterDraw...",        ID_APP_ABOUT
     END
@@ -227,8 +228,10 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "&Save",                       ID_FILE_SAVE
         MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
+        MENUITEM SEPARATOR
         MENUITEM "&Export...",                  ID_FILE_EXPORT
         MENUITEM "&Record...",                  ID_FILE_RECORD
+        MENUITEM "&Load Texture...",            ID_FILE_LOAD_TEXTURE
         MENUITEM SEPARATOR
         MENUITEM "Print Set&up...",             ID_FILE_PRINT_SETUP
         MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
@@ -367,6 +370,7 @@ BEGIN
     BEGIN
         MENUITEM "&Help Topics",                ID_HELP_FINDER
         MENUITEM "PotterDraw on the &Web",      ID_APP_HOME_PAGE
+        MENUITEM "Check for &Updates...",       ID_APP_CHECK_FOR_UPDATES
         MENUITEM SEPARATOR
         MENUITEM "&About PotterDraw...",        ID_APP_ABOUT
     END
@@ -450,6 +454,7 @@ BEGIN
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
     "R",            ID_FILE_RECORD,         VIRTKEY, CONTROL, NOINVERT
     "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    VK_F1,          ID_HELP_FINDER,         VIRTKEY, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
     "G",            ID_SPLINE_SHOW_GRID,    VIRTKEY, CONTROL, NOINVERT
@@ -483,7 +488,7 @@ BEGIN
     VK_OEM_MINUS,   ID_VIEW_ZOOM_OUT,       VIRTKEY, CONTROL, NOINVERT
     "0",            ID_VIEW_ZOOM_RESET,     VIRTKEY, CONTROL, NOINVERT
     VK_F11,         ID_WINDOW_FULL_SCREEN,  VIRTKEY, NOINVERT
-    VK_F1,          ID_HELP_FINDER,         VIRTKEY, NOINVERT
+    "L",            ID_FILE_LOAD_TEXTURE,   VIRTKEY, CONTROL, NOINVERT
 END
 
 
@@ -633,8 +638,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION 1,0,1,0
+ PRODUCTVERSION 1,0,1,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -651,12 +656,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Anal Software"
             VALUE "FileDescription", "PotterDraw"
-            VALUE "FileVersion", "1.0.0.1"
+            VALUE "FileVersion", "1.0.1.0"
             VALUE "InternalName", "PotterDraw.exe"
             VALUE "LegalCopyright", "Copyleft 2017 Chris Korda"
             VALUE "OriginalFilename", "PotterDraw.exe"
             VALUE "ProductName", "PotterDraw"
-            VALUE "ProductVersion", "1.0.0.1"
+            VALUE "ProductVersion", "1.0.1.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -812,15 +817,17 @@ BEGIN
     IDS_APP_HELP_FILE_MISSING "Can't find help file '%1'."
     IDS_APP_LICENSE         "This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.  You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA."
     IDS_APP_UNKNOWN_SYSTEM_ERROR "Unknown system error %d (0x%X)"
+    IDS_CKUP_CANT_GET_ADDR  "Can't get address '%1'.\n%2"
+    IDS_CKUP_CANT_LOAD_DLL  "Can't load library '%1'.\n%2"
     IDS_DDV_PCT_CANT_BE_100 "Enter a percentage other than 100."
     IDS_DDV_PCT_MUST_BE_GT_ZERO "Percentage must be greater than zero."
     IDS_DDV_VAL_CANT_BE_ZERO "Enter a non-zero value."
-    IDS_DOC_BAD_FORMAT      "'%1' has an invalid format."
-    IDS_DOC_NEWER_VERSION   "'%1' is from a newer document version. Some of its features may not be supported."
 END
 
 STRINGTABLE
 BEGIN
+    IDS_DOC_BAD_FORMAT      "'%1' has an invalid format."
+    IDS_DOC_NEWER_VERSION   "'%1' is from a newer document version. Some of its features may not be supported."
     IDS_EDIT_MENU           "Edit"
     IDS_EDIT_REDO_FMT       "&Redo %s"
     IDS_EDIT_UNDO_FMT       "&Undo %s"
@@ -837,12 +844,12 @@ BEGIN
     IDS_ERR_SPLINE_DUPLICATE_Y 
                             "Spline intersects a y-coordinate more than once."
     IDS_ERR_SPLINE_EMPTY    "Spline is empty."
-    IDS_ERR_SPLINE_NEGATIVE_X "Spline has at least one negative x-coordinate."
-    IDS_ERR_TEXTURE_FILE_NOT_FOUND "Texture file not found."
 END
 
 STRINGTABLE
 BEGIN
+    IDS_ERR_SPLINE_NEGATIVE_X "Spline has at least one negative x-coordinate."
+    IDS_ERR_TEXTURE_FILE_NOT_FOUND "Texture file not found."
     IDS_EXPLORER            "Explorer"
     IDS_EXPORT              "Export"
     IDS_HLINK_CANT_LAUNCH   "Can't launch browser."
@@ -858,12 +865,12 @@ BEGIN
     IDS_MOD_DESC_iOperation "Operation of modulation on target property"
     IDS_MOD_DESC_iRange     "Range of modulation"
     IDS_MOD_DESC_iTarget    "Target property to be modulated"
-    IDS_MOD_DESC_iWaveform  "Type of waveform"
-    IDS_MOD_GROUP_MAIN      "Main"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_MOD_DESC_iWaveform  "Type of waveform"
+    IDS_MOD_GROUP_MAIN      "Main"
     IDS_MOD_NAME_fAmplitude "Amplitude"
     IDS_MOD_NAME_fBias      "Bias"
     IDS_MOD_NAME_fFrequency "Frequency"
@@ -878,12 +885,12 @@ BEGIN
     IDS_MOD_OPT_OPER_ADD    "Add"
     IDS_MOD_OPT_OPER_DIVIDE "Divide"
     IDS_MOD_OPT_OPER_MULTIPLY "Multiply"
-    IDS_MOD_OPT_OPER_SUBTRACT "Subtract"
-    IDS_MOD_OPT_RANGE_BIPOLAR "Bipolar"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_MOD_OPT_OPER_SUBTRACT "Subtract"
+    IDS_MOD_OPT_RANGE_BIPOLAR "Bipolar"
     IDS_MOD_OPT_RANGE_UNIPOLAR "Unipolar"
     IDS_MOD_OPT_WAVE_NONE   "None"
     IDS_MOD_OPT_WAVE_RAMP_DOWN "Ramp Down"
@@ -891,6 +898,8 @@ BEGIN
     IDS_MOD_OPT_WAVE_SINE   "Sine"
     IDS_MOD_OPT_WAVE_SQUARE "Square"
     IDS_MOD_OPT_WAVE_TRIANGLE "Triangle"
+    IDS_OPT_DESC_bAutoCheckUpdates 
+                            "Automatically check for newer version of app during startup"
     IDS_OPT_DESC_bCustomImageSize 
                             "If true, image export uses custom size instead of view size"
     IDS_OPT_DESC_bPlotAllModulations 
@@ -899,17 +908,19 @@ BEGIN
                             "If true, show descriptions area in properties bar"
     IDS_OPT_DESC_bVertexColor 
                             "If true, PLY export uses vertex color instead of texture map"
+    IDS_OPT_DESC_bViewSplineDrag 
+                            "Continuously update 3D view while spline is being dragged"
     IDS_OPT_DESC_fDragRotateStep 
                             "Drag rotation step size, in degrees per pixel"
+END
+
+STRINGTABLE
+BEGIN
     IDS_OPT_DESC_fPanStep   "Panning step size, in view coordinates"
     IDS_OPT_DESC_fSplineZoomStep "Spline zoom step size, as a percentage"
     IDS_OPT_DESC_fZoomStep  "Zoom step size, as a percentage"
     IDS_OPT_DESC_nCustomImageHeight 
                             "Height of exported image if using custom size, in pixels"
-END
-
-STRINGTABLE
-BEGIN
     IDS_OPT_DESC_nCustomImageWidth 
                             "Width of exported image if using custom size, in pixels"
     IDS_OPT_DESC_nFloatPrecision 
@@ -919,19 +930,21 @@ BEGIN
     IDS_OPT_GROUP_OSCILLOSCOPE "Oscilloscope"
     IDS_OPT_GROUP_SPLINE    "Spline"
     IDS_OPT_GROUP_VIEW      "View"
+    IDS_OPT_NAME_bAutoCheckUpdates "Automatically Check for Updates"
     IDS_OPT_NAME_bCustomImageSize "Use Custom Image Size"
     IDS_OPT_NAME_bPlotAllModulations "Plot All Modulations"
     IDS_OPT_NAME_bPropertyDescrips "Show Property Descriptions"
     IDS_OPT_NAME_bVertexColor "Use Vertex Color"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_OPT_NAME_bViewSplineDrag "Show Spline Drag in View"
     IDS_OPT_NAME_fDragRotateStep "Drag Rotate Step"
     IDS_OPT_NAME_fPanStep   "Pan Step"
     IDS_OPT_NAME_fSplineZoomStep "Zoom Step"
     IDS_OPT_NAME_fZoomStep  "Zoom Step"
     IDS_OPT_NAME_nCustomImageHeight "Custom Image Height"
-END
-
-STRINGTABLE
-BEGIN
     IDS_OPT_NAME_nCustomImageWidth "Custom Image Width"
     IDS_OPT_NAME_nFloatPrecision "Floating-Point Precision"
     IDS_OSCILLOSCOPE_BAR    "Oscilloscope"
@@ -943,6 +956,10 @@ BEGIN
     IDS_PDR_DESC_clrBackground "Background color of view window"
     IDS_PDR_DESC_fAspectRatio 
                             "Width scaling for elliptical shapes; 1 for normal, > 1 for wider, < 1 for narrower"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PDR_DESC_fAutoRotatePitch 
                             "Pitch speed when auto-rotating view, in degrees per second"
     IDS_PDR_DESC_fAutoRotateRoll 
@@ -953,10 +970,6 @@ BEGIN
     IDS_PDR_DESC_fBendPhase "Initial phase of bends; normalized from 0 to 1"
     IDS_PDR_DESC_fBendPolePhase 
                             "Initial phase of bend poles; normalized from 0 to 1"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_DESC_fBendPoles "Number of bend poles"
     IDS_PDR_DESC_fBends     "Number of bends"
     IDS_PDR_DESC_fColorCycles "Number of times to cycle through palette"
@@ -967,17 +980,19 @@ BEGIN
     IDS_PDR_DESC_fOffsetU   "Offset applied to U coordinate for texture mapping; normalized from 0 to 1"
     IDS_PDR_DESC_fOffsetV   "Offset applied to V coordinate for texture mapping; normalized from 0 to 1"
     IDS_PDR_DESC_fPetals    "Number of petals"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PDR_DESC_fRadius    "Radius scaling factor"
     IDS_PDR_DESC_fRippleDepth "Depth of each ripple"
     IDS_PDR_DESC_fRipplePhase 
                             "Initial phase of ripples; normalized from 0 to 1"
     IDS_PDR_DESC_fRipples   "Number of ripples"
     IDS_PDR_DESC_fScallopDepth "Depth of each scallop"
+    IDS_PDR_DESC_fScallopPhase 
+                            "Initial phase of scallop rotation; normalized from 0 to 1"
     IDS_PDR_DESC_fScallops  "Number of scallops"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_DESC_fStripeAmplitude "Amplitude of stripe waves"
     IDS_PDR_DESC_fStripeFrequency 
                             "Frequency of stripe waves, normalized to number of waves per height"
@@ -989,6 +1004,10 @@ BEGIN
     IDS_PDR_DESC_iBendPoleMotif "Function applied to bend pole waveform"
     IDS_PDR_DESC_iColorPattern "Type of color pattern"
     IDS_PDR_DESC_iPaletteType "Type of palette"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PDR_DESC_iRippleMotif "Function applied to ripple waveform"
     IDS_PDR_DESC_iScallopMotif "Function applied to scallop waveform"
     IDS_PDR_DESC_nColorSharpness 
@@ -998,10 +1017,6 @@ BEGIN
     IDS_PDR_DESC_nSides     "Number of sides in each ring"
     IDS_PDR_DESC_sTexturePath 
                             "Path of file to use as texture, if any; if specified, overrides palette"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_GROUP_MESH      "Mesh"
     IDS_PDR_GROUP_TEXTURE   "Texture"
     IDS_PDR_GROUP_VIEW      "View"
@@ -1011,6 +1026,10 @@ BEGIN
     IDS_PDR_NAME_fAutoRotatePitch "Auto Rotate Pitch"
     IDS_PDR_NAME_fAutoRotateRoll "Auto Rotate Roll"
     IDS_PDR_NAME_fAutoRotateYaw "Auto Rotate Yaw"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PDR_NAME_fBendDepth "Bend Depth"
     IDS_PDR_NAME_fBendPhase "Bend Phase"
     IDS_PDR_NAME_fBendPolePhase "Bend Pole Phase"
@@ -1018,10 +1037,6 @@ BEGIN
     IDS_PDR_NAME_fBends     "Bends"
     IDS_PDR_NAME_fColorCycles "Color Cycles"
     IDS_PDR_NAME_fCyclesV   "Cycles V"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_NAME_fFrameRate "Frame Rate"
     IDS_PDR_NAME_fHelixAmplitude "Helix Amplitude"
     IDS_PDR_NAME_fHelixFrequency "Helix Frequency"
@@ -1031,17 +1046,18 @@ BEGIN
     IDS_PDR_NAME_fRadius    "Radius"
     IDS_PDR_NAME_fRippleDepth "Ripple Depth"
     IDS_PDR_NAME_fRipplePhase "Ripple Phase"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PDR_NAME_fRipples   "Ripples"
     IDS_PDR_NAME_fScallopDepth "Scallop Depth"
+    IDS_PDR_NAME_fScallopPhase "Scallop Phase"
     IDS_PDR_NAME_fScallops  "Scallops"
     IDS_PDR_NAME_fStripeAmplitude "Stripe Amplitude"
     IDS_PDR_NAME_fStripeFrequency "Stripe Frequency"
     IDS_PDR_NAME_fStripePhase "Stripe Phase"
     IDS_PDR_NAME_fTwist     "Twist"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_NAME_fWallThickness "Wall Thickness"
     IDS_PDR_NAME_iBendMotif "Bend Motif"
     IDS_PDR_NAME_iBendPoleMotif "Bend Pole Motif"
@@ -1050,6 +1066,10 @@ BEGIN
     IDS_PDR_NAME_iRippleMotif "Ripple Motif"
     IDS_PDR_NAME_iScallopMotif "Scallop Motif"
     IDS_PDR_NAME_nColorSharpness "Color Sharpness"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PDR_NAME_nColors    "Colors"
     IDS_PDR_NAME_nRings     "Rings"
     IDS_PDR_NAME_nSides     "Sides"
@@ -1058,10 +1078,6 @@ BEGIN
     IDS_PDR_OPT_COLPAT_POLAR "Polar"
     IDS_PDR_OPT_COLPAT_RINGS "Rings"
     IDS_PDR_OPT_COLPAT_STRIPES "Stripes"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_OPT_MOTIF_FLUTES "Flutes"
     IDS_PDR_OPT_MOTIF_NONE  "None"
     IDS_PDR_OPT_MOTIF_PARTED_FLUTES "Parted Flutes"
@@ -1070,6 +1086,10 @@ BEGIN
     IDS_PDR_OPT_PALTYPE_COMPLEMENT "Complement"
     IDS_PDR_OPT_PALTYPE_LINEAR "Linear"
     IDS_PDR_OPT_PALTYPE_SPLIT "Split"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PROPERTIES_BAR      "Properties"
     IDS_PROPS_MORE_COLORS   "More Colors..."
     IDS_RECDLG_CUSTOM       "Custom"
@@ -1078,10 +1098,6 @@ BEGIN
     IDS_SCALE_2D_SCALE      "&Scale:"
     IDS_SCALE_2D_WIDTH      "&Width:"
     IDS_SPLINE_BAR          "Spline"
-END
-
-STRINGTABLE
-BEGIN
     IDS_SPLINE_NM_ADD_NODE  "Add Node"
     IDS_SPLINE_NM_CHANGED   "Spline"
     IDS_SPLINE_NM_CUT       "Cut"
@@ -1090,28 +1106,31 @@ BEGIN
     IDS_SPLINE_NM_FLIP_HORIZONTAL "Flip Horizontal"
     IDS_SPLINE_NM_FLIP_VERTICAL "Flip Vertical"
     IDS_SPLINE_NM_IMPORT    "Import"
+END
+
+STRINGTABLE
+BEGIN
     IDS_SPLINE_NM_NODE_TYPE "Node Type"
     IDS_SPLINE_NM_PASTE     "Paste"
     IDS_SPLINE_NM_ROTATE    "Rotate"
     IDS_SPLINE_NM_SCALE     "Scale"
     IDS_SPLINE_NM_SEGMENT_TYPE "Segment Type"
     IDS_SPLINE_NM_TRANSLATE "Translate"
+    IDS_TEXTURE_FILES       "Texture Files"
     IDS_TEXT_FILES_FILTER   "Text Files (*.txt)|*.txt|All Files (*.*)|*.*||"
     IDS_TOOLBAR_CUSTOMIZE   "Customize..."
-END
-
-STRINGTABLE
-BEGIN
     IDS_TOOLBAR_STANDARD    "Standard"
     IDS_VIEW_PAN            "Pan"
 END
 
 STRINGTABLE
 BEGIN
-    ID_APP_HOME_PAGE        "Go to the ChordEase home page\nHome Page"
+    ID_APP_CHECK_FOR_UPDATES "Check for a newer version\nCheck for Updates"
+    ID_APP_HOME_PAGE        "Go to the PotterDraw home page\nHome Page"
     ID_EDIT_DELETE          "Delete selected items\nDelete"
     ID_EDIT_DESELECT        "Clear selection\nDeselect"
     ID_FILE_EXPORT          "Export image or 3D model\nExport"
+    ID_FILE_LOAD_TEXTURE    "Load a texture from a file\nLoad Texture"
     ID_FILE_RECORD          "Record video as sequence of bitmaps\nRecord"
     ID_INDICATOR_FRAME_RATE "00000000"
     ID_INDICATOR_RESOLUTION "00000 x 00000"
@@ -1137,12 +1156,12 @@ BEGIN
     ID_SPLINE_SEGMENT_TYPE1_CURVE 
                             "Set type of selected segments to curve\nCurve"
     ID_SPLINE_SEGMENT_TYPE2_LINE "Set type of selected segments to line\nLine"
-    ID_SPLINE_SHOW_GRID     "Show or hide grid\nShow Grid"
-    ID_SPLINE_SHOW_HORZ_MIRROR "Horizontally mirror spline\nOpposite Wall"
 END
 
 STRINGTABLE
 BEGIN
+    ID_SPLINE_SHOW_GRID     "Show or hide grid\nShow Grid"
+    ID_SPLINE_SHOW_HORZ_MIRROR "Horizontally mirror spline\nOpposite Wall"
     ID_SPLINE_SHOW_RULERS   "Show or hide rulers\nShow Rulers"
     ID_SPLINE_SNAP_TO_GRID  "Toggle snap to grid\nSnap to Grid"
     ID_SPLINE_TRANSLATE     "Translate selected segments\translate"
@@ -1166,12 +1185,12 @@ BEGIN
     ID_VIEW_ROTATE_ABOVE    "View from above\nAbove View"
     ID_VIEW_ROTATE_AUTO     "Automatically rotate view\nAuto Rotate View"
     ID_VIEW_ROTATE_BACK     "View from back\nBack View"
-    ID_VIEW_ROTATE_BOTTOM   "View from bottom\nBottom View"
-    ID_VIEW_ROTATE_EDIT     "Edit rotation numerically\nEdit Rotation"
 END
 
 STRINGTABLE
 BEGIN
+    ID_VIEW_ROTATE_BOTTOM   "View from bottom\nBottom View"
+    ID_VIEW_ROTATE_EDIT     "Edit rotation numerically\nEdit Rotation"
     ID_VIEW_ROTATE_FRONT    "View from front\nFront View"
     ID_VIEW_ROTATE_LEFT     "View from left\nLeft View"
     ID_VIEW_ROTATE_RESET    "Reset view rotation and panning\nReset View"
@@ -1186,12 +1205,12 @@ BEGIN
     ID_VIEW_STYLE_WIREFRAME "Show wireframe\nWireframe"
     ID_VIEW_ZOOM_IN         "Zoom in to center of view\nZoom In"
     ID_VIEW_ZOOM_OUT        "Zoom out from center of view\nZoom Out"
-    ID_VIEW_ZOOM_RESET      "Reset zoom and panning to defaults\nReset Zoom"
-    ID_WINDOW_FULL_SCREEN   "Toggle full screen mode\nFull Screen"
 END
 
 STRINGTABLE
 BEGIN
+    ID_VIEW_ZOOM_RESET      "Reset zoom and panning to defaults\nReset Zoom"
+    ID_WINDOW_FULL_SCREEN   "Toggle full screen mode\nFull Screen"
     ID_WINDOW_MANAGER       "&Windows..."
 END
 

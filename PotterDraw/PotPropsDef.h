@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		24aug17	add scallop phase
 		
 */
 
@@ -29,6 +30,7 @@ PROPDEF(	MESH,		VAR,		double,		fRadius,			1,				1e-6,		1e6,		NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fWallThickness,		5,				1e-6,		1e6,		NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fScallops,			0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fScallopDepth,		0,				0,			0,			NULL,		0)
+PROPDEF(	MESH,		VAR,		double,		fScallopPhase,		0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		ENUM,		int,		iScallopMotif,		0,				0,			0,			m_Motif,	_countof(m_Motif))
 PROPDEF(	MESH,		VAR,		double,		fRipples,			0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fRippleDepth,		0,				0,			0,			NULL,		0)

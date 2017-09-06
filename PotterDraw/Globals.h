@@ -53,7 +53,7 @@ enum {	// application-wide user window messages, based on WP_APP
 	UWM_PALETTE_CHANGE,			// wParam: iColor or -1 for all, lParam: COLORREF
 	UWM_PALETTE_SELECTION,		// wParam: iColor, lParam: unused
 	UWM_SET_RECORD,				// wParam: bEnable, lParam: none
-	UWM_PROPERTY_HELP,			// wParam: iProp, lParam: CWnd*
+	UWM_DELAYEDCREATE,			// wParam: none, lParam: none
 };
 
 // ck: wrapper for formatting system errors

@@ -8,11 +8,12 @@
 		revision history:
 		rev		date	comments
         00      04may17	initial version
+		01		01sep17	call help directly
 		
 */
 
 #include "stdafx.h"
-#include "Resource.h"
+#include "PotterDraw.h"
 #include "ModulationBar.h"
 
 #ifdef _DEBUG
@@ -175,6 +176,12 @@ void CModulationBar::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 
 LRESULT CModulationBar::OnCommandHelp(WPARAM wParam, LPARAM lParam)
 {
-	AfxGetMainWnd()->SendMessage(UWM_PROPERTY_HELP, m_Grid.GetCurSelIdx(), reinterpret_cast<LPARAM>(this));
+	int	iProp = m_Grid.GetCurSelIdx();
+	int	nID = 0;
+	if (iProp >= 0 && iProp < CModulationProps::PROPERTIES)	// if valid property index
+		nID = CModulationProps::m_Info[iProp].nNameID;	// get property name resource ID
+	else
+		nID = IDS_MODULATION_BAR;
+	theApp.WinHelp(nID);
 	return TRUE;
 }

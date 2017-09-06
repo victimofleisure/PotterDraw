@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
+		01		05sep17	add spline drag hint
 
 */
 
@@ -242,6 +243,11 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			bMakeSpline = true;
 			bMakeMesh = true;
 			break;
+		case CPotterDrawDoc::HINT_SPLINE_DRAG:
+			m_Graphics.CalcSpline(theApp.GetMainFrame()->GetSplineWnd().GetSpline());
+			m_Graphics.MakeMesh(false);
+			RedrawWindow();	// redraw view explicitly to avoid paint lag
+			return;	// early out, don't update document
 		default:	// no hint
 			bMakeMesh = true;
 			bMakeSpline = true;

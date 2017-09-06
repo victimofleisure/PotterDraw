@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
+		01		24aug17	add load texture file command
 
 */
 
@@ -32,6 +33,11 @@ IMPLEMENT_DYNCREATE(CPotterDrawDoc, CDocument)
 
 #define ID_SPLINE_CMD_FIRST ID_SPLINE_ADD_NODE	// assumes resource IDs are alpha sorted
 #define ID_SPLINE_CMD_LAST ID_SPLINE_ZOOM_RESET
+
+const LPCTSTR CPotterDrawDoc::m_arrTextureFileExt[] = {
+	_T(".bmp"), _T(".dds"), _T(".dib"), _T(".hdr"), _T(".jpg"), _T(".pfm"), _T(".png"), _T(".ppm"), _T(".tga")
+};
+const int CPotterDrawDoc::m_nTextureFileExts = _countof(m_arrTextureFileExt);
 
 // CPotterDrawDoc construction/destruction
 
@@ -267,6 +273,15 @@ void CPotterDrawDoc::RelayEditUpdateCmdUI(CCmdUI *pCmdUI)
 		RelaySplineUpdateCmdUI(pCmdUI);
 }
 
+void CPotterDrawDoc::LoadTexture(LPCTSTR szPath)
+{
+	NotifyUndoableEdit(PROP_sTexturePath, UCODE_PROPERTY);
+	m_sTexturePath = szPath;
+	SetModifiedFlag();
+	CPropertyHint	hint(PROP_sTexturePath);
+	UpdateAllViews(NULL, HINT_PROPERTY, &hint);
+}
+
 // CPotterDrawDoc message map
 
 BEGIN_MESSAGE_MAP(CPotterDrawDoc, CDocument)
@@ -288,6 +303,7 @@ BEGIN_MESSAGE_MAP(CPotterDrawDoc, CDocument)
 	ON_UPDATE_COMMAND_UI(ID_EDIT_REDO, OnUpdateEditRedo)
 	ON_COMMAND_RANGE(ID_SPLINE_CMD_FIRST, ID_SPLINE_CMD_LAST, OnSplineCmd)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_SPLINE_CMD_FIRST, ID_SPLINE_CMD_LAST, OnUpdateSplineCmd)
+	ON_COMMAND(ID_FILE_LOAD_TEXTURE, OnFileLoadTexture)
 END_MESSAGE_MAP()
 
 // CPotterDrawDoc message handlers
@@ -454,4 +470,24 @@ void CPotterDrawDoc::OnSplineCmd(UINT nID)
 void CPotterDrawDoc::OnUpdateSplineCmd(CCmdUI *pCmdUI)
 {
 	RelaySplineUpdateCmdUI(pCmdUI);
+}
+
+void CPotterDrawDoc::OnFileLoadTexture()
+{
+	CString	sExt;
+	int	nExts = _countof(m_arrTextureFileExt);
+	for (int iExt = 0; iExt < nExts; iExt++) {	// for each texture file extension
+		if (iExt)
+			sExt += _T("; ");
+		sExt += '*';
+		sExt += m_arrTextureFileExt[iExt];
+	}
+	CString	sFilter;
+	CString	sTextureFiles((LPCTSTR)IDS_TEXTURE_FILES);
+	sFilter.Format(_T("%s (%s)|%s|"), sTextureFiles, sExt, sExt);
+	sFilter += LDS(AFX_IDS_ALLFILTER) + _T("|*.*||");
+	CFileDialog	fd(true, NULL, NULL, OFN_HIDEREADONLY, sFilter);
+	if (fd.DoModal() == IDOK) {
+		LoadTexture(fd.GetPathName());
+	}
 }

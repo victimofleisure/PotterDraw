@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
+		01		05sep17	add spline drag hint
 
 */
 
@@ -33,8 +34,11 @@ protected: // create from serialization only
 		HINT_PALETTE,		// palette edit
 		HINT_MODULATION,	// modulation edit; pHint points to CModulationHint object
 		HINT_SPLINE,		// spline edit
+		HINT_SPLINE_DRAG,	// spline drag
 		HINTS
 	};
+	static const LPCTSTR	m_arrTextureFileExt[];	// array of texture file extensions
+	static const int	m_nTextureFileExts;	// number of texture file extensions
 
 // Types
 	class CPropertyHint : public CObject {
@@ -57,6 +61,7 @@ public:
 // Operations
 public:
 	void	OnPropertyEdit(int iProp);
+	void	LoadTexture(LPCTSTR szPath);
 
 // Overrides
 public:
@@ -127,4 +132,5 @@ protected:
 	afx_msg void OnUpdateEditRedo(CCmdUI *pCmdUI);
 	afx_msg	void OnSplineCmd(UINT nID);
 	afx_msg void OnUpdateSplineCmd(CCmdUI *pCmdUI);
+	afx_msg void OnFileLoadTexture();
 };

@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		01sep17	call help directly
 		
 */
 
@@ -253,6 +254,12 @@ void CPropertiesBar::OnSettingChange(UINT uFlags, LPCTSTR lpszSection)
 
 LRESULT CPropertiesBar::OnCommandHelp(WPARAM wParam, LPARAM lParam)
 {
-	AfxGetMainWnd()->SendMessage(UWM_PROPERTY_HELP, m_Grid.GetCurSelIdx(), reinterpret_cast<LPARAM>(this));
+	int	iProp = m_Grid.GetCurSelIdx();
+	int	nID = 0;
+	if (iProp >= 0 && iProp < CPotProperties::PROPERTIES)	// if valid property index
+		nID = CPotProperties::m_Info[iProp].nNameID;	// get property name resource ID
+	else
+		nID = IDS_PROPERTIES_BAR;
+	theApp.WinHelp(nID);
 	return TRUE;
 }

@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      20jun17	initial version
+		01		05sep17	in OnNotify, add changing notification to update view
 		
 */
 
@@ -30,6 +31,7 @@ static char THIS_FILE[]=__FILE__;
 
 // spline notifications that aren't undoable edits don't have resource strings, 
 // but their resource IDs still have to be defined for code generation to work
+#define IDS_SPLINE_NM_CHANGING 0
 #define IDS_SPLINE_NM_PAN 0
 #define IDS_SPLINE_NM_ZOOM 0
 #define IDS_SPLINE_NM_SELECTION 0
@@ -130,6 +132,12 @@ BOOL CSplineBar::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult)
 			case CSplineWnd::NM_SPLINE_GRID_SETUP:
 				// copy spline properties to document
 				pDoc->m_arrSpline.CSplineProperties::operator=(m_wndSpline);
+				break;
+			case CSplineWnd::NM_SPLINE_CHANGING:
+				if (theApp.m_Options.m_bViewSplineDrag) {	// if updating view during spline drag
+					pDoc->UpdateAllViews(NULL, CPotterDrawDoc::HINT_SPLINE_DRAG);	// update view
+					m_wndSpline.RedrawWindow();	// redraw spline explicitly to avoid paint lag
+				}
 				break;
 			default:
 				pDoc->NotifyUndoableEdit(pNMHDR->code, UCODE_SPLINE);

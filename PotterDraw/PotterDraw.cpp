@@ -340,9 +340,6 @@ CString CPotterDrawApp::GetVersionString()
 	sVersion.Format(_T("%d.%d.%d.%d"), 
 		HIWORD(AppInfo.dwFileVersionMS), LOWORD(AppInfo.dwFileVersionMS),
 		HIWORD(AppInfo.dwFileVersionLS), LOWORD(AppInfo.dwFileVersionLS));
-#ifdef RADISH_HD
-	sVersion += _T(" HD");
-#endif
 #ifdef _WIN64
 	sVersion += _T(" x64");
 #else
