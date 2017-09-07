@@ -15,6 +15,7 @@
 		05		01sep17	remove property help handler
 		06		05sep17	in OnUpdate, add spline special case
 		07		05sep17	fix pSender to match tests in OnUpdate
+		08		07sep17	fix modulation property change not updating oscilloscope
 
 */
 
@@ -925,6 +926,8 @@ LRESULT CMainFrame::OnPropertyChange(WPARAM wParam, LPARAM lParam)
 					CView	*pSender = reinterpret_cast<CView *>(&m_wndModulationBar);
 					pDoc->UpdateAllViews(pSender, CPotterDrawDoc::HINT_MODULATION, &hint);
 					pDoc->SetModifiedFlag();
+					if (m_wndOscilloscopeBar.IsWindowVisible())
+						m_wndOscilloscopeBar.Update();
 				}
 			}
 		}
