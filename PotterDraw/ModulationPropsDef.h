@@ -8,6 +8,10 @@
 		revision history:
 		rev		date	comments
         00      04may17	initial version
+		01		05oct17	add exponentiate operation
+		02		09oct17	add pulse and rounded pulse waves
+		03		17oct17	add sine cubed and flame waves
+		04		20oct17	add triangular pulse wave
 		
 */
 
@@ -34,6 +38,8 @@ PROPDEF(	MAIN,		VAR,		double,		fPhase,				0,				0,			0,			NULL,		0)
 PROPDEF(	MAIN,		VAR,		double,		fBias,				0,				0,			0,			NULL,		0)
 PROPDEF(	MAIN,		VAR,		double,		fPower,				0,				0,			DBL_MAX,	NULL,		0)
 PROPDEF(	MAIN,		VAR,		double,		fPhaseSpeed,		0,				0,			0,			NULL,		0)
+PROPDEF(	MAIN,		VAR,		double,		fPulseWidth,		0.5,			0,			0,			NULL,		0)
+PROPDEF(	MAIN,		VAR,		double,		fSlew,				0.5,			0,			0,			NULL,		0)
 
 #undef PROPDEF
 #undef EXCLUDETARGETPROP
@@ -48,6 +54,11 @@ WAVEFORMDEF(	TRIANGLE)
 WAVEFORMDEF(	RAMP_UP)
 WAVEFORMDEF(	RAMP_DOWN)
 WAVEFORMDEF(	SQUARE)
+WAVEFORMDEF(	PULSE)
+WAVEFORMDEF(	ROUNDED_PULSE)
+WAVEFORMDEF(	TRIANGULAR_PULSE)
+WAVEFORMDEF(	SINE_CUBED)
+WAVEFORMDEF(	FLAME)
 
 #undef WAVEFORMDEF
 #endif
@@ -68,6 +79,7 @@ OPERATIONDEF(	ADD)
 OPERATIONDEF(	SUBTRACT)
 OPERATIONDEF(	MULTIPLY)
 OPERATIONDEF(	DIVIDE)
+OPERATIONDEF(	EXPONENTIATE)
 
 #undef OPERATIONDEF
 #endif

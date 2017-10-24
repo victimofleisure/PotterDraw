@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
 		00		16apr17	initial version
+		01		09oct17	add remaining time
  
 */
 
@@ -46,4 +47,5 @@ public:
 	afx_msg void OnDestroy();
 	CStatic m_Completed;
 	CStatic m_Duration;
+	CStatic m_Remaining;
 };

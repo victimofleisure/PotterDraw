@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
+		01		09oct17	add pre-record auto-rotate and animation states
 		
 */
 
@@ -102,6 +103,8 @@ protected:
 	int		m_nRecordFramesDone;	// number of frames recorded
 	CSize	m_szRecordFrame;		// record frame size
 	CDib	m_dibPrint;				// device-independent bitmap for printing
+	bool	m_bPreRecordAutoRotate;	// true if auto-rotate was enabled before recording
+	bool	m_bPreRecordAnimation;	// true if animation was enabled before recording
 
 // Helpers
 	void	SetStandardView(int iView);

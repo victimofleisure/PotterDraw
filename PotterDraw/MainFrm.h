@@ -10,6 +10,7 @@
         00      12mar17	initial version
 		01		24aug17	add OnDropFiles handler to load texture files
 		02		25aug17	add check for updates
+		03		09oct17	add render frame rate
 		
 */
 
@@ -57,6 +58,7 @@ public:
 	COscilloscopeBar&	GetOscilloscopeBar();
 	CSplineBar&	GetSplineBar();
 	CSplineWnd&	GetSplineWnd();
+	double	GetRenderFrameRate() const;
 
 // Operations
 public:
@@ -111,6 +113,7 @@ protected:
 	bool	m_bPreFullScreenWasZoomed;	// true if maximized prior to going full screen
 	bool	m_bDeferredUpdate;			// true while a deferred update remains pending
 	bool	m_bDeferredSizing;			// true while a deferred sizing remains pending
+	double	m_fRenderFrameRate;			// rendering frame rate, in frames per second
 
 // Helpers
 	CString	GetResolutionString() const;
@@ -208,3 +211,9 @@ inline CSplineWnd& CMainFrame::GetSplineWnd()
 {
 	return m_wndSplineBar.m_wndSpline;
 }
+
+inline double CMainFrame::GetRenderFrameRate() const
+{
+	return m_fRenderFrameRate;
+}
+

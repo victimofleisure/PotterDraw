@@ -9,6 +9,8 @@
 		rev		date	comments
         00      12mar17	initial version
 		01		05sep17	add spline drag hint
+		02		05oct17	add scallop phase, range, power, operation
+		03		09oct17	in Record, save and restore auto-rotate and animation
 
 */
 
@@ -63,6 +65,8 @@ CPotterDrawView::CPotterDrawView()
 	m_nRecordDuration = 0;
 	m_nRecordFramesDone = 0;
 	m_szRecordFrame = CSize(0, 0);
+	m_bPreRecordAutoRotate = false;
+	m_bPreRecordAnimation = false;
 }
 
 CPotterDrawView::~CPotterDrawView()
@@ -174,6 +178,10 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 					case CPotProperties::PROP_fScallops:
 					case CPotProperties::PROP_fScallopDepth:
 					case CPotProperties::PROP_iScallopMotif:
+					case CPotProperties::PROP_fScallopPhase:
+					case CPotProperties::PROP_iScallopRange:
+					case CPotProperties::PROP_fScallopPower:
+					case CPotProperties::PROP_iScallopOperation:
 						bMakeMesh = pDoc->HasScallops() || m_Graphics.HasScallops();
 						break;
 					case CPotProperties::PROP_fRipples:
@@ -396,6 +404,7 @@ bool CPotterDrawView::Record(bool bEnable)
 {
 	if (bEnable == IsRecording())	// if already in requested state
 		return true;	// nothing to do
+	CPotterDrawDoc	*pDoc = GetDocument();
 	if (bEnable) {	// if starting
 		CString	sFolder(theApp.GetProfileString(REG_SETTINGS, RK_RECORD_FOLDER));
 		CString	sTitle(LPCTSTR(IDS_RECORD_FOLDER));
@@ -403,7 +412,6 @@ bool CPotterDrawView::Record(bool bEnable)
 			return false;
 		theApp.WriteProfileString(REG_SETTINGS, RK_RECORD_FOLDER, sFolder);
 		CRecordDlg	dlg;
-		CPotterDrawDoc	*pDoc = GetDocument();
 		dlg.m_fFrameRate = pDoc->m_fFrameRate;
 		if (dlg.DoModal() != IDOK)
 			return false;
@@ -418,15 +426,18 @@ bool CPotterDrawView::Record(bool bEnable)
 		m_nRecordDuration = dlg.m_nDurationFrames;
 		m_iRecordFileFormat = dlg.m_iFileFormat;
 		m_szRecordFrame = CSize(dlg.m_nFrameWidth, dlg.m_nFrameHeight);
+		m_bPreRecordAutoRotate = m_bAutoRotate;	// save pre-record state of auto-rotate
+		m_bPreRecordAnimation = pDoc->m_bAnimation;	// save pre-record state of animation
 		m_bAutoRotate = dlg.m_bAutoRotate != 0;
 		pDoc->m_bAnimation = dlg.m_bAnimation != 0;
-		theApp.GetMainFrame()->OnUpdate(NULL);	// update animation property
-		UpdateAnimationEnable();
 	} else {	// stopping
 		m_sRecordFolder.Empty();
+		m_bAutoRotate = m_bPreRecordAutoRotate;	// restore pre-record state of auto-rotate
+		pDoc->m_bAnimation = m_bPreRecordAnimation;	// restore pre-record state of animation
 	}
 	CMainFrame	*pMain = theApp.GetMainFrame();
 	pMain->OnRecord(bEnable);
+	theApp.GetMainFrame()->OnUpdate(NULL);	// update animation property
 	UpdateAnimationEnable();
 	return true;
 }

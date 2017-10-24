@@ -10,6 +10,13 @@
         00      12mar17	initial version
 		01		24aug17	in CalcPotMesh, add scallop phase
 		02		25aug17	copy outer wall's texture coords to inner wall
+		03		05oct17	add scallop range, power, operation
+		04		09oct17	in GetWave, add pulse and rounded pulse waves
+		05		11oct17	in CalcPotMesh, make origin double instead of float
+		06		12oct17	in MakeTexture, check locked rectangle's pitch
+		07		17oct17	in GetWave, add sine cubed and flame waves
+		08		19oct17	add scallop waveform, pulse width, and slew
+		09		20oct17	in GetWave, add triangular pulse wave
 
 */
 
@@ -18,8 +25,8 @@
 #include "PotGraphics.h"
 #include "Benchmark.h"
 #include "PathStr.h"
-#include "DPoint.h"	// for plotting
-#include "Range.h"	// for plotting
+#include "DPoint.h"
+#include "Range.h"
 typedef CRange<double> CDblRange;
 
 #define _USE_MATH_DEFINES	// for trig constants
@@ -230,7 +237,7 @@ void CPotGraphics::CalcPotMesh()
 	bool	bBends = HasBends();
 	bool	bHelix = HasHelix();
 	double	fRingBend = 0;
-	D3DXVECTOR2	vOrigin(0, 0);
+	DPoint	vOrigin(0, 0);
 	CArrayEx<CDoubleArray, CDoubleArray&> faOuterRad;
 	faOuterRad.SetSize(nRings);
 	for (iRing = 0; iRing < nRings; iRing++)
@@ -262,8 +269,8 @@ void CPotGraphics::CalcPotMesh()
 			double	fRingTwist = m_fTwist * M_PI * 2 * fRing;	// optimization
 			if (bHelix) {
 				double	fHelixTheta = fRing * m_fHelixFrequency * M_PI * 2;
-				vOrigin.x = float(sin(fHelixTheta) * m_fHelixAmplitude);
-				vOrigin.y = float(cos(fHelixTheta) * m_fHelixAmplitude);
+				vOrigin.x = sin(fHelixTheta) * m_fHelixAmplitude;
+				vOrigin.y = cos(fHelixTheta) * m_fHelixAmplitude;
 			}
 			for (iSide = 0; iSide < nSides; iSide++) {	// for each side
 				CVertex&	v = m_arrVert[iVert];
@@ -272,9 +279,54 @@ void CPotGraphics::CalcPotMesh()
 				if (iWall == WALL_OUTER) {	// if outer wall
 					fRad = fRingRad;
 					if (bScallops) {
-						double	r = cos((fSide * m_fScallops + m_fScallopPhase) * M_PI * 2) * m_fScallopDepth;
+						double	r;
+						if (!m_iScallopWaveform)	// if sine, handle specially for performance
+							r = cos((fSide * m_fScallops + m_fScallopPhase) * M_PI * 2);	// actually cosine
+						else {	// waveform other than sine; offset phase by 90 degrees to eumlate cosine
+							r = GetWave(m_iScallopWaveform + 1, fSide * m_fScallops + m_fScallopPhase + 0.25, 
+								m_fScallopPulseWidth, m_fScallopSlew);	// for pulse waveforms
+						}
 						ApplyMotif(m_iScallopMotif, r);
-						fRad += r;
+						switch (m_iScallopRange) {
+						case CModulationProps::RANGE_UNIPOLAR:
+							r = (r + 1) / 2;	// convert from bipolar to unipolar
+							if (m_fScallopPower > 0) {	// if exponential
+								double	fScale = m_fScallopPower - 1;
+								if (fScale)	// avoid divide by zero
+									r = (pow(m_fScallopPower, r) - 1) / fScale;
+							}
+							break;
+						default:	// bipolar
+							if (m_fScallopPower > 0) {	// if exponential
+								double	fScale = m_fScallopPower - 1;
+								if (fScale)	// avoid divide by zero
+									r = (pow(m_fScallopPower, (r + 1) / 2) - 1) / fScale * 2 - 1;
+							}
+						}
+						r *= m_fScallopDepth;
+						switch (m_iScallopOperation) {
+						case CModulationProps::OPER_ADD:
+							fRad += r;
+							break;
+						case CModulationProps::OPER_SUBTRACT:
+							fRad -= r;
+							break;
+						case CModulationProps::OPER_MULTIPLY:
+							if (r >= 0)
+								fRad *= r + 1;
+							else
+								fRad /= 1 - r;
+							break;
+						case CModulationProps::OPER_DIVIDE:
+							if (r >= 0)
+								fRad /= r + 1;
+							else
+								fRad *= 1 - r;
+							break;
+						case CModulationProps::OPER_EXPONENTIATE:
+							fRad *= pow(2, r);
+							break;
+						}
 					}
 					if (bBends) {
 						double	r = fRingBend * cos((fSide * m_fBendPoles + m_fBendPolePhase) * M_PI * 2);
@@ -298,7 +350,7 @@ void CPotGraphics::CalcPotMesh()
 				double	x = sin(fTheta) * m_fAspectRatio;
 				double	y = cos(fTheta);
 				double	z = (fRing - 0.5) * fHeight;
-				v.pt = D3DXVECTOR3(float(x * fRad) + vOrigin.x, float(y * fRad) + vOrigin.y, float(z));
+				v.pt = D3DXVECTOR3(float(x * fRad + vOrigin.x), float(y * fRad + vOrigin.y), float(z));
 				D3DXVec3TransformCoord(&v.pt, &v.pt, &matRot);
 				iVert++;
 			}
@@ -313,14 +365,14 @@ void CPotGraphics::CalcPotMesh()
 		if (nMods)
 			ApplyModulations(0);	// in case helix amplitude is modulated
 		vOrigin.x = 0;
-		vOrigin.y = float(m_fHelixAmplitude);
+		vOrigin.y = m_fHelixAmplitude;
 	}
 	if (nMods)
 		RestoreModulatedProperties();
 	for (int iWall = 0; iWall < WALLS; iWall++) {
 		CVertex&	v = m_arrVert[iVert + iWall];
 		double	z = -fHeight / 2 + m_fWallThickness * iWall;
-		v.pt = D3DXVECTOR3(vOrigin.x, vOrigin.y, float(z));
+		v.pt = D3DXVECTOR3(float(vOrigin.x), float(vOrigin.y), float(z));
 		D3DXVec3TransformCoord(&v.pt, &v.pt, &matRot);
 	}
 //	printf("generating indices\n");
@@ -556,8 +608,14 @@ bool CPotGraphics::MakeTexture()
 		CHECK(D3DXCreateTexture(m_pDevice, nWidth, nHeight, 0, 0, D3DFMT_A8B8G8R8, D3DPOOL_MANAGED, &m_pTexture));
 		D3DLOCKED_RECT	rect;
 		CHECK(m_pTexture->LockRect(0, &rect, 0, 0));
-		DWORD	*pBits = (DWORD *)rect.pBits;
+		if (rect.Pitch < nWidth * 4) {	// if texture's pitch is less than a row
+			AfxMessageBox(IDS_ERR_TEXTURE_TOO_WIDE);
+			CHECK(m_pTexture->UnlockRect(0));
+			return false;	// avoid access outside texture buffer
+		}
+		BYTE	*pRow = (BYTE *)rect.pBits;
 		for (int y = 0; y < nHeight; y++) {
+			DWORD	*pBits = (DWORD *)pRow;
 			for (int x = 0; x < nWidth; x++) {
 				int	iColor = x / m_nColorSharpness % nColors;
 				COLORREF	c;
@@ -574,6 +632,7 @@ bool CPotGraphics::MakeTexture()
 				*pBits++ = D3DCOLOR_RGBA(GetRValue(c), GetGValue(c), GetBValue(c), 0);
 				m_dibTexture.SetPixel(x, y, c);
 			}
+			pRow += rect.Pitch;	// advance to texture's next row
 		}
 		CHECK(m_pTexture->UnlockRect(0));
 //		printf("w=%d h=%d, levels=%d\n", sz.cx, sz.cy, m_pTexture->GetLevelCount());
@@ -645,7 +704,7 @@ __forceinline void CPotGraphics::ApplyMotif(int iMotif, double& r)
 	}
 }
 
-__forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase)
+__forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase, double fPulseWidth, double fSlew)
 {
 	switch (iWaveform) {
 	case CModulationProps::WAVE_SINE:
@@ -661,6 +720,59 @@ __forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase)
 		return 1 - Wrap(fPhase, 1) * 2;
 	case CModulationProps::WAVE_SQUARE:
 		return Wrap(fPhase, 1) < 0.5 ? 1 : -1;
+	case CModulationProps::WAVE_PULSE:
+		{
+			double	r = Wrap(fPhase, 1);
+			double	a = fPulseWidth / 2 * fSlew;
+			if (r < a)	// if rising
+				return r / a * 2 - 1;
+			else if (r < fPulseWidth - a)	// if high
+				return 1;
+			else if (r < fPulseWidth)	// if falling
+				return 1 - (r - (fPulseWidth - a)) / a * 2;
+			else	// low
+				return -1;
+		}
+	case CModulationProps::WAVE_ROUNDED_PULSE:
+		{
+			double	r = Wrap(fPhase, 1);
+			double	a = fPulseWidth / 2 * fSlew;
+			if (r < a)	// if rising
+				return cos((r / a + 1) * M_PI);
+			else if (r < fPulseWidth - a)	// if high
+				return 1;
+			else if (r < fPulseWidth)	// if falling
+				return cos((r - (fPulseWidth - a)) / a * M_PI);
+			else	// low
+				return -1;
+		}
+	case CModulationProps::WAVE_TRIANGULAR_PULSE:
+		{
+			double	r = Wrap(fPhase, 1);
+			if (r < fPulseWidth) {	// if high
+				if (r < fPulseWidth * fSlew)	// if rising
+					r = r / (fPulseWidth * fSlew);
+				else	// falling
+					r = (r - fPulseWidth) / (fPulseWidth * (fSlew - 1));
+				return r * 2 - 1;	// make bipolar
+			} else	// low
+				return -1;
+		}
+	case CModulationProps::WAVE_SINE_CUBED:
+		return pow(sin(fPhase * M_PI * 2), 3);
+	case CModulationProps::WAVE_FLAME:
+		{
+			double	r = Wrap(fPhase + 0.25, 1);
+			double	s = sin(r * M_PI * 2);
+			if (r < 0.25)
+				return s - 1;
+			else if (r < 0.5)
+				return 1 - s;
+			else if (r < 0.75)
+				return s + 1;
+			else
+				return -1 - s;
+		}
 	}
 	return 0;
 }
@@ -674,7 +786,8 @@ void CPotGraphics::ApplyModulations(double fRing)
 		int	iProp = m_arrModIdx[iMod];
 		const PROPERTY_INFO&	info = m_Info[iProp];
 		const CModulationProps&	mod = m_Mod[iProp];
-		double	r = GetWave(mod.m_iWaveform, fTheta * mod.m_fFrequency + mod.m_fPhase);
+		double	r = GetWave(mod.m_iWaveform, fTheta * mod.m_fFrequency + mod.m_fPhase, 
+			mod.m_fPulseWidth, mod.m_fSlew);	// for pulse waveforms
 		ApplyMotif(mod.m_iMotif, r);
 		switch (mod.m_iRange) {
 		case CModulationProps::RANGE_UNIPOLAR:
@@ -710,6 +823,9 @@ void CPotGraphics::ApplyModulations(double fRing)
 				if (r)	// avoid divide by zero
 					*pTarget = *pSource / r;
 				break;
+			case CModulationProps::OPER_EXPONENTIATE:
+				*pTarget = *pSource * pow(2, r);
+				break;
 			}
 		} else if (info.pType == &typeid(int)) {	// else if property type is int
 			int	*pSource = static_cast<int *>(m_arrSrcProps.GetPropertyAddress(iProp));
@@ -727,6 +843,9 @@ void CPotGraphics::ApplyModulations(double fRing)
 			case CModulationProps::OPER_DIVIDE:
 				if (r)	// avoid divide by zero
 					*pTarget = round(*pSource / r);
+				break;
+			case CModulationProps::OPER_EXPONENTIATE:
+				*pTarget = round(*pSource * pow(2, r));
 				break;
 			}
 		}

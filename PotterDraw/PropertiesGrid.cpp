@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		10oct17	enable spin control for integer numeric properties
 
 */
 
@@ -395,6 +396,8 @@ void CPropertiesGridCtrl::InitPropList(const CProperties& Props)
 			pNumProp = new CValidPropertyGridProperty(sPropName, arrVar[iProp], sPropDescrip, iProp);
 			Props.GetRange(iProp, pNumProp->m_vMinVal, pNumProp->m_vMaxVal);
 			pProp = pNumProp;
+			if (Props.GetType(iProp) == &typeid(int))	// if integer type, enable spin control
+				pNumProp->EnableSpinControl(TRUE, pNumProp->m_vMinVal.intVal, pNumProp->m_vMaxVal.intVal);
 		}
 		pGroup->AddSubItem(pProp);
 		m_arrProp[iProp] = pProp;

@@ -16,6 +16,7 @@
 		06		05sep17	in OnUpdate, add spline special case
 		07		05sep17	fix pSender to match tests in OnUpdate
 		08		07sep17	fix modulation property change not updating oscilloscope
+		09		09oct17	add render frame rate
 
 */
 
@@ -106,6 +107,7 @@ CMainFrame::CMainFrame()
 	m_bPreFullScreenWasZoomed = false;
 	m_bDeferredUpdate = false;
 	m_bDeferredSizing = false;
+	m_fRenderFrameRate = 0;
 }
 
 CMainFrame::~CMainFrame()
@@ -341,9 +343,9 @@ void CMainFrame::OnActivateView(CView *pView)
 {
 	// dynamic cast because other view types are possible, e.g. print preview
 	CPotterDrawView	*pActiveView = DYNAMIC_DOWNCAST(CPotterDrawView, pView);
-	if (pActiveView != m_pActiveView) {
+	if (pActiveView != m_pActiveView) {	// if active view changed
 		m_pActiveView = pActiveView;
-		if (!m_bDeferredUpdate)
+		if (!m_bDeferredUpdate)	// if not deferring update
 			OnUpdate(NULL);
 		bool	bNewEnable = pActiveView != NULL;
 		bool	bOldEnable = m_wndPropertiesBar.GetWindow(GW_CHILD)->IsWindowEnabled() != 0;
@@ -1021,9 +1023,10 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 	if (nIDEvent == FRAME_RATE_TIMER) {
 		CString	sFrameRate;
 		if (m_pActiveView != NULL && (m_pActiveView->IsAnimating() || m_pActiveView->IsRecording())) {
-			double	fFrameRate = m_pActiveView->MeasureFrameRate();
-			sFrameRate.Format(_T("%.2f"), fFrameRate);
-		}
+			m_fRenderFrameRate = m_pActiveView->MeasureFrameRate();
+			sFrameRate.Format(_T("%.2f"), m_fRenderFrameRate);
+		} else
+			m_fRenderFrameRate = 0;
 		m_wndStatusBar.SetPaneText(INDICATOR_FRAME_RATE, sFrameRate);
 	}
 }

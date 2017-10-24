@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		06oct17	bump file version to 2
 		
 */
 
@@ -20,7 +21,7 @@
 #include "PotGraphics.h"	// for style bits
 
 #define FILE_ID			_T("PotterDraw")
-#define	FILE_VERSION	1
+#define	FILE_VERSION	2
 
 #define RK_FILE_ID		_T("sFileID")
 #define RK_FILE_VERSION	_T("nFileVersion")

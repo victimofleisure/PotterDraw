@@ -8,7 +8,8 @@
 		revision history:
 		rev		date	comments
         00      13jun17	initial version
- 
+		01		06oct17	in AddNode, if adding line segment, give control vectors zero length
+
 */
 
 #include "stdafx.h"
@@ -280,9 +281,14 @@ int CSplineArray::AddNode(int iSeg, DPoint ptNode, DPoint p1, DPoint p2, double 
 		if (fGridStep)	// if snapping to grid
 			SnapToGrid(ptNode, fGridStep);	// quantize updated node point
 		DPoint	ptCtrl[2];
-		ptCtrl[0] = ptNode - vIntersect * fCtrlVecLen;
-		ptCtrl[1] = vIntersect * fCtrlVecLen + ptNode;
 		CSegment&	seg = GetAt(iSeg);
+		if (seg.m_iSegType != ST_LINE) {	// if adding curve segment
+			ptCtrl[0] = ptNode - vIntersect * fCtrlVecLen;
+			ptCtrl[1] = vIntersect * fCtrlVecLen + ptNode;
+		} else {	// adding line segment; give control vectors zero length
+			ptCtrl[0] = ptNode;
+			ptCtrl[1] = ptNode;
+		}
 		segNew = CSegment(seg.m_ptCtrl[0], ptCtrl[1], ptNode, seg.m_iSegType, seg.m_iNodeType);
 		seg.m_ptCtrl[0] = ptCtrl[0];
 		iInsertPos = iSeg;

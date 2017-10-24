@@ -8,7 +8,8 @@
 		revision history:
 		rev		date	comments
 		00		16apr17	initial version
- 
+ 		01		09oct17	add remaining time
+
 */
 
 // RecordStatusDlg.cpp : implementation file
@@ -41,6 +42,7 @@ void CRecordStatusDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_RECORD_STATUS_PROGRESS, m_Progress);
 	DDX_Control(pDX, IDC_RECORD_STATUS_COMPLETED, m_Completed);
 	DDX_Control(pDX, IDC_RECORD_STATUS_DURATION, m_Duration);
+	DDX_Control(pDX, IDC_RECORD_STATUS_REMAINING, m_Remaining);
 }
 
 BEGIN_MESSAGE_MAP(CRecordStatusDlg, CModelessDlg)
@@ -73,9 +75,10 @@ void CRecordStatusDlg::OnOK()
 void CRecordStatusDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	CPotterDrawView	*pView = theApp.GetMainFrame()->GetActiveMDIView();
-	CString	sDuration, sCompleted;
+	CString	sDuration, sCompleted, sRemaining;
 	int	nProgPos = 0;
-	if (pView != NULL && pView->IsRecording()) {
+	bool	bIsRecording = pView != NULL && pView->IsRecording(); 
+	if (bIsRecording) {	// if recording
 		double	fFrameRate = pView->GetDocument()->m_fFrameRate;
 		int	nDuration = pView->GetRecordDuration();
 		int	nCompleted = pView->GetRecordFramesDone();
@@ -86,9 +89,16 @@ void CRecordStatusDlg::OnTimer(UINT_PTR nIDEvent)
 		sCompleted.Format(_T(" %s (%d)"), sTime, nCompleted);
 		if (nDuration)	// avoid divide by zero
 			nProgPos = round(double(nCompleted) / nDuration * 100.0);
+		double	fRenderFrameRate = theApp.GetMainFrame()->GetRenderFrameRate();
+		if (fRenderFrameRate) {	// avoid divide by zero
+			int	nRemainingSecs = round((nDuration - nCompleted) / fRenderFrameRate);
+			sRemaining = CTimeSpan(nRemainingSecs).Format(_T(" %D.%H:%M:%S"));
+		}
 	}
 	m_Duration.SetWindowText(sDuration);
 	m_Completed.SetWindowText(sCompleted);
+	m_Remaining.SetWindowText(sRemaining);
 	m_Progress.SetPos(nProgPos);
+	GetDlgItem(IDOK)->EnableWindow(bIsRecording);	// enable abort button only if recording
 	CModelessDlg::OnTimer(nIDEvent);
 }

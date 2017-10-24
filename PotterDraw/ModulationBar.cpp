@@ -9,6 +9,7 @@
 		rev		date	comments
         00      04may17	initial version
 		01		01sep17	call help directly
+		02		20oct17	in ctor, change enable modulation init to true
 		
 */
 
@@ -32,7 +33,7 @@ static char THIS_FILE[]=__FILE__;
 CModulationBar::CModulationBar()
 {
 	m_pInitialProps = NULL;
-	m_bEnableModulation = false;
+	m_bEnableModulation = true;	// properties are initially enabled
 }
 
 CModulationBar::~CModulationBar()

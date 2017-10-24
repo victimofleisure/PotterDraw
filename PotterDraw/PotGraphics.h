@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
+		01		09oct17	in GetWave, add pulse and rounded pulse waves
 		
 */
 
@@ -141,7 +142,7 @@ protected:
 	bool	CreateBoundingBox();
 	bool	DrawBoundingBox();
 	static	void	ApplyMotif(int iMotif, double& r);
-	static	double	GetWave(int iWaveform, double fPhase);
+	static	double	GetWave(int iWaveform, double fPhase, double fPulseWidth, double fSlew);
 	void	ApplyModulations(double fRing);
 	void	SaveModulatedProperties();
 	void	RestoreModulatedProperties();

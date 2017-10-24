@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		05oct17	in ReadEnum, if string not found, default to zero, not -1
 		
 */
 
@@ -101,6 +102,8 @@ inline void CProperties::ReadEnum(LPCTSTR szSection, LPCTSTR szKey, int& Value, 
 	ASSERT(pOption != NULL);
 	ASSERT(Value < nOptions);
 	Value = FindOption(AfxGetApp()->GetProfileString(szSection, szKey), pOption, nOptions);
+	if (Value < 0)	// if string not found
+		Value = 0;	// default to zero, not -1; avoids range errors downstream
 }
 
 inline void CProperties::WriteEnum(LPCTSTR szSection, LPCTSTR szKey, const int& Value, const CProperties::OPTION_INFO *pOption, int nOptions)

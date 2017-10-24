@@ -9,6 +9,8 @@
 		rev		date	comments
         00      23mar17	initial version
 		01		24aug17	add scallop phase
+		02		05oct17	add scallop range, power, operation
+		03		19oct17	add scallop waveform, pulse width, and slew
 		
 */
 
@@ -31,7 +33,13 @@ PROPDEF(	MESH,		VAR,		double,		fWallThickness,		5,				1e-6,		1e6,		NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fScallops,			0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fScallopDepth,		0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fScallopPhase,		0,				0,			0,			NULL,		0)
+PROPDEF(	MESH,		ENUM,		int,		iScallopWaveform,	0,				0,			0,			CModulationProps::m_Waveform + 1,	_countof(CModulationProps::m_Waveform) - 1)
+PROPDEF(	MESH,		ENUM,		int,		iScallopOperation,	0,				0,			0,			CModulationProps::m_Operation,	_countof(CModulationProps::m_Operation))
+PROPDEF(	MESH,		ENUM,		int,		iScallopRange,		0,				0,			0,			CModulationProps::m_Range,	_countof(CModulationProps::m_Range))
 PROPDEF(	MESH,		ENUM,		int,		iScallopMotif,		0,				0,			0,			m_Motif,	_countof(m_Motif))
+PROPDEF(	MESH,		VAR,		double,		fScallopPower,		0,				0,			DBL_MAX,	NULL,		0)
+PROPDEF(	MESH,		VAR,		double,		fScallopPulseWidth,	0.5,			0,			0,			NULL,		0)
+PROPDEF(	MESH,		VAR,		double,		fScallopSlew,		0.5,			0,			0,			NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fRipples,			0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fRippleDepth,		0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		VAR,		double,		fRipplePhase,		0,				0,			0,			NULL,		0)

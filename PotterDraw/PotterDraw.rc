@@ -545,7 +545,7 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,162,109,50,14
 END
 
-IDD_RECORD_STATUS DIALOGEX 0, 0, 201, 91
+IDD_RECORD_STATUS DIALOGEX 0, 0, 201, 109
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Record Status"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -555,7 +555,9 @@ BEGIN
     LTEXT           "",IDC_RECORD_STATUS_DURATION,69,27,108,14,SS_CENTERIMAGE | SS_SUNKEN
     RTEXT           "Completed:",IDC_STATIC,15,47,50,14,SS_CENTERIMAGE
     LTEXT           "",IDC_RECORD_STATUS_COMPLETED,69,47,108,14,SS_CENTERIMAGE | SS_SUNKEN
-    DEFPUSHBUTTON   "Abort",IDOK,75,70,50,14
+    RTEXT           "Remaining:",IDC_STATIC,15,67,50,14,SS_CENTERIMAGE
+    LTEXT           "",IDC_RECORD_STATUS_REMAINING,69,67,108,14,SS_CENTERIMAGE | SS_SUNKEN
+    DEFPUSHBUTTON   "Abort",IDOK,75,88,50,14
 END
 
 IDD_ROTATE DIALOGEX 0, 0, 120, 84
@@ -638,8 +640,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,2,0
- PRODUCTVERSION 1,0,2,0
+ FILEVERSION 1,0,3,0
+ PRODUCTVERSION 1,0,3,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -656,12 +658,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Anal Software"
             VALUE "FileDescription", "PotterDraw"
-            VALUE "FileVersion", "1.0.2.0"
+            VALUE "FileVersion", "1.0.3.0"
             VALUE "InternalName", "PotterDraw.exe"
             VALUE "LegalCopyright", "Copyleft 2017 Chris Korda"
             VALUE "OriginalFilename", "PotterDraw.exe"
             VALUE "ProductName", "PotterDraw"
-            VALUE "ProductVersion", "1.0.2.0"
+            VALUE "ProductVersion", "1.0.3.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -708,7 +710,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 194
         TOPMARGIN, 7
-        BOTTOMMARGIN, 84
+        BOTTOMMARGIN, 102
     END
 
     IDD_ROTATE, DIALOG
@@ -850,6 +852,7 @@ STRINGTABLE
 BEGIN
     IDS_ERR_SPLINE_NEGATIVE_X "Spline has at least one negative x-coordinate."
     IDS_ERR_TEXTURE_FILE_NOT_FOUND "Texture file not found."
+    IDS_ERR_TEXTURE_TOO_WIDE "Texture is too wide."
     IDS_EXPLORER            "Explorer"
     IDS_EXPORT              "Export"
     IDS_HLINK_CANT_LAUNCH   "Can't launch browser."
@@ -861,14 +864,16 @@ BEGIN
     IDS_MOD_DESC_fPhaseSpeed 
                             "Modulation phase delta during animation, in Hertz"
     IDS_MOD_DESC_fPower     "Base of power function, or zero if none"
+    IDS_MOD_DESC_fPulseWidth "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
+    IDS_MOD_DESC_fSlew      "Amount of slew, for pulse waveforms only; normalized from 0 to 1"
     IDS_MOD_DESC_iMotif     "Function applied to modulation waveform"
-    IDS_MOD_DESC_iOperation "Operation of modulation on target property"
-    IDS_MOD_DESC_iRange     "Range of modulation"
-    IDS_MOD_DESC_iTarget    "Target property to be modulated"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_MOD_DESC_iOperation "Operation of modulation on target property"
+    IDS_MOD_DESC_iRange     "Range of modulation"
+    IDS_MOD_DESC_iTarget    "Target property to be modulated"
     IDS_MOD_DESC_iWaveform  "Type of waveform"
     IDS_MOD_GROUP_MAIN      "Main"
     IDS_MOD_NAME_fAmplitude "Amplitude"
@@ -877,25 +882,36 @@ BEGIN
     IDS_MOD_NAME_fPhase     "Phase"
     IDS_MOD_NAME_fPhaseSpeed "Phase Speed"
     IDS_MOD_NAME_fPower     "Power"
+    IDS_MOD_NAME_fPulseWidth "Pulse Width"
+    IDS_MOD_NAME_fSlew      "Slew"
     IDS_MOD_NAME_iMotif     "Motif"
     IDS_MOD_NAME_iOperation "Operation"
     IDS_MOD_NAME_iRange     "Range"
-    IDS_MOD_NAME_iTarget    "Target"
-    IDS_MOD_NAME_iWaveform  "Waveform"
-    IDS_MOD_OPT_OPER_ADD    "Add"
-    IDS_MOD_OPT_OPER_DIVIDE "Divide"
-    IDS_MOD_OPT_OPER_MULTIPLY "Multiply"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_MOD_NAME_iTarget    "Target"
+    IDS_MOD_NAME_iWaveform  "Waveform"
+    IDS_MOD_OPT_OPER_ADD    "Add"
+    IDS_MOD_OPT_OPER_DIVIDE "Divide"
+    IDS_MOD_OPT_OPER_EXPONENTIATE "Exponentiate"
+    IDS_MOD_OPT_OPER_MULTIPLY "Multiply"
     IDS_MOD_OPT_OPER_SUBTRACT "Subtract"
     IDS_MOD_OPT_RANGE_BIPOLAR "Bipolar"
     IDS_MOD_OPT_RANGE_UNIPOLAR "Unipolar"
+    IDS_MOD_OPT_WAVE_FLAME  "Flame"
     IDS_MOD_OPT_WAVE_NONE   "None"
+    IDS_MOD_OPT_WAVE_PULSE  "Pulse"
     IDS_MOD_OPT_WAVE_RAMP_DOWN "Ramp Down"
     IDS_MOD_OPT_WAVE_RAMP_UP "Ramp Up"
+    IDS_MOD_OPT_WAVE_ROUNDED_PULSE "Rounded Pulse"
     IDS_MOD_OPT_WAVE_SINE   "Sine"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_MOD_OPT_WAVE_TRIANGULAR_PULSE "Triangular Pulse"
     IDS_MOD_OPT_WAVE_SQUARE "Square"
     IDS_MOD_OPT_WAVE_TRIANGLE "Triangle"
     IDS_OPT_DESC_bAutoCheckUpdates 
@@ -912,10 +928,6 @@ BEGIN
                             "Continuously update 3D view while spline is being dragged"
     IDS_OPT_DESC_fDragRotateStep 
                             "Drag rotation step size, in degrees per pixel"
-END
-
-STRINGTABLE
-BEGIN
     IDS_OPT_DESC_fPanStep   "Panning step size, in view coordinates"
     IDS_OPT_DESC_fSplineZoomStep "Spline zoom step size, as a percentage"
     IDS_OPT_DESC_fZoomStep  "Zoom step size, as a percentage"
@@ -925,6 +937,10 @@ BEGIN
                             "Width of exported image if using custom size, in pixels"
     IDS_OPT_DESC_nFloatPrecision 
                             "Number of digits after decimal point for OBJ export"
+END
+
+STRINGTABLE
+BEGIN
     IDS_OPT_GROUP_EXPORT    "Export"
     IDS_OPT_GROUP_GENERAL   "General"
     IDS_OPT_GROUP_OSCILLOSCOPE "Oscilloscope"
@@ -935,16 +951,16 @@ BEGIN
     IDS_OPT_NAME_bPlotAllModulations "Plot All Modulations"
     IDS_OPT_NAME_bPropertyDescrips "Show Property Descriptions"
     IDS_OPT_NAME_bVertexColor "Use Vertex Color"
-END
-
-STRINGTABLE
-BEGIN
     IDS_OPT_NAME_bViewSplineDrag "Show Spline Drag in View"
     IDS_OPT_NAME_fDragRotateStep "Drag Rotate Step"
     IDS_OPT_NAME_fPanStep   "Pan Step"
     IDS_OPT_NAME_fSplineZoomStep "Zoom Step"
     IDS_OPT_NAME_fZoomStep  "Zoom Step"
     IDS_OPT_NAME_nCustomImageHeight "Custom Image Height"
+END
+
+STRINGTABLE
+BEGIN
     IDS_OPT_NAME_nCustomImageWidth "Custom Image Width"
     IDS_OPT_NAME_nFloatPrecision "Floating-Point Precision"
     IDS_OSCILLOSCOPE_BAR    "Oscilloscope"
@@ -956,10 +972,6 @@ BEGIN
     IDS_PDR_DESC_clrBackground "Background color of view window"
     IDS_PDR_DESC_fAspectRatio 
                             "Width scaling for elliptical shapes; 1 for normal, > 1 for wider, < 1 for narrower"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_DESC_fAutoRotatePitch 
                             "Pitch speed when auto-rotating view, in degrees per second"
     IDS_PDR_DESC_fAutoRotateRoll 
@@ -970,6 +982,10 @@ BEGIN
     IDS_PDR_DESC_fBendPhase "Initial phase of bends; normalized from 0 to 1"
     IDS_PDR_DESC_fBendPolePhase 
                             "Initial phase of bend poles; normalized from 0 to 1"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PDR_DESC_fBendPoles "Number of bend poles"
     IDS_PDR_DESC_fBends     "Number of bends"
     IDS_PDR_DESC_fColorCycles "Number of times to cycle through palette"
@@ -980,10 +996,6 @@ BEGIN
     IDS_PDR_DESC_fOffsetU   "Offset applied to U coordinate for texture mapping; normalized from 0 to 1"
     IDS_PDR_DESC_fOffsetV   "Offset applied to V coordinate for texture mapping; normalized from 0 to 1"
     IDS_PDR_DESC_fPetals    "Number of petals"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_DESC_fRadius    "Radius scaling factor"
     IDS_PDR_DESC_fRippleDepth "Depth of each ripple"
     IDS_PDR_DESC_fRipplePhase 
@@ -992,6 +1004,13 @@ BEGIN
     IDS_PDR_DESC_fScallopDepth "Depth of each scallop"
     IDS_PDR_DESC_fScallopPhase 
                             "Initial phase of scallop rotation; normalized from 0 to 1"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_DESC_fScallopPower "Base of scallop waveform's power function, or zero if none"
+    IDS_PDR_DESC_fScallopPulseWidth "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
+    IDS_PDR_DESC_fScallopSlew "Amount of slew, for pulse waveforms only; normalized from 0 to 1"
     IDS_PDR_DESC_fScallops  "Number of scallops"
     IDS_PDR_DESC_fStripeAmplitude "Amplitude of stripe waves"
     IDS_PDR_DESC_fStripeFrequency 
@@ -1004,12 +1023,15 @@ BEGIN
     IDS_PDR_DESC_iBendPoleMotif "Function applied to bend pole waveform"
     IDS_PDR_DESC_iColorPattern "Type of color pattern"
     IDS_PDR_DESC_iPaletteType "Type of palette"
+    IDS_PDR_DESC_iRippleMotif "Function applied to ripple waveform"
+    IDS_PDR_DESC_iScallopMotif "Function applied to scallop waveform"
+    IDS_PDR_DESC_iScallopOperation "Operation of scallop waveform on radius"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_PDR_DESC_iRippleMotif "Function applied to ripple waveform"
-    IDS_PDR_DESC_iScallopMotif "Function applied to scallop waveform"
+    IDS_PDR_DESC_iScallopRange "Range of scallop waveform"
+    IDS_PDR_DESC_iScallopWaveform "Type of waveform used for scallops"
     IDS_PDR_DESC_nColorSharpness 
                             "Sharpness of stripes; 1 is fuzziest, 100 is sharpest"
     IDS_PDR_DESC_nColors    "Number of colors in palette"
@@ -1053,6 +1075,9 @@ BEGIN
     IDS_PDR_NAME_fRipples   "Ripples"
     IDS_PDR_NAME_fScallopDepth "Scallop Depth"
     IDS_PDR_NAME_fScallopPhase "Scallop Phase"
+    IDS_PDR_NAME_fScallopPower "Scallop Power"
+    IDS_PDR_NAME_fScallopPulseWidth "Scallop Pulse Width"
+    IDS_PDR_NAME_fScallopSlew "Scallop Slew"
     IDS_PDR_NAME_fScallops  "Scallops"
     IDS_PDR_NAME_fStripeAmplitude "Stripe Amplitude"
     IDS_PDR_NAME_fStripeFrequency "Stripe Frequency"
@@ -1063,13 +1088,16 @@ BEGIN
     IDS_PDR_NAME_iBendPoleMotif "Bend Pole Motif"
     IDS_PDR_NAME_iColorPattern "Color Pattern"
     IDS_PDR_NAME_iPaletteType "Palette Type"
-    IDS_PDR_NAME_iRippleMotif "Ripple Motif"
-    IDS_PDR_NAME_iScallopMotif "Scallop Motif"
-    IDS_PDR_NAME_nColorSharpness "Color Sharpness"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_PDR_NAME_iRippleMotif "Ripple Motif"
+    IDS_PDR_NAME_iScallopMotif "Scallop Motif"
+    IDS_PDR_NAME_iScallopOperation "Scallop Operation"
+    IDS_PDR_NAME_iScallopRange "Scallop Range"
+    IDS_PDR_NAME_iScallopWaveform "Scallop Waveform"
+    IDS_PDR_NAME_nColorSharpness "Color Sharpness"
     IDS_PDR_NAME_nColors    "Colors"
     IDS_PDR_NAME_nRings     "Rings"
     IDS_PDR_NAME_nSides     "Sides"
@@ -1080,16 +1108,16 @@ BEGIN
     IDS_PDR_OPT_COLPAT_STRIPES "Stripes"
     IDS_PDR_OPT_MOTIF_FLUTES "Flutes"
     IDS_PDR_OPT_MOTIF_NONE  "None"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PDR_OPT_MOTIF_PARTED_FLUTES "Parted Flutes"
     IDS_PDR_OPT_MOTIF_PARTED_REEDS "Parted Reeds"
     IDS_PDR_OPT_MOTIF_REEDS "Reeds"
     IDS_PDR_OPT_PALTYPE_COMPLEMENT "Complement"
     IDS_PDR_OPT_PALTYPE_LINEAR "Linear"
     IDS_PDR_OPT_PALTYPE_SPLIT "Split"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PROPERTIES_BAR      "Properties"
     IDS_PROPS_MORE_COLORS   "More Colors..."
     IDS_RECDLG_CUSTOM       "Custom"
@@ -1100,16 +1128,16 @@ BEGIN
     IDS_SPLINE_BAR          "Spline"
     IDS_SPLINE_NM_ADD_NODE  "Add Node"
     IDS_SPLINE_NM_CHANGED   "Spline"
+END
+
+STRINGTABLE
+BEGIN
     IDS_SPLINE_NM_CUT       "Cut"
     IDS_SPLINE_NM_DELETE    "Delete"
     IDS_SPLINE_NM_DELETE_NODE "Delete Node"
     IDS_SPLINE_NM_FLIP_HORIZONTAL "Flip Horizontal"
     IDS_SPLINE_NM_FLIP_VERTICAL "Flip Vertical"
     IDS_SPLINE_NM_IMPORT    "Import"
-END
-
-STRINGTABLE
-BEGIN
     IDS_SPLINE_NM_NODE_TYPE "Node Type"
     IDS_SPLINE_NM_PASTE     "Paste"
     IDS_SPLINE_NM_ROTATE    "Rotate"
@@ -1120,7 +1148,12 @@ BEGIN
     IDS_TEXT_FILES_FILTER   "Text Files (*.txt)|*.txt|All Files (*.*)|*.*||"
     IDS_TOOLBAR_CUSTOMIZE   "Customize..."
     IDS_TOOLBAR_STANDARD    "Standard"
+END
+
+STRINGTABLE
+BEGIN
     IDS_VIEW_PAN            "Pan"
+    IDS_MOD_OPT_WAVE_SINE_CUBED "Sine Cubed"
 END
 
 STRINGTABLE
