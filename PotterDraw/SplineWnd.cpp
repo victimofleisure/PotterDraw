@@ -9,6 +9,7 @@
 		rev		date	comments
         00      13jun17	initial version
 		01		05sep17	add changing notification
+		02		26oct17	in read/write profile, add grid setup
  
 */
 
@@ -50,6 +51,7 @@ const COLORREF CSplineWnd::m_arrDefaultColor[COLORS] = {
 #define RK_SPLINE_START_PT	_T("ptStart")
 #define RK_SPLINE_PAN		_T("ptPan")
 #define RK_SPLINE_ZOOM		_T("fZoom")
+#define RK_SPLINE_GRID_SPACING	_T("fGridSpacing")
 #define RK_SPLINE_STYLE		_T("nStyle")
 #define RK_SPLINE_CTRL_PT_0	_T("ptCtrl[0]")
 #define RK_SPLINE_CTRL_PT_1	_T("ptCtrl[1]")
@@ -420,6 +422,7 @@ void CSplineState::ReadProfile()
 	RdReg(RK_SPLINE_SECTION, RK_SPLINE_START_PT, m_ptStart);
 	RdReg(RK_SPLINE_SECTION, RK_SPLINE_PAN, m_ptPan);
 	RdReg(RK_SPLINE_SECTION, RK_SPLINE_ZOOM, m_fZoom);
+	RdReg(RK_SPLINE_SECTION, RK_SPLINE_GRID_SPACING, m_fGridSpacing);
 	RdReg(RK_SPLINE_SECTION, RK_SPLINE_STYLE, m_nStyle);
 	RdReg(RK_SPLINE_SECTION, RK_SPLINE_NODE_TYPE, m_iNodeType);
 	CString	sIdx;
@@ -442,6 +445,7 @@ void CSplineState::WriteProfile() const
 	WrReg(RK_SPLINE_SECTION, RK_SPLINE_START_PT, m_ptStart);
 	WrReg(RK_SPLINE_SECTION, RK_SPLINE_PAN, m_ptPan);
 	WrReg(RK_SPLINE_SECTION, RK_SPLINE_ZOOM, m_fZoom);
+	WrReg(RK_SPLINE_SECTION, RK_SPLINE_GRID_SPACING, m_fGridSpacing);
 	WrReg(RK_SPLINE_SECTION, RK_SPLINE_STYLE, m_nStyle);
 	WrReg(RK_SPLINE_SECTION, RK_SPLINE_NODE_TYPE, m_iNodeType);
 	CString	sIdx;

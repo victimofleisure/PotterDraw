@@ -640,8 +640,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,3,0
- PRODUCTVERSION 1,0,3,0
+ FILEVERSION 1,0,3,1
+ PRODUCTVERSION 1,0,3,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -658,12 +658,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Anal Software"
             VALUE "FileDescription", "PotterDraw"
-            VALUE "FileVersion", "1.0.3.0"
+            VALUE "FileVersion", "1.0.3.1"
             VALUE "InternalName", "PotterDraw.exe"
             VALUE "LegalCopyright", "Copyleft 2017 Chris Korda"
             VALUE "OriginalFilename", "PotterDraw.exe"
             VALUE "ProductName", "PotterDraw"
-            VALUE "ProductVersion", "1.0.3.0"
+            VALUE "ProductVersion", "1.0.3.1"
         END
     END
     BLOCK "VarFileInfo"
@@ -864,7 +864,8 @@ BEGIN
     IDS_MOD_DESC_fPhaseSpeed 
                             "Modulation phase delta during animation, in Hertz"
     IDS_MOD_DESC_fPower     "Base of power function, or zero if none"
-    IDS_MOD_DESC_fPulseWidth "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
+    IDS_MOD_DESC_fPulseWidth 
+                            "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
     IDS_MOD_DESC_fSlew      "Amount of slew, for pulse waveforms only; normalized from 0 to 1"
     IDS_MOD_DESC_iMotif     "Function applied to modulation waveform"
 END
@@ -911,9 +912,10 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_MOD_OPT_WAVE_TRIANGULAR_PULSE "Triangular Pulse"
+    IDS_MOD_OPT_WAVE_SINE_CUBED "Sine Cubed"
     IDS_MOD_OPT_WAVE_SQUARE "Square"
     IDS_MOD_OPT_WAVE_TRIANGLE "Triangle"
+    IDS_MOD_OPT_WAVE_TRIANGULAR_PULSE "Triangular Pulse"
     IDS_OPT_DESC_bAutoCheckUpdates 
                             "Automatically check for newer version of app during startup"
     IDS_OPT_DESC_bCustomImageSize 
@@ -935,12 +937,12 @@ BEGIN
                             "Height of exported image if using custom size, in pixels"
     IDS_OPT_DESC_nCustomImageWidth 
                             "Width of exported image if using custom size, in pixels"
-    IDS_OPT_DESC_nFloatPrecision 
-                            "Number of digits after decimal point for OBJ export"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_OPT_DESC_nFloatPrecision 
+                            "Number of digits after decimal point for OBJ export"
     IDS_OPT_GROUP_EXPORT    "Export"
     IDS_OPT_GROUP_GENERAL   "General"
     IDS_OPT_GROUP_OSCILLOSCOPE "Oscilloscope"
@@ -956,11 +958,11 @@ BEGIN
     IDS_OPT_NAME_fPanStep   "Pan Step"
     IDS_OPT_NAME_fSplineZoomStep "Zoom Step"
     IDS_OPT_NAME_fZoomStep  "Zoom Step"
-    IDS_OPT_NAME_nCustomImageHeight "Custom Image Height"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_OPT_NAME_nCustomImageHeight "Custom Image Height"
     IDS_OPT_NAME_nCustomImageWidth "Custom Image Width"
     IDS_OPT_NAME_nFloatPrecision "Floating-Point Precision"
     IDS_OSCILLOSCOPE_BAR    "Oscilloscope"
@@ -980,12 +982,12 @@ BEGIN
                             "Yaw speed when auto-rotating view, in degrees per second"
     IDS_PDR_DESC_fBendDepth "Depth of each bend"
     IDS_PDR_DESC_fBendPhase "Initial phase of bends; normalized from 0 to 1"
-    IDS_PDR_DESC_fBendPolePhase 
-                            "Initial phase of bend poles; normalized from 0 to 1"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_PDR_DESC_fBendPolePhase 
+                            "Initial phase of bend poles; normalized from 0 to 1"
     IDS_PDR_DESC_fBendPoles "Number of bend poles"
     IDS_PDR_DESC_fBends     "Number of bends"
     IDS_PDR_DESC_fColorCycles "Number of times to cycle through palette"
@@ -1002,15 +1004,18 @@ BEGIN
                             "Initial phase of ripples; normalized from 0 to 1"
     IDS_PDR_DESC_fRipples   "Number of ripples"
     IDS_PDR_DESC_fScallopDepth "Depth of each scallop"
-    IDS_PDR_DESC_fScallopPhase 
-                            "Initial phase of scallop rotation; normalized from 0 to 1"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_PDR_DESC_fScallopPower "Base of scallop waveform's power function, or zero if none"
-    IDS_PDR_DESC_fScallopPulseWidth "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
-    IDS_PDR_DESC_fScallopSlew "Amount of slew, for pulse waveforms only; normalized from 0 to 1"
+    IDS_PDR_DESC_fScallopPhase 
+                            "Initial phase of scallop rotation; normalized from 0 to 1"
+    IDS_PDR_DESC_fScallopPower 
+                            "Base of scallop waveform's power function, or zero if none"
+    IDS_PDR_DESC_fScallopPulseWidth 
+                            "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
+    IDS_PDR_DESC_fScallopSlew 
+                            "Amount of slew, for pulse waveforms only; normalized from 0 to 1"
     IDS_PDR_DESC_fScallops  "Number of scallops"
     IDS_PDR_DESC_fStripeAmplitude "Amplitude of stripe waves"
     IDS_PDR_DESC_fStripeFrequency 
@@ -1025,11 +1030,11 @@ BEGIN
     IDS_PDR_DESC_iPaletteType "Type of palette"
     IDS_PDR_DESC_iRippleMotif "Function applied to ripple waveform"
     IDS_PDR_DESC_iScallopMotif "Function applied to scallop waveform"
-    IDS_PDR_DESC_iScallopOperation "Operation of scallop waveform on radius"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_PDR_DESC_iScallopOperation "Operation of scallop waveform on radius"
     IDS_PDR_DESC_iScallopRange "Range of scallop waveform"
     IDS_PDR_DESC_iScallopWaveform "Type of waveform used for scallops"
     IDS_PDR_DESC_nColorSharpness 
@@ -1047,11 +1052,11 @@ BEGIN
     IDS_PDR_NAME_fAspectRatio "Aspect Ratio"
     IDS_PDR_NAME_fAutoRotatePitch "Auto Rotate Pitch"
     IDS_PDR_NAME_fAutoRotateRoll "Auto Rotate Roll"
-    IDS_PDR_NAME_fAutoRotateYaw "Auto Rotate Yaw"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_PDR_NAME_fAutoRotateYaw "Auto Rotate Yaw"
     IDS_PDR_NAME_fBendDepth "Bend Depth"
     IDS_PDR_NAME_fBendPhase "Bend Phase"
     IDS_PDR_NAME_fBendPolePhase "Bend Pole Phase"
@@ -1067,11 +1072,11 @@ BEGIN
     IDS_PDR_NAME_fPetals    "Petals"
     IDS_PDR_NAME_fRadius    "Radius"
     IDS_PDR_NAME_fRippleDepth "Ripple Depth"
-    IDS_PDR_NAME_fRipplePhase "Ripple Phase"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_PDR_NAME_fRipplePhase "Ripple Phase"
     IDS_PDR_NAME_fRipples   "Ripples"
     IDS_PDR_NAME_fScallopDepth "Scallop Depth"
     IDS_PDR_NAME_fScallopPhase "Scallop Phase"
@@ -1087,11 +1092,11 @@ BEGIN
     IDS_PDR_NAME_iBendMotif "Bend Motif"
     IDS_PDR_NAME_iBendPoleMotif "Bend Pole Motif"
     IDS_PDR_NAME_iColorPattern "Color Pattern"
-    IDS_PDR_NAME_iPaletteType "Palette Type"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_PDR_NAME_iPaletteType "Palette Type"
     IDS_PDR_NAME_iRippleMotif "Ripple Motif"
     IDS_PDR_NAME_iScallopMotif "Scallop Motif"
     IDS_PDR_NAME_iScallopOperation "Scallop Operation"
@@ -1107,11 +1112,11 @@ BEGIN
     IDS_PDR_OPT_COLPAT_RINGS "Rings"
     IDS_PDR_OPT_COLPAT_STRIPES "Stripes"
     IDS_PDR_OPT_MOTIF_FLUTES "Flutes"
-    IDS_PDR_OPT_MOTIF_NONE  "None"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_PDR_OPT_MOTIF_NONE  "None"
     IDS_PDR_OPT_MOTIF_PARTED_FLUTES "Parted Flutes"
     IDS_PDR_OPT_MOTIF_PARTED_REEDS "Parted Reeds"
     IDS_PDR_OPT_MOTIF_REEDS "Reeds"
@@ -1127,11 +1132,11 @@ BEGIN
     IDS_SCALE_2D_WIDTH      "&Width:"
     IDS_SPLINE_BAR          "Spline"
     IDS_SPLINE_NM_ADD_NODE  "Add Node"
-    IDS_SPLINE_NM_CHANGED   "Spline"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_SPLINE_NM_CHANGED   "Spline"
     IDS_SPLINE_NM_CUT       "Cut"
     IDS_SPLINE_NM_DELETE    "Delete"
     IDS_SPLINE_NM_DELETE_NODE "Delete Node"
@@ -1147,13 +1152,12 @@ BEGIN
     IDS_TEXTURE_FILES       "Texture Files"
     IDS_TEXT_FILES_FILTER   "Text Files (*.txt)|*.txt|All Files (*.*)|*.*||"
     IDS_TOOLBAR_CUSTOMIZE   "Customize..."
-    IDS_TOOLBAR_STANDARD    "Standard"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_TOOLBAR_STANDARD    "Standard"
     IDS_VIEW_PAN            "Pan"
-    IDS_MOD_OPT_WAVE_SINE_CUBED "Sine Cubed"
 END
 
 STRINGTABLE
