@@ -9,6 +9,7 @@
 		rev		date	comments
         00      23mar17	initial version
 		01		05oct17	in ReadEnum, if string not found, default to zero, not -1
+		02		03nov17	add subgroup
 		
 */
 
@@ -38,6 +39,7 @@ public:
 		int		nLen;		// size of property in bytes
 		const type_info	*pType;	// pointer to type info
 		int		iGroup;		// group index; enumerated in derived class
+		int		iSubgroup;	// subgroup index, or -1 if none; enumerated in derived class
 		int		iPropType;	// property type; enumerated below
 		int		nOptions;	// if combo box, number of options
 		const OPTION_INFO	*pOption;	// if combo box, pointer to array of options
@@ -66,6 +68,7 @@ public:
 	LPCTSTR	GetPropertyInternalName(int iProp) const;
 	void	GetValue(int iProp, void *pBuf, int nLen) const;
 	void	SetValue(int iProp, const void *pBuf, int nLen);
+	int		GetSubgroup(int iProp) const;
 
 // Operations
 	void	ExportPropertyInfo(LPCTSTR szPath) const;
@@ -95,6 +98,8 @@ public:
 	virtual	CString	GetPropertyName(int iProp) const;
 	virtual	CString	GetPropertyDescription(int iProp) const;
 	virtual	CString	GetOptionName(int iProp, int iOption) const;
+	virtual	int		GetSubgroupCount(int iGroup) const;
+	virtual	CString	GetSubgroupName(int iGroup, int iSubgroup) const;
 };
 
 inline void CProperties::ReadEnum(LPCTSTR szSection, LPCTSTR szKey, int& Value, const CProperties::OPTION_INFO *pOption, int nOptions)

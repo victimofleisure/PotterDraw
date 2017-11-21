@@ -17,6 +17,15 @@
 		07		17oct17	in GetWave, add sine cubed and flame waves
 		08		19oct17	add scallop waveform, pulse width, and slew
 		09		20oct17	in GetWave, add triangular pulse wave
+		10		01nov17	add polygon properties
+		11		06nov17	add get/set pot material
+		12		10nov17	add ramp pulse wave
+		13		10nov17	add power types
+		14		14nov17	flatten outer radius array and make it a member
+		15		15nov17	add radius color pattern
+		16		15nov17	optimize modulo one wrapping
+		17		16nov17	in UpdateTextureCoords, avoid reading from vertex buffer
+		18		17nov17	in ExportPLY, handle texture file
 
 */
 
@@ -36,8 +45,7 @@ typedef CRange<double> CDblRange;
 
 bool CPotGraphics::m_bShowingErrorMsg;
 
-const D3DMATERIAL9 CPotGraphics::m_materialPot = {{0.8f, 0.8f, 0.8f}, {0.2f, 0.2f, 0.2f}, {1, 1, 1}, {0}, 1000};
-const D3DMATERIAL9 CPotGraphics::m_materialBounds = {{0}, {0}, {0}, {0, 1, 0}};
+const D3DMATERIAL9 CPotGraphics::m_mtrlBounds = {{0}, {0}, {0}, {0, 1, 0}};
 
 #define CALC_NORMALS 1	// non-zero to calculate normals; zero to use D3DXComputeNormals (very slow)
 
@@ -47,9 +55,13 @@ CPotGraphics::CPotGraphics()
 	m_nFaces = 0;
 	m_fColorPos = 0;
 	m_fColorDelta = 1 / m_fFrameRate;
+	m_mtrlPot = m_mtrlPotDefault;
 	m_nAdjRings = 0;
 	m_nAdjSides = 0;
 	m_bModulatingMesh = false;
+	m_fMinOuterRadius = 0;
+	m_fMaxOuterRadius = 0;
+	m_fOuterRadiusScale = 0;
 }
 
 CPotGraphics::~CPotGraphics()
@@ -122,6 +134,8 @@ void CPotGraphics::GetViewState(CPotProperties& Props) const
 	Props.m_vRotation = CD3DGraphics::m_vRotation;
 	Props.m_vPan = CD3DGraphics::m_vPan;
 	Props.m_fZoom = CD3DGraphics::m_fZoom;
+	Props.m_vLightDir = m_light.Direction;
+	Props.m_mtrlPot = m_mtrlPot;
 }
 
 void CPotGraphics::SetViewState(const CPotProperties& Props)
@@ -130,6 +144,15 @@ void CPotGraphics::SetViewState(const CPotProperties& Props)
 	CD3DGraphics::m_vRotation = Props.m_vRotation;
 	CD3DGraphics::m_vPan = Props.m_vPan;
 	CD3DGraphics::m_fZoom = Props.m_fZoom;
+	m_light.Direction = Props.m_vLightDir;
+	m_mtrlPot = Props.m_mtrlPot;
+}
+
+bool CPotGraphics::SetPotMaterial(const D3DMATERIAL9& mtrlPot)
+{
+	m_mtrlPot = mtrlPot;
+	CHECK(m_pDevice->SetMaterial(&mtrlPot));
+	return true;
 }
 
 bool CPotGraphics::MakeVertexBuffer(C3DVertexBuffer& Dst, const void *pSrc, int nBufSize, int nPrimitives, DWORD dwFVF)
@@ -194,15 +217,26 @@ bool CPotGraphics::MakeMesh(bool bResizing)
 //	printf("%f\n", b.Elapsed());
 #endif	// !CALC_NORMALS
 //	printf("verts=%d faces=%d \n", m_pMesh->GetNumVertices(), m_pMesh->GetNumFaces());
-	CHECK(m_pDevice->SetMaterial(&m_materialPot));
+	CHECK(m_pDevice->SetMaterial(&m_mtrlPot));
 	if (!MakeTexture())
 		return false;
 	if (m_nStyle & ST_BOUNDS)
 		CreateBoundingBox();
+	if (m_iColorPattern == COLORPAT_RADIUS) {	// if radius color pattern
+		ComputeOuterRadiusRange(m_fMinOuterRadius, m_fMaxOuterRadius);
+		double	fDeltaRad = m_fMaxOuterRadius - m_fMinOuterRadius;
+		if (fDeltaRad > 1e-6)	// if radius range is reasonable 
+			m_fOuterRadiusScale = 1 / fDeltaRad;
+		else	// radius range is infinitesimal
+			m_fOuterRadiusScale = 0;	// avoid excessive scale
+		UpdateTextureCoords();
+	}
 //m_pMesh = NULL;
 //CHECK(D3DXCreateCylinder(m_pDevice, 130, 100, 200, 50, 10, &m_pMesh, NULL));
 	return true;
 }
+
+#define OUTER_RADIUS(ring, side) m_faOuterRadius[(ring) * nSides + (side)]
 
 void CPotGraphics::CalcPotMesh()
 {
@@ -232,16 +266,16 @@ void CPotGraphics::CalcPotMesh()
 	int	iWall, iRing, iSide;
 	int	iVert = 0;
 	double	fDelta = M_PI * 2 / nSides;
-	bool	bScallops = HasScallops();
-	bool	bRipples = HasRipples();
-	bool	bBends = HasBends();
-	bool	bHelix = HasHelix();
+	bool	bHasScallops = HasScallops();
+	bool	bHasRipples = HasRipples();
+	bool	bHasBends = HasBends();
+	bool	bHasHelix = HasHelix();
+	bool	bIsPolygon = IsPolygon();
 	double	fRingBend = 0;
+	double	fPolyRoundnessOffset = 0;
+	double	fPolyRoundness = 0;
 	DPoint	vOrigin(0, 0);
-	CArrayEx<CDoubleArray, CDoubleArray&> faOuterRad;
-	faOuterRad.SetSize(nRings);
-	for (iRing = 0; iRing < nRings; iRing++)
-		faOuterRad[iRing].SetSize(nStride);
+	m_faOuterRadius.SetSize(nRings * nSides);
 	int	nMods = m_arrModIdx.GetSize();
 	if (nMods)
 		SaveModulatedProperties();
@@ -255,22 +289,35 @@ void CPotGraphics::CalcPotMesh()
 				ApplyModulations(fRing);
 			if (iWall == WALL_OUTER) {	// if outer wall
 				double	fRad = m_fRadius * m_arrSpline[iRing];
-				if (bRipples) {
+				if (bHasRipples) {		// if ripples enabled
 					double	r = sin((fRing * m_fRipples + m_fRipplePhase) * M_PI * 2) * m_fRippleDepth;
 					ApplyMotif(m_iRippleMotif, r);
 					fRad += r;
 				}
-				if (bBends) {
+				if (bHasBends) {	// if bends enabled
 					fRingBend = cos((fRing * m_fBends + m_fBendPhase) * M_PI * 2) * m_fBendDepth;
 					ApplyMotif(m_iBendMotif, fRingBend);
 				}
 				fRingRad = fRad;
 			}
 			double	fRingTwist = m_fTwist * M_PI * 2 * fRing;	// optimization
-			if (bHelix) {
+			if (bHasHelix) {	// if helix enabled
 				double	fHelixTheta = fRing * m_fHelixFrequency * M_PI * 2;
 				vOrigin.x = sin(fHelixTheta) * m_fHelixAmplitude;
 				vOrigin.y = cos(fHelixTheta) * m_fHelixAmplitude;
+			}
+			if (bIsPolygon && m_fPolygonRoundness)	{	// if polygon roundness enabled
+				double	fMin = 1 - cos(M_PI / m_fPolygonSides);
+				double	b = min(fabs(m_fPolygonRoundness), 1) * fMin;
+				double	fExp = fMin - b;
+				if (fExp)	// if less than maximum roundness
+					fPolyRoundness = log(fExp) / log(fMin);
+				else	// maximum roundness; avoid log of zero
+					fPolyRoundness = DBL_MAX;
+				if (m_fPolygonRoundness > 0)
+					fPolyRoundnessOffset = 0;
+				else
+					fPolyRoundnessOffset = b;
 			}
 			for (iSide = 0; iSide < nSides; iSide++) {	// for each side
 				CVertex&	v = m_arrVert[iVert];
@@ -278,7 +325,16 @@ void CPotGraphics::CalcPotMesh()
 				double	fRad;
 				if (iWall == WALL_OUTER) {	// if outer wall
 					fRad = fRingRad;
-					if (bScallops) {
+					if (bIsPolygon) {	// if polygon enabled
+						double	n = m_fPolygonSides;
+						double	r = cos(M_PI / n) / cos(Wrap1(fSide * n + m_fPolygonPhase) * M_PI * 2 / n - M_PI / n);
+						if (m_fPolygonRoundness)
+							r = 1 - pow(1 - r, fPolyRoundness) - fPolyRoundnessOffset;
+						if (m_fPolygonBulge)
+							r = pow(r, 1 - m_fPolygonBulge);
+						fRad *= r;
+					}
+					if (bHasScallops) {	// if scallops enabled
 						double	r;
 						if (!m_iScallopWaveform)	// if sine, handle specially for performance
 							r = cos((fSide * m_fScallops + m_fScallopPhase) * M_PI * 2);	// actually cosine
@@ -287,23 +343,8 @@ void CPotGraphics::CalcPotMesh()
 								m_fScallopPulseWidth, m_fScallopSlew);	// for pulse waveforms
 						}
 						ApplyMotif(m_iScallopMotif, r);
-						switch (m_iScallopRange) {
-						case CModulationProps::RANGE_UNIPOLAR:
-							r = (r + 1) / 2;	// convert from bipolar to unipolar
-							if (m_fScallopPower > 0) {	// if exponential
-								double	fScale = m_fScallopPower - 1;
-								if (fScale)	// avoid divide by zero
-									r = (pow(m_fScallopPower, r) - 1) / fScale;
-							}
-							break;
-						default:	// bipolar
-							if (m_fScallopPower > 0) {	// if exponential
-								double	fScale = m_fScallopPower - 1;
-								if (fScale)	// avoid divide by zero
-									r = (pow(m_fScallopPower, (r + 1) / 2) - 1) / fScale * 2 - 1;
-							}
-						}
-						r *= m_fScallopDepth;
+						ApplyPower(m_iScallopRange, m_iScallopPowerType, m_fScallopPower, r);
+						r *= m_fScallopDepth;	// apply amplitude
 						switch (m_iScallopOperation) {
 						case CModulationProps::OPER_ADD:
 							fRad += r;
@@ -328,21 +369,21 @@ void CPotGraphics::CalcPotMesh()
 							break;
 						}
 					}
-					if (bBends) {
+					if (bHasBends) {	// if bends enabled
 						double	r = fRingBend * cos((fSide * m_fBendPoles + m_fBendPolePhase) * M_PI * 2);
 						ApplyMotif(m_iBendPoleMotif, r);
 						fRad += r;
 					}
-					faOuterRad[iRing][iSide] = fRad;	// store outer radius for 2nd pass
-					GetTexture(fRing, fSide, v.t);	// get texture coords
+					OUTER_RADIUS(iRing, iSide) = fRad;	// store outer radius for 2nd pass
+					GetTextureCoords(fRing, fSide, v.t);	// get texture coords
 				} else {	// inner wall
 					double	fSlope;
 					if (iRing && iRing < nRings - 1)
-						fSlope = (faOuterRad[iRing + 1][iSide] - faOuterRad[iRing - 1][iSide]) / (fZStep * 2);
+						fSlope = (OUTER_RADIUS(iRing + 1, iSide) - OUTER_RADIUS(iRing - 1, iSide)) / (fZStep * 2);
 					else
 						fSlope = 0;
 					double	a = atan(fSlope);
-					fRad = faOuterRad[iRing][iSide] - m_fWallThickness / cos(a);
+					fRad = OUTER_RADIUS(iRing, iSide) - m_fWallThickness / cos(a);
 					fRad = max(fRad, 0);	// avoid negative radius
 					v.t = m_arrVert[iVert - nWallStride].t;	// copy outer wall's texture coords
 				}
@@ -356,12 +397,12 @@ void CPotGraphics::CalcPotMesh()
 			}
 			CVertex&	v = m_arrVert[iVert];	// ring's final vertex
 			v.pt = m_arrVert[iVert - nSides].pt;	// point is same as first vertex
-			GetTexture(fRing, 1, v.t);	// but texture differs
+			GetTextureCoords(fRing, 1, v.t);	// but texture differs
 			iVert++;
 		}
 	}
 	// vertices for outer and inner bottoms
-	if (bHelix) {
+	if (bHasHelix) {
 		if (nMods)
 			ApplyModulations(0);	// in case helix amplitude is modulated
 		vOrigin.x = 0;
@@ -478,7 +519,7 @@ void CPotGraphics::CalcPotMesh()
 		ComputeBounds(m_vBounds[0], m_vBounds[1]);
 }
 
-void CPotGraphics::GetTexture(double fRing, double fSide, D3DXVECTOR2& t) const
+void CPotGraphics::GetTextureCoords(double fRing, double fSide, D3DXVECTOR2& t) const
 {
 	switch (m_iColorPattern) {
 	case COLORPAT_STRIPES:
@@ -515,6 +556,18 @@ void CPotGraphics::GetTexture(double fRing, double fSide, D3DXVECTOR2& t) const
 			t.y = float(cos(a) * r + 0.5);
 		}
 		break;
+	case COLORPAT_RADIUS:
+		{
+			int	nSides = m_nSides;
+			int iRing = round(fRing * (m_nRings - 1));
+			int iSide = round(fSide * nSides);
+			if (iSide >= nSides)
+				iSide = 0;	// wrap around
+			t.x = float((OUTER_RADIUS(iRing, iSide) - m_fMinOuterRadius) * m_fOuterRadiusScale 
+				* m_fColorCycles + m_fOffsetU);
+			t.y = float(fRing * m_fCyclesV + m_fOffsetV);
+		}
+		break;
 	}
 }
 
@@ -529,7 +582,7 @@ void CPotGraphics::UpdateAnimation()
 		if (m_bModulatingMesh)	// if at least one mesh modulation
 			MakeMesh();
 		else	// texture modulations only
-			UpdateTexture();
+			UpdateTextureCoords();
 	}
 }
 
@@ -542,7 +595,7 @@ void CPotGraphics::GetAnimationState(CPotProperties& Props) const
 	}
 }
 
-bool CPotGraphics::UpdateTexture()
+bool CPotGraphics::UpdateTextureCoords()
 {
 //	CBenchmark	b;
 	int	nMods = m_arrModIdx.GetSize();
@@ -551,16 +604,19 @@ bool CPotGraphics::UpdateTexture()
 	CVertex	*pVert;
 	CHECK(m_pMesh->LockVertexBuffer(0, (void **)&pVert));
 	int	iVert = 0;
-	int	nStride = m_nSides + 1;
+	int	nSides = m_nSides;
+	int	nStride = nSides + 1;
+	int	iLastRing = m_nRings - 1;
 	for (int iRing = 0; iRing < m_nRings; iRing++) {	// for each ring
-		double	fRing = double(iRing) / (m_nRings - 1);	// normalized ring
+		double	fRing = double(iRing) / iLastRing;	// normalized ring
 		if (nMods)
 			ApplyModulations(fRing);
 		for (int iSide = 0; iSide < nStride; iSide++) {	// for each side
-			double	fSide = double(iSide) / m_nSides;	// normalized side
-			CVertex&	vert = pVert[iVert];
-			GetTexture(fRing, fSide, vert.t);
-			m_arrVert[iVert].t = vert.t;
+			double	fSide = double(iSide) / nSides;	// normalized side
+			D3DXVECTOR2	t;	// texture coords; local variable performs best
+			GetTextureCoords(fRing, fSide, t);	// get texture coords for this vertex
+			m_arrVert[iVert].t = t;	// write texture coords to vertex array
+			pVert[iVert].t = t;	// write texture coords to mesh vertex buffer
 			iVert++;
 		}
 	}
@@ -670,6 +726,11 @@ __forceinline double CPotGraphics::Wrap(double x, double y)
 	return x;
 }
 
+__forceinline double CPotGraphics::Wrap1(double x)
+{
+	return x - floor(x);
+}
+
 __forceinline void CPotGraphics::CAdjacency::Add(int iFace)
 {
 	if (m_nFaces < _countof(m_arrFaceIdx))
@@ -704,6 +765,46 @@ __forceinline void CPotGraphics::ApplyMotif(int iMotif, double& r)
 	}
 }
 
+__forceinline void CPotGraphics::ApplyPower(int iRange, int iPowerType, double fPower, double& r)
+{
+	// assume input is bipolar; output is unipolar or bipolar, depending on iRange
+	if (iRange == CModulationProps::RANGE_UNIPOLAR) {
+		if (fPower > 0) {	// if exponential
+			double	fScale = fPower - 1;
+			if (fScale) {	// avoid divide by zero
+				if (iPowerType == CModulationProps::POWER_TYPE_ASYMMETRIC) {	// if asymmetric
+					r = (r + 1) / 2;	// convert from bipolar to unipolar
+					r = (pow(fPower, r) - 1) / fScale;
+				} else {	// symmetric
+					if (r >= 0)	// if positive input
+						r = (pow(fPower, r) - 1) / fScale;
+					else	// negative input
+						r = -(pow(fPower, -r) - 1) / fScale;
+					r = (r + 1) / 2;	 // convert from bipolar to unipolar
+				}
+			} else	// scale is zero
+				r = (r + 1) / 2;	// convert from bipolar to unipolar
+		} else	// not exponential
+			r = (r + 1) / 2;	// convert from bipolar to unipolar
+	} else {	// bipolar
+		if (fPower > 0) {	// if exponential
+			double	fScale = fPower - 1;
+			if (fScale) {	// avoid divide by zero
+				if (iPowerType == CModulationProps::POWER_TYPE_ASYMMETRIC) {	// if asymmetric
+					r = (r + 1) / 2;	// convert from bipolar to unipolar
+					r = (pow(fPower, r) - 1) / fScale;
+					r = r * 2 - 1;	// convert from unipolar back to bipolar
+				} else {	// symmetric
+					if (r >= 0)	// if positive input
+						r = (pow(fPower, r) - 1) / fScale;
+					else	// negative input
+						r = -(pow(fPower, -r) - 1) / fScale;
+				}
+			}
+		}
+	}
+}
+
 __forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase, double fPulseWidth, double fSlew)
 {
 	switch (iWaveform) {
@@ -711,18 +812,18 @@ __forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase, double 
 		return sin(fPhase * M_PI * 2);
 	case CModulationProps::WAVE_TRIANGLE:
 		{
-			double	r = Wrap(fPhase + 0.25, 1) * 4;
+			double	r = Wrap1(fPhase + 0.25) * 4;
 			return r < 2 ? r - 1 : 3 - r;
 		}
 	case CModulationProps::WAVE_RAMP_UP:
-		return Wrap(fPhase, 1) * 2 - 1;
+		return Wrap1(fPhase) * 2 - 1;
 	case CModulationProps::WAVE_RAMP_DOWN:
-		return 1 - Wrap(fPhase, 1) * 2;
+		return 1 - Wrap1(fPhase) * 2;
 	case CModulationProps::WAVE_SQUARE:
-		return Wrap(fPhase, 1) < 0.5 ? 1 : -1;
+		return Wrap1(fPhase) < 0.5 ? 1 : -1;
 	case CModulationProps::WAVE_PULSE:
 		{
-			double	r = Wrap(fPhase, 1);
+			double	r = Wrap1(fPhase);
 			double	a = fPulseWidth / 2 * fSlew;
 			if (r < a)	// if rising
 				return r / a * 2 - 1;
@@ -735,7 +836,7 @@ __forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase, double 
 		}
 	case CModulationProps::WAVE_ROUNDED_PULSE:
 		{
-			double	r = Wrap(fPhase, 1);
+			double	r = Wrap1(fPhase);
 			double	a = fPulseWidth / 2 * fSlew;
 			if (r < a)	// if rising
 				return cos((r / a + 1) * M_PI);
@@ -748,7 +849,7 @@ __forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase, double 
 		}
 	case CModulationProps::WAVE_TRIANGULAR_PULSE:
 		{
-			double	r = Wrap(fPhase, 1);
+			double	r = Wrap1(fPhase);
 			if (r < fPulseWidth) {	// if high
 				if (r < fPulseWidth * fSlew)	// if rising
 					r = r / (fPulseWidth * fSlew);
@@ -758,11 +859,24 @@ __forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase, double 
 			} else	// low
 				return -1;
 		}
+	case CModulationProps::WAVE_RAMP_PULSE:
+		{
+			double	r = Wrap1(fPhase);
+			double	a = fPulseWidth / 2 * fSlew;
+			if (r < a)	// if rising
+				return r / a;
+			else if (r < fPulseWidth - a)	// if high
+				return 1 - (r - a) / (fPulseWidth - a * 2) * 2;
+			else if (r < fPulseWidth)	// if falling
+				return (r - (fPulseWidth - a)) / a - 1;
+			else	// low
+				return 0;
+		}
 	case CModulationProps::WAVE_SINE_CUBED:
 		return pow(sin(fPhase * M_PI * 2), 3);
 	case CModulationProps::WAVE_FLAME:
 		{
-			double	r = Wrap(fPhase + 0.25, 1);
+			double	r = Wrap1(fPhase + 0.25);
 			double	s = sin(r * M_PI * 2);
 			if (r < 0.25)
 				return s - 1;
@@ -789,23 +903,8 @@ void CPotGraphics::ApplyModulations(double fRing)
 		double	r = GetWave(mod.m_iWaveform, fTheta * mod.m_fFrequency + mod.m_fPhase, 
 			mod.m_fPulseWidth, mod.m_fSlew);	// for pulse waveforms
 		ApplyMotif(mod.m_iMotif, r);
-		switch (mod.m_iRange) {
-		case CModulationProps::RANGE_UNIPOLAR:
-			r = (r + 1) / 2;	// convert from bipolar to unipolar
-			if (mod.m_fPower > 0) {	// if exponential
-				double	fScale = mod.m_fPower - 1;
-				if (fScale)	// avoid divide by zero
-					r = (pow(mod.m_fPower, r) - 1) / fScale;
-			}
-			break;
-		default:	// bipolar
-			if (mod.m_fPower > 0) {	// if exponential
-				double	fScale = mod.m_fPower - 1;
-				if (fScale)	// avoid divide by zero
-					r = (pow(mod.m_fPower, (r + 1) / 2) - 1) / fScale * 2 - 1;
-			}
-		}
-		r = (r + mod.m_fBias) * mod.m_fAmplitude;
+		ApplyPower(mod.m_iRange, mod.m_iPowerType, mod.m_fPower, r);
+		r = (r + mod.m_fBias) * mod.m_fAmplitude;	// apply bias and amplitude
 		if (info.pType == &typeid(double)) {	// if property type is double
 			double	*pSource = static_cast<double *>(m_arrSrcProps.GetPropertyAddress(iProp));
 			double	*pTarget = static_cast<double *>(GetPropertyAddress(iProp));
@@ -953,11 +1052,11 @@ __forceinline double CPotGraphics::ConvertPropertyToDouble(LPCVOID pSrc, const t
 COLORREF CPotGraphics::Interpolate(const CDibEx& dib, double x, double y)
 {
 	CSize	sz(dib.GetSize());
-	x = Wrap(x - 0.5 / sz.cx, 1);	// offset by half a pixel
+	x = Wrap1(x - 0.5 / sz.cx);	// offset by half a pixel
 	int	ix = trunc(x * sz.cx);
 	int	ix1 = ix < sz.cx ? ix : 0;
 	int	ix2 = ix + 1 < sz.cx ? ix + 1 : 0;
-	y = Wrap(y - 0.5 / sz.cy, 1);	// offset by half a pixel
+	y = Wrap1(y - 0.5 / sz.cy);	// offset by half a pixel
 	int	iy = trunc(y * sz.cy);
 	int	iy1 = iy < sz.cy ? iy : 0;
 	int	iy2 = iy + 1 < sz.cy ? iy + 1 : 0;
@@ -1007,10 +1106,29 @@ bool CPotGraphics::ExportPLY(LPCTSTR szPath, bool bVertexColor)
 		sHdr.Format(szHdr, nVerts, nFaces);
 		CFile	fOut(szPath, CFile::modeCreate | CFile::modeWrite);
 		fOut.Write(sHdr, sHdr.GetLength());
+		CDibEx	dibTextureFile, *pDibTexture;
+		if (!m_sTexturePath.IsEmpty()) {	// if we have a texture file
+			CImage	image;
+			if (FAILED(image.Load(m_sTexturePath)))	// load image from texture file
+				return false;
+			if (!dibTextureFile.Create(image.GetWidth(), image.GetHeight(), 24))	// create texture bitmap
+				return false;
+			CDC	dc;
+			if (!dc.CreateCompatibleDC(NULL))	// create memory device context
+				return false;
+			HGDIOBJ	hPrevBmp = dc.SelectObject(dibTextureFile);	// select texture bitmap
+			if (hPrevBmp == NULL)
+				return false;
+			if (!image.BitBlt(dc, 0, 0, SRCCOPY))	// blit image into texture bitmap
+				return false;
+			dc.SelectObject(hPrevBmp);	// reselect default bitmap
+			pDibTexture = &dibTextureFile;	// use bitmap created from texture file
+		} else	// no texture file
+			pDibTexture = &m_dibTexture;	// use synthesized texture bitmap
 		for (int iVert = 0; iVert < nVerts; iVert++) {	// for each vertex
 			const CVertex&	vert = m_arrVert[iVert];
 			fOut.Write(&vert, sizeof(C3DVertexNormal));	// omit texture coords
-			COLORREF	c = Interpolate(m_dibTexture, vert.t.x, vert.t.y);
+			COLORREF	c = Interpolate(*pDibTexture, vert.t.x, vert.t.y);
 			DWORD	pc = PLY_RGBA(GetRValue(c), GetGValue(c), GetBValue(c), 255);
 			fOut.Write(&pc, sizeof(pc));
 		}
@@ -1204,7 +1322,7 @@ bool CPotGraphics::DrawBoundingBox()
 	CHECK(m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));	// set wireframe mode
 	D3DMATERIAL9	material;
 	CHECK(m_pDevice->GetMaterial(&material));	// save material
-	CHECK(m_pDevice->SetMaterial(&m_materialBounds));	// set bounds material
+	CHECK(m_pDevice->SetMaterial(&m_mtrlBounds));	// set bounds material
 	IDirect3DBaseTexture9	*pTexture;
 	CHECK(m_pDevice->GetTexture(0, &pTexture));	// save texture
 	CHECK(m_pDevice->SetTexture(0, NULL));	// disable texture
@@ -1231,3 +1349,23 @@ bool CPotGraphics::IsSplinePositiveInX() const
 	return true;
 }
 
+void CPotGraphics::ComputeOuterRadiusRange(double& fMinRadius, double& fMaxRadius) const
+{
+	int	nRads = m_nSides * m_nRings;
+	if (!nRads) {	// if empty
+		fMinRadius = 0;
+		fMaxRadius = 0;
+		return;
+	}
+	double	fMin = m_faOuterRadius[0];	// init to first radius
+	double	fMax = m_faOuterRadius[0];
+	for (int iRad = 1; iRad < nRads; iRad++) {	// for each subsequent radius
+		double	r = m_faOuterRadius[iRad];
+		if (r < fMin)
+			fMin = r;
+		else if (r > fMax)
+			fMax = r;
+	}
+	fMinRadius = fMin;
+	fMaxRadius = fMax;
+}

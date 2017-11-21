@@ -9,6 +9,7 @@
 		rev		date	comments
         00      12mar17	initial version
 		01		05sep17	add spline drag hint
+		02		06nov17	add lighting
 
 */
 
@@ -35,6 +36,7 @@ protected: // create from serialization only
 		HINT_MODULATION,	// modulation edit; pHint points to CModulationHint object
 		HINT_SPLINE,		// spline edit
 		HINT_SPLINE_DRAG,	// spline drag
+		HINT_LIGHTING,		// lighting edit
 		HINTS
 	};
 	static const LPCTSTR	m_arrTextureFileExt[];	// array of texture file extensions
@@ -100,6 +102,11 @@ protected:
 	class CUndoSpline : public CRefObj {
 	public:
 		CSplineState	m_arrSpline;
+	};
+	class CUndoLighting : public CRefObj {
+	public:
+		D3DVECTOR	m_vLightDir;
+		D3DMATERIAL9	m_mtrlPot;
 	};
 
 // Helpers

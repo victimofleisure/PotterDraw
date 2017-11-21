@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		03nov17	add subgroup
 		
 */
 
@@ -81,6 +82,21 @@ CString CProperties::GetPropertyName(int iProp) const
 CString CProperties::GetPropertyDescription(int iProp) const
 {
 	return LDS(GetPropertyInfo(iProp).nDescripID);
+}
+
+int CProperties::GetSubgroupCount(int iGroup) const
+{
+	return 0;
+}
+
+CString	CProperties::GetSubgroupName(int iGroup, int iSubgroup) const
+{
+	return _T("");
+}
+
+int CProperties::GetSubgroup(int iProp) const
+{
+	return GetPropertyInfo(iProp).iSubgroup;
 }
 
 void CProperties::ExportPropertyInfo(LPCTSTR szPath) const

@@ -8,6 +8,9 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		01nov17	add IsPolygon
+		02		03nov17	add property subgroup
+		03		06nov17	add lighting
 		
 */
 
@@ -38,6 +41,11 @@ public:
 		#include "PotPropsDef.h"
 		GROUPS
 	};
+	enum {	// mesh subgroups
+		#define MESHSUBGROUPDEF(name) SUBGROUP_##name,
+		#include "PotPropsDef.h"
+		MESH_SUBGROUPS
+	};
 	enum {	// color patterns
 		#define PATTERNDEF(name) COLORPAT_##name,
 		#include "PotPropsDef.h"
@@ -59,13 +67,15 @@ public:
 		RENDER_STYLES
 	};
 	static const OPTION_INFO	m_Group[GROUPS];	// group names
+	static const OPTION_INFO	m_MeshSubgroup[MESH_SUBGROUPS];	// mesh subgroup names
 	static const OPTION_INFO	m_ColorPattern[COLOR_PATTERNS];	// pattern names
 	static const OPTION_INFO	m_PaletteType[PALETTE_TYPES];	// palette types
 	static const OPTION_INFO	m_Motif[MOTIFS];	// motifs
 	static const COLORREF		m_cDefaultPalette[];	// default palette
 	static const STYLE_INFO		m_RenderStyleInfo[RENDER_STYLES];	// render styles
+	static const D3DMATERIAL9	m_mtrlPotDefault;	// default pot material properties
 	enum {	// properties
-		#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) PROP_##name,
+		#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) PROP_##name,
 		#include "PotPropsDef.h"
 		PROPERTIES
 	};
@@ -73,13 +83,15 @@ public:
 
 // Data members
 	int		m_nFileVersion;
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) type m_##name;
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) type m_##name;
 	#include "PotPropsDef.h"
 	CArrayEx<COLORREF, COLORREF>	m_arrPalette;	// array of palette color values
 	int		m_iPaletteCurSel;	// index of currently selected color within palette
 	UINT	m_nRenderStyle;		// render style bitmask
 	D3DVECTOR	m_vRotation;	// rotation vector
 	D3DVECTOR	m_vPan;			// panning vector
+	D3DVECTOR	m_vLightDir;	// light direction vector
+	D3DMATERIAL9	m_mtrlPot;	// pot material properties
 	double	m_fZoom;			// zoom factor
 	CFixedArray<CModulationProps, PROPERTIES>	m_Mod;	// array of modulations
 	int		m_iModTarget;		// property index of current modulation target
@@ -92,6 +104,8 @@ public:
 	virtual	void	GetVariants(CVariantArray& Var) const;
 	virtual	void	SetVariants(const CVariantArray& Var);
 	virtual	CString	GetGroupName(int iGroup) const;
+	virtual	int		GetSubgroupCount(int iGroup) const;
+	virtual	CString	GetSubgroupName(int iGroup, int iSubgroup) const;
 
 // Attributes
 	void	SetDefaultPalette();
@@ -104,6 +118,7 @@ public:
 	bool	HasHelix() const;
 	bool	HasModulations() const;
 	bool	HasAnimatedModulations() const;
+	bool	IsPolygon() const;
 	LPVOID	GetPropertyAddress(int iProp);
 	LPCVOID	GetPropertyAddress(int iProp) const;
 
@@ -143,6 +158,11 @@ inline bool CPotProperties::HasBends() const
 inline bool CPotProperties::HasHelix() const
 {
 	return (m_fHelixFrequency && m_fHelixAmplitude) || IsModulated(PROP_fHelixFrequency) || IsModulated(PROP_fHelixAmplitude);
+}
+
+inline bool CPotProperties::IsPolygon() const
+{
+	return m_fPolygonSides >= 2 || IsModulated(PROP_fPolygonSides);
 }
 
 inline LPVOID CPotProperties::GetPropertyAddress(int iProp)

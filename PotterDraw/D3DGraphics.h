@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
+		01		06nov17	add get/set light
 		
 */
 
@@ -73,6 +74,8 @@ public:
 	HRESULT	GetLastError() const;
 	CString	GetLastErrorName() const;
 	CString	GetLastErrorDescription() const;
+	void	GetLight(D3DLIGHT9& light) const;
+	bool	SetLight(const D3DLIGHT9& light);
 
 // Operations
 	bool	Create(); 
@@ -89,6 +92,7 @@ public:
 protected:
 // Constants
 	static const D3DVECTOR	m_vStandardView[STANDARD_VIEWS];	// standard view rotations
+	static const D3DVECTOR	m_vDefaultLightDir;	// default light direction
 
 // Data members
 	CComPtr<IDirect3D>	m_pD3D;	// Direct3D interface
@@ -101,7 +105,8 @@ protected:
 	D3DXVECTOR3	m_vPan;			// current panning, in world coordinates
 	D3DXVECTOR3	m_vRotation;	// yaw, pitch, and roll, in radians
 	D3DXMATRIX	m_matRotation;	// world rotation matrix
-	D3DCOLOR	m_BkgndColor;	// background color
+	D3DCOLOR	m_clrBkgnd;		// background color
+	D3DLIGHT9	m_light;		// light source
 
 // Overrideables
 	virtual	bool	OnCreate(bool bResizing);
@@ -158,7 +163,7 @@ inline const D3DXVECTOR3& CD3DGraphics::GetPan() const
 
 inline D3DCOLOR CD3DGraphics::GetBkgndColor() const
 {
-	return m_BkgndColor;
+	return m_clrBkgnd;
 }
 
 inline D3DCOLOR CD3DGraphics::CvtFromColorRef(COLORREF Color)
@@ -169,4 +174,9 @@ inline D3DCOLOR CD3DGraphics::CvtFromColorRef(COLORREF Color)
 inline HRESULT CD3DGraphics::GetLastError() const
 {
 	return m_hLastError;
+}
+
+inline void CD3DGraphics::GetLight(D3DLIGHT9& light) const
+{
+	light = m_light;
 }

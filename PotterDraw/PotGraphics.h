@@ -9,6 +9,9 @@
 		rev		date	comments
         00      12mar17	initial version
 		01		09oct17	in GetWave, add pulse and rounded pulse waves
+		02		06nov17	add get/set pot material
+		03		14nov17	add outer radius array
+		04		15nov17	optimize modulo one wrapping
 		
 */
 
@@ -45,11 +48,15 @@ public:
 	int		GetVertexCount() const;
 	int		GetIndexCount() const;
 	int		GetFaceCount() const;
+	void	GetPotMaterial(D3DMATERIAL9& mtrlPot) const;
+	bool	SetPotMaterial(const D3DMATERIAL9& mtrlPot);
+	static const D3DVECTOR&	GetDefaultLightDir();
+	void	GetOuterRadiusRange(double& fMinRadius, double& fMaxRadius) const;
 
 // Operations
 	bool	MakeMesh(bool bResizing = false);
 	bool	MakeTexture();
-	bool	UpdateTexture();
+	bool	UpdateTextureCoords();
 	bool	ExportPLY(LPCTSTR szPath, bool bVertexColor = false);
 	bool	ExportSTL(LPCTSTR szPath);
 	bool	ExportOBJ(LPCTSTR szPath, int nPrecision = 6);
@@ -58,6 +65,7 @@ public:
 	void	CalcSpline(const CSplineArray& arrSpline);
 	bool	IsSplinePositiveInX() const;
 	bool	ComputeBounds(D3DXVECTOR3& p1, D3DXVECTOR3& p2);
+	void	ComputeOuterRadiusRange(double& fMinRadius, double& fMaxRadius) const;
 	static	COLORREF	Interpolate(const CDibEx& dib, double x, double y);
 
 protected:
@@ -114,8 +122,7 @@ protected:
 	double	m_fColorDelta;		// color change per frame
 	static	bool	m_bShowingErrorMsg;	// true while displaying error message box
 	D3DXVECTOR3	m_vBounds[2];	// bounding box corners
-	static const D3DMATERIAL9	m_materialPot;	// pot material properties
-	static const D3DMATERIAL9	m_materialBounds;	// bounds material properties
+	static const D3DMATERIAL9	m_mtrlBounds;	// bounds material properties
 	CArrayEx<D3DXVECTOR3, D3DXVECTOR3&>	m_arrFaceNormal;	// array of face normals
 	CArrayEx<CAdjacency, CAdjacency&>	m_arrAdjaceny;		// array of adjaceny lists
 	int		m_nAdjRings;		// number of rings in adjacency array
@@ -125,6 +132,10 @@ protected:
 	bool	m_bModulatingMesh;	// true if modulating mesh
 	CDoubleArray	m_arrSpline;	// spline as array of ring radii
 	DRect	m_rSplineBounds;	// spline bounds
+	CDoubleArray	m_faOuterRadius;	// 2D array of outer wall radii
+	double	m_fMinOuterRadius;	// minimum radius of outer wall
+	double	m_fMaxOuterRadius;	// maximum radius of outer wall
+	double	m_fOuterRadiusScale;	// normalizes outer wall radii for radius color pattern
 
 // Overrides
 	virtual	bool	OnCreate(bool bResizing);
@@ -135,13 +146,15 @@ protected:
 // Helpers
 	bool	MakeVertexBuffer(C3DVertexBuffer& Dst, const void *pSrc, int nBufSize, int nPrimitives, DWORD dwFVF);
 	void	CalcPotMesh();
-	void	GetTexture(double fRing, double fSide, D3DXVECTOR2& t) const;
+	void	GetTextureCoords(double fRing, double fSide, D3DXVECTOR2& t) const;
 	static	void	AddTri(CDWordArrayEx& arrIdx, int& iIdx, int i0, int i1, int i2);
 	static	void	AddQuad(CDWordArrayEx& arrIdx, int& iIdx, int iA0, int iA1, int iA2, int iB0, int iB1, int iB2);
 	static	double	Wrap(double x, double y);
+	static	double	Wrap1(double x);
 	bool	CreateBoundingBox();
 	bool	DrawBoundingBox();
 	static	void	ApplyMotif(int iMotif, double& r);
+	static	void	ApplyPower(int iRange, int iPowerType, double fPower, double& r);
 	static	double	GetWave(int iWaveform, double fPhase, double fPulseWidth, double fSlew);
 	void	ApplyModulations(double fRing);
 	void	SaveModulatedProperties();
@@ -168,4 +181,20 @@ inline int CPotGraphics::GetIndexCount() const
 inline int CPotGraphics::GetFaceCount() const
 {
 	return m_nFaces;
+}
+
+inline void CPotGraphics::GetPotMaterial(D3DMATERIAL9& mtrlPot) const
+{
+	mtrlPot = m_mtrlPot;
+}
+
+inline const D3DVECTOR& CPotGraphics::GetDefaultLightDir()
+{
+	return m_vDefaultLightDir;
+}
+
+inline void CPotGraphics::GetOuterRadiusRange(double& fMinRadius, double& fMaxRadius) const
+{
+	fMaxRadius = m_fMaxOuterRadius;
+	fMinRadius = m_fMinOuterRadius;
 }

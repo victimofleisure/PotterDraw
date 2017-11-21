@@ -8,6 +8,8 @@
 		revision history:
 		rev		date	comments
         00      04may17	initial version
+		01		03nov17	add property subgroup
+		02		10nov17	add power types
 		
 */
 
@@ -24,7 +26,7 @@ const CProperties::OPTION_INFO CModulationProps::m_Group[GROUPS] = {
 };
 
 const CProperties::OPTION_INFO CModulationProps::m_Target[TARGETS] = {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) {NULL, IDS_PDR_NAME_##name},
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) {NULL, IDS_PDR_NAME_##name},
 	#include "PotPropsDef.h"
 };
 
@@ -43,10 +45,15 @@ const CProperties::OPTION_INFO CModulationProps::m_Operation[OPERATIONS] = {
 	#include "ModulationPropsDef.h"
 };
 
+const CProperties::OPTION_INFO CModulationProps::m_PowerType[POWER_TYPES] = {
+	#define POWERTYPEDEF(name) _T(#name), {IDS_MOD_OPT_POWER_TYPE_##name},
+	#include "ModulationPropsDef.h"
+};
+
 const CProperties::PROPERTY_INFO CModulationProps::m_Info[PROPERTIES] = {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		{_T(#name), IDS_MOD_NAME_##name, IDS_MOD_DESC_##name, offsetof(CModulationProps, m_##name), \
-		sizeof(type), &typeid(type), GROUP_##group, PT_##proptype, items, itemname, minval, maxval},
+		sizeof(type), &typeid(type), GROUP_##group, -1, PT_##proptype, items, itemname, minval, maxval},
 	#include "ModulationPropsDef.h"
 };
 
@@ -54,7 +61,7 @@ const CModulationProps CModulationProps::m_DefaultVals(true);	// ctor overload t
 
 CModulationProps::CModulationProps(bool bInit)
 {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) m_##name = initval;
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) m_##name = initval;
 	#include "ModulationPropsDef.h"
 }
 
@@ -77,14 +84,14 @@ const CModulationProps::PROPERTY_INFO& CModulationProps::GetPropertyInfo(int iPr
 void CModulationProps::GetVariants(CVariantArray& Var) const
 {
 	Var.SetSize(PROPERTIES);
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		Var[PROP_##name] = CComVariant(m_##name);
 	#include "ModulationPropsDef.h"
 }
 
 void CModulationProps::SetVariants(const CVariantArray& Var)
 {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		GetVariant(Var[PROP_##name], m_##name);
 	#include "ModulationPropsDef.h"
 }
@@ -98,7 +105,7 @@ CString CModulationProps::GetGroupName(int iGroup) const
 bool CModulationProps::operator==(const CModulationProps& props) const
 {
 	#define EXCLUDETARGETPROP	// exclude target property
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		if (m_##name != m_DefaultVals.m_##name) \
 			return false;
 	#include "ModulationPropsDef.h"
@@ -108,7 +115,7 @@ bool CModulationProps::operator==(const CModulationProps& props) const
 void CModulationProps::ReadProperties(LPCTSTR szSection)
 {
 	#define EXCLUDETARGETPROP	// exclude target property
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		if (PT_##proptype == PT_ENUM) \
 			ReadEnum(szSection, _T(#name), m_##name, itemname, items); \
 		else \
@@ -119,7 +126,7 @@ void CModulationProps::ReadProperties(LPCTSTR szSection)
 void CModulationProps::WriteProperties(LPCTSTR szSection) const
 {
 	#define EXCLUDETARGETPROP	// exclude target property
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		if (PT_##proptype == PT_ENUM) \
 			WriteEnum(szSection, _T(#name), m_##name, itemname, items); \
 		else \

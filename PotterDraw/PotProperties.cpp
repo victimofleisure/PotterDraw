@@ -9,6 +9,8 @@
 		rev		date	comments
         00      23mar17	initial version
 		01		06oct17	bump file version to 2
+		02		03nov17	add property subgroup
+		03		06nov17	add lighting
 		
 */
 
@@ -31,14 +33,23 @@
 #define RK_ROTATION		_T("vRotation")
 #define RK_PAN			_T("vPan")
 #define RK_ZOOM			_T("fZoom")
+#define RK_LIGHT_DIR	_T("vLightDir")
+#define RK_POT_MATERIAL	_T("mtrlPot")
 #define RK_MOD_TARGET	_T("sModTarget")
 
 #define	RK_MOD_SECTION	_T("Modulation\\")
 #define	RK_MOD_COUNT	_T("nModulations")
 #define	RK_TARGET_NAME	_T("sTarget")
 
+#define SUBGROUP_NONE	-1
+
 const CProperties::OPTION_INFO CPotProperties::m_Group[GROUPS] = {
 	#define GROUPDEF(name) {_T(#name), IDS_PDR_GROUP_##name}, 
+	#include "PotPropsDef.h"
+};
+
+const CProperties::OPTION_INFO CPotProperties::m_MeshSubgroup[MESH_SUBGROUPS] = {
+#define MESHSUBGROUPDEF(name) {_T(#name), IDS_PDR_SUBGROUP_MESH_##name},
 	#include "PotPropsDef.h"
 };
 
@@ -58,9 +69,9 @@ const CProperties::OPTION_INFO CPotProperties::m_Motif[MOTIFS] = {
 };
 
 const CProperties::PROPERTY_INFO CPotProperties::m_Info[PROPERTIES] = {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		{_T(#name), IDS_PDR_NAME_##name, IDS_PDR_DESC_##name, offsetof(CPotProperties, m_##name), \
-		sizeof(type), &typeid(type), GROUP_##group, PT_##proptype, items, itemname, minval, maxval},
+		sizeof(type), &typeid(type), GROUP_##group, SUBGROUP_##subgroup, PT_##proptype, items, itemname, minval, maxval},
 	#include "PotPropsDef.h"
 };
 
@@ -79,15 +90,19 @@ const CPotProperties::STYLE_INFO CPotProperties::m_RenderStyleInfo[] = {
 	#include "PotPropsDef.h"
 };
 
+const D3DMATERIAL9 CPotProperties::m_mtrlPotDefault = {{0.8f, 0.8f, 0.8f}, {0.2f, 0.2f, 0.2f}, {1, 1, 1}, {0}, 1000};
+
 CPotProperties::CPotProperties()
 {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) m_##name = initval;
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) m_##name = initval;
 	#include "PotPropsDef.h"
 	m_nFileVersion = FILE_VERSION;
 	m_iPaletteCurSel = -1;
 	m_nRenderStyle = 0;
 	ZeroMemory(&m_vRotation, sizeof(m_vRotation));
 	ZeroMemory(&m_vPan, sizeof(m_vPan));
+	m_vLightDir = CPotGraphics::GetDefaultLightDir();
+	m_mtrlPot = m_mtrlPotDefault;
 	m_fZoom = 1;
 	m_iModTarget = 0;
 	for (int iProp = 0; iProp < PROPERTIES; iProp++)	// for each property
@@ -122,14 +137,14 @@ const CPotProperties::PROPERTY_INFO& CPotProperties::GetPropertyInfo(int iProp) 
 void CPotProperties::GetVariants(CVariantArray& Var) const
 {
 	Var.SetSize(PROPERTIES);
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		Var[PROP_##name] = CComVariant(m_##name);
 	#include "PotPropsDef.h"
 }
 
 void CPotProperties::SetVariants(const CVariantArray& Var)
 {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		GetVariant(Var[PROP_##name], m_##name);
 	#include "PotPropsDef.h"
 }
@@ -138,6 +153,25 @@ CString CPotProperties::GetGroupName(int iGroup) const
 {
 	ASSERT(IsValidGroup(iGroup));
 	return LDS(m_Group[iGroup].nNameID);
+}
+
+int CPotProperties::GetSubgroupCount(int iGroup) const
+{
+	ASSERT(IsValidGroup(iGroup));
+	if (iGroup == GROUP_MESH)
+		return MESH_SUBGROUPS;
+	else
+		return 0;
+}
+
+CString	CPotProperties::GetSubgroupName(int iGroup, int iSubgroup) const
+{
+	ASSERT(IsValidGroup(iGroup));
+	CString	sName;
+	if (iGroup == GROUP_MESH) {
+		sName.LoadString(m_MeshSubgroup[iSubgroup].nNameID);
+	}
+	return sName;
 }
 
 void CPotProperties::ReadProperties(LPCTSTR szPath)
@@ -158,7 +192,7 @@ void CPotProperties::ReadProperties(LPCTSTR szPath)
 		AfxFormatString1(msg, IDS_DOC_NEWER_VERSION, szPath);
 		AfxMessageBox(msg);
 	}
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		if (PT_##proptype == PT_ENUM) \
 			ReadEnum(REG_SETTINGS, _T(#name), m_##name, itemname, items); \
 		else \
@@ -183,6 +217,8 @@ void CPotProperties::ReadProperties(LPCTSTR szPath)
 	RdReg(RK_ROTATION, m_vRotation);
 	RdReg(RK_PAN, m_vPan);
 	RdReg(RK_ZOOM, m_fZoom);
+	RdReg(RK_LIGHT_DIR, m_vLightDir);
+	RdReg(RK_POT_MATERIAL, m_mtrlPot);
 	CString	sModTarget;
 	RdReg(RK_MOD_TARGET, sModTarget);
 	m_iModTarget = FindProperty(sModTarget);
@@ -206,7 +242,7 @@ void CPotProperties::WriteProperties(LPCTSTR szPath) const
 	f.Open(szPath, CFile::modeCreate | CFile::modeWrite);
 	WrReg(RK_FILE_ID, CString(FILE_ID));
 	WrReg(RK_FILE_VERSION, FILE_VERSION);
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		if (PT_##proptype == PT_ENUM) \
 			WriteEnum(REG_SETTINGS, _T(#name), m_##name, itemname, items); \
 		else \
@@ -226,6 +262,8 @@ void CPotProperties::WriteProperties(LPCTSTR szPath) const
 	WrReg(RK_ROTATION, m_vRotation);
 	WrReg(RK_PAN, m_vPan);
 	WrReg(RK_ZOOM, m_fZoom);
+	WrReg(RK_LIGHT_DIR, m_vLightDir);
+	WrReg(RK_POT_MATERIAL, m_mtrlPot);
 	CString	sModTarget;
 	if (m_iModTarget >= 0)
 		sModTarget = GetPropertyInternalName(m_iModTarget);

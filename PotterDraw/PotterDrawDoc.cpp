@@ -9,6 +9,8 @@
 		rev		date	comments
         00      12mar17	initial version
 		01		24aug17	add load texture file command
+		02		06nov17	add lighting
+		03		07nov17	in OnEditUndo and OnEditRedo, set modified flag
 
 */
 
@@ -167,6 +169,14 @@ void CPotterDrawDoc::SaveUndoState(CUndoState& State)
 			State.SetObj(pVal);
 		}
 		break;
+	case UCODE_LIGHTING:
+		{
+			CRefPtr<CUndoLighting>	pVal;
+			pVal.CreateObj();
+			pVal->m_vLightDir = m_vLightDir;
+			pVal->m_mtrlPot = m_mtrlPot;
+			State.SetObj(pVal);
+		}
 	}
 }
 
@@ -211,6 +221,13 @@ void CPotterDrawDoc::RestoreUndoState(const CUndoState& State)
 			UpdateAllViews(NULL, HINT_SPLINE);
 		}
 		break;
+	case UCODE_LIGHTING:
+		{
+			CUndoLighting	*pVal = static_cast<CUndoLighting  *>(State.GetObj());
+			m_vLightDir = pVal->m_vLightDir;
+			m_mtrlPot = pVal->m_mtrlPot;
+			UpdateAllViews(NULL, HINT_LIGHTING);
+		}
 	}
 }
 
@@ -236,6 +253,9 @@ CString CPotterDrawDoc::GetUndoTitle(const CUndoState& State)
 		break;
 	case UCODE_SPLINE:
 		sTitle.LoadString(CSplineBar::GetUndoTitle(State.GetCtrlID()));
+		break;
+	case UCODE_LIGHTING:
+		sTitle.LoadString(IDS_LIGHTING);
 		break;
 	}
 	return sTitle;
@@ -312,6 +332,7 @@ void CPotterDrawDoc::OnEditUndo()
 {
 	if (theApp.GetMainFrame()->PropertiesBarHasFocus() || !CFocusEdit::Undo()) {
 		GetUndoManager()->Undo();
+		SetModifiedFlag();	// undo counts as modification
 	}
 }
 
@@ -328,6 +349,7 @@ void CPotterDrawDoc::OnUpdateEditUndo(CCmdUI *pCmdUI)
 void CPotterDrawDoc::OnEditRedo()
 {
 	GetUndoManager()->Redo();
+	SetModifiedFlag();	// redo counts as modification
 }
 
 void CPotterDrawDoc::OnUpdateEditRedo(CCmdUI *pCmdUI)

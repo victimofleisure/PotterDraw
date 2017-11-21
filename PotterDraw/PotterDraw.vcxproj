@@ -246,6 +246,7 @@
     <ClInclude Include="HelpResMap.h" />
     <ClInclude Include="Hyperlink.h" />
     <ClInclude Include="IniFile.h" />
+    <ClInclude Include="LightingDlg.h" />
     <ClInclude Include="MidiWrap.h" />
     <ClInclude Include="ModelessDlg.h" />
     <ClInclude Include="ModulationBar.h" />
@@ -322,6 +323,7 @@
     <ClCompile Include="GridSetupDlg.cpp" />
     <ClCompile Include="Hyperlink.cpp" />
     <ClCompile Include="IniFile.cpp" />
+    <ClCompile Include="LightingDlg.cpp" />
     <ClCompile Include="MidiWrap.cpp" />
     <ClCompile Include="ModelessDlg.cpp" />
     <ClCompile Include="ModulationBar.cpp" />

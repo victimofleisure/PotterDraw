@@ -8,6 +8,8 @@
 		revision history:
 		rev		date	comments
         00      04may17	initial version
+		01		03nov17	add property subgroup
+		02		10nov17	add power types
 		
 */
 
@@ -30,7 +32,7 @@ public:
 		GROUPS
 	};
 	enum {	// targets
-		#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) PROP_##name,
+		#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) PROP_##name,
 		#include "PotPropsDef.h"
 		TARGETS
 	};
@@ -49,8 +51,13 @@ public:
 		#include "ModulationPropsDef.h"
 		OPERATIONS
 	};
+	enum {	// operations
+		#define POWERTYPEDEF(name) POWER_TYPE_##name,
+		#include "ModulationPropsDef.h"
+		POWER_TYPES
+	};
 	enum {	// properties
-		#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) PROP_##name,
+		#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) PROP_##name,
 		#include "ModulationPropsDef.h"
 		PROPERTIES
 	};
@@ -59,11 +66,12 @@ public:
 	static const OPTION_INFO	m_Waveform[WAVEFORMS];	// waveform names
 	static const OPTION_INFO	m_Range[RANGES];	// range names
 	static const OPTION_INFO	m_Operation[OPERATIONS];	// operation names
+	static const OPTION_INFO	m_PowerType[POWER_TYPES];	// power type names
 	static const PROPERTY_INFO	m_Info[PROPERTIES];	// fixed info for each property
 	static const CModulationProps	m_DefaultVals;	// default values
 
 // Data members
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) type m_##name;
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) type m_##name;
 	#include "ModulationPropsDef.h"
 
 // Overrides

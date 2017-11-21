@@ -9,6 +9,8 @@
 		rev		date	comments
         00      12mar17	initial version
 		01		09oct17	add pre-record auto-rotate and animation states
+		02		06nov17	add lighting dialog
+		03		15nov17	add palette import/export
 		
 */
 
@@ -185,7 +187,10 @@ protected:
 	afx_msg void OnUpdateFileRecord(CCmdUI *pCmdUI);
 	virtual void OnPrint(CDC* pDC, CPrintInfo* pInfo);
 	afx_msg void OnUpdateNextPane(CCmdUI* pCmdUI);
+	afx_msg void OnViewLighting();
 	afx_msg void OnToolsMeshInfo();
+	afx_msg void OnPaletteImport();
+	afx_msg void OnPaletteExport();
 };
 
 #ifndef _DEBUG  // debug version in PotterDrawView.cpp
@@ -254,4 +259,3 @@ inline void CPotterDrawView::PlotProperty(int iProp, CArrayEx<DPoint, DPoint&>& 
 {
 	m_Graphics.PlotProperty(iProp, arrPoint, pRange);
 }
-

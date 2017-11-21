@@ -11,6 +11,12 @@
 		01		05sep17	add spline drag hint
 		02		05oct17	add scallop phase, range, power, operation
 		03		09oct17	in Record, save and restore auto-rotate and animation
+		04		01nov17	add scallop waveform, pulse width, slew
+		05		01nov17	add polygon properties
+		06		06nov17	add lighting dialog
+		07		13nov17	in OnUpdate, use mesh subgroups
+		08		15nov17	add palette import/export
+		09		16nov17	in OnUpdate, if radius color pattern selected, remake mesh
 
 */
 
@@ -28,6 +34,7 @@
 #include "RecordStatusDlg.h"
 #include "UndoCodes.h"
 #include "RotateDlg.h"
+#include "LightingDlg.h"
 
 #define _USE_MATH_DEFINES	// for trig constants
 #include <math.h>
@@ -161,6 +168,7 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		bool	bMakeMesh = false;
 		bool	bMakeTexture = false;
 		bool	bMakeSpline = false;
+		bool	bResizing = false;
 		switch (lHint) {
 		case CPotterDrawDoc::HINT_PROPERTY:
 			{
@@ -170,41 +178,33 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				int	iGroup = CPotProperties::m_Info[iProp].iGroup;
 				switch (iGroup) {
 				case CPotProperties::GROUP_MESH:
-					switch (iProp) {
-					case CPotProperties::PROP_nRings:
-						bMakeMesh = true;
-						bMakeSpline = true;
+					switch (CPotProperties::m_Info[iProp].iSubgroup) {	// mesh subgroups
+					case CPotProperties::SUBGROUP_POLYGON:
+						bMakeMesh = pDoc->IsPolygon() || m_Graphics.IsPolygon();
 						break;
-					case CPotProperties::PROP_fScallops:
-					case CPotProperties::PROP_fScallopDepth:
-					case CPotProperties::PROP_iScallopMotif:
-					case CPotProperties::PROP_fScallopPhase:
-					case CPotProperties::PROP_iScallopRange:
-					case CPotProperties::PROP_fScallopPower:
-					case CPotProperties::PROP_iScallopOperation:
+					case CPotProperties::SUBGROUP_SCALLOP:
 						bMakeMesh = pDoc->HasScallops() || m_Graphics.HasScallops();
 						break;
-					case CPotProperties::PROP_fRipples:
-					case CPotProperties::PROP_fRippleDepth:
-					case CPotProperties::PROP_fRipplePhase:
-					case CPotProperties::PROP_iRippleMotif:
+					case CPotProperties::SUBGROUP_RIPPLE:
 						bMakeMesh = pDoc->HasRipples() || m_Graphics.HasRipples();
 						break;
-					case CPotProperties::PROP_fBends:
-					case CPotProperties::PROP_fBendDepth:
-					case CPotProperties::PROP_fBendPhase:
-					case CPotProperties::PROP_iBendMotif:
-					case CPotProperties::PROP_fBendPoles:
-					case CPotProperties::PROP_fBendPolePhase:
-					case CPotProperties::PROP_iBendPoleMotif:
+					case CPotProperties::SUBGROUP_BEND:
 						bMakeMesh = pDoc->HasBends() || m_Graphics.HasBends();
 						break;
-					case CPotProperties::PROP_fHelixFrequency:
-					case CPotProperties::PROP_fHelixAmplitude:
+					case CPotProperties::SUBGROUP_HELIX:
 						bMakeMesh = pDoc->HasHelix() || m_Graphics.HasHelix();
 						break;
 					default:
-						bMakeMesh = true;
+						// mesh properties in subgroups should be handled above
+						ASSERT(CPotProperties::m_Info[iProp].iSubgroup < 0);
+						switch (iProp) {
+						case CPotProperties::PROP_nRings:
+							bMakeMesh = true;
+							bMakeSpline = true;
+							break;
+						default:
+							bMakeMesh = true;
+						}
 					}
 					break;
 				case CPotProperties::GROUP_TEXTURE:
@@ -214,6 +214,12 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 					case CPotProperties::PROP_iPaletteType:
 					case CPotProperties::PROP_sTexturePath:
 						bMakeTexture = true;
+						break;
+					case CPotProperties::PROP_iColorPattern:
+						if (pDoc->m_iColorPattern == CPotProperties::COLORPAT_RADIUS) {	// if radius color pattern
+							bMakeMesh = true;	// need to compute radius range and update texure coords
+							bResizing = true;	// but don't need to recalculate vertices and faces
+						}
 						break;
 					}
 					break;
@@ -256,6 +262,16 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			m_Graphics.MakeMesh(false);
 			RedrawWindow();	// redraw view explicitly to avoid paint lag
 			return;	// early out, don't update document
+		case CPotterDrawDoc::HINT_LIGHTING:
+			{
+				D3DLIGHT9	light;
+				m_Graphics.GetLight(light);
+				light.Direction = pDoc->m_vLightDir;
+				m_Graphics.SetLight(light);
+				m_Graphics.SetPotMaterial(pDoc->m_mtrlPot);
+				Invalidate();	// necessary due to early out below
+			}
+			return;	// early out, to avoid needlessly updating texture
 		default:	// no hint
 			bMakeMesh = true;
 			bMakeSpline = true;
@@ -267,11 +283,11 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			m_Graphics.CalcSpline(pDoc->m_arrSpline);
 		if (bMakeMesh) {	// if mesh is stale
 			CWaitCursor wc;	// mesh generation can be slow
-			m_Graphics.MakeMesh(false);
+			m_Graphics.MakeMesh(bResizing);
 		} else {	// reusing mesh
 			if (bMakeTexture)	// if texture is stale
 				m_Graphics.MakeTexture();
-			m_Graphics.UpdateTexture();
+			m_Graphics.UpdateTextureCoords();
 		}
 	}
 	SetAnimation(m_bAutoRotate || pDoc->m_bAnimation);
@@ -627,7 +643,10 @@ BEGIN_MESSAGE_MAP(CPotterDrawView, CView)
 	ON_UPDATE_COMMAND_UI(ID_FILE_RECORD, OnUpdateFileRecord)
 	ON_UPDATE_COMMAND_UI(ID_NEXT_PANE, OnUpdateNextPane)
 	ON_UPDATE_COMMAND_UI(ID_PREV_PANE, OnUpdateNextPane)
+	ON_COMMAND(ID_VIEW_LIGHTING, OnViewLighting)
 	ON_COMMAND(ID_TOOLS_MESH_INFO, OnToolsMeshInfo)
+	ON_COMMAND(ID_PALETTE_IMPORT, OnPaletteImport)
+	ON_COMMAND(ID_PALETTE_EXPORT, OnPaletteExport)
 END_MESSAGE_MAP()
 
 // CPotterDrawView message handlers
@@ -1133,6 +1152,27 @@ void CPotterDrawView::OnViewPanEdit()
 		m_Graphics.SetPan(dlg.m_vRotation * float(M_PI / 180));
 }
 
+void CPotterDrawView::OnViewLighting()
+{
+	CPotterDrawDoc	*pDoc = GetDocument();
+	CLightingDlg	dlg;
+	dlg.m_vDir = pDoc->m_vLightDir;
+	dlg.m_fDiffuse = pDoc->m_mtrlPot.Diffuse.r;
+	dlg.m_fAmbient = pDoc->m_mtrlPot.Ambient.r;
+	dlg.m_fSpecular = pDoc->m_mtrlPot.Specular.r;
+	dlg.m_fPower = pDoc->m_mtrlPot.Power;
+	if (dlg.DoModal() == IDOK) {
+		pDoc->NotifyUndoableEdit(0, UCODE_LIGHTING);
+		pDoc->m_vLightDir = dlg.m_vDir;
+		pDoc->m_mtrlPot.Diffuse = D3DXCOLOR(dlg.m_fDiffuse, dlg.m_fDiffuse, dlg.m_fDiffuse, 1.0f);
+		pDoc->m_mtrlPot.Ambient = D3DXCOLOR(dlg.m_fAmbient, dlg.m_fAmbient, dlg.m_fAmbient, 1.0f);
+		pDoc->m_mtrlPot.Specular = D3DXCOLOR(dlg.m_fSpecular, dlg.m_fSpecular, dlg.m_fSpecular, 1.0f);
+		pDoc->m_mtrlPot.Power = dlg.m_fPower;
+		pDoc->UpdateAllViews(NULL, CPotterDrawDoc::HINT_LIGHTING);
+		pDoc->SetModifiedFlag();
+	}
+}
+
 void CPotterDrawView::OnToolsMeshInfo()
 {
 	D3DXVECTOR3	p1, p2;
@@ -1140,8 +1180,8 @@ void CPotterDrawView::OnToolsMeshInfo()
 	D3DXVec3Subtract(&p1, &p1, &p2);
 	D3DXVECTOR3	vSize(fabs(p1.x), fabs(p1.y), fabs(p1.z));
 	CString	sMsg;
-	sMsg.Format(_T("Vertices:\t%d\nFacets:\t%d\nWidth:\t%g\nHeight:\t%g\nDepth:\t%g"),
-		m_Graphics.GetVertexCount(), m_Graphics.GetFaceCount(), vSize.x, vSize.y, vSize.z);
+	sMsg.Format(IDS_MESH_INFO_FORMAT, m_Graphics.GetVertexCount(), 
+		m_Graphics.GetFaceCount(), vSize.x, vSize.y, vSize.z);
 	CPotterDrawDoc	*pDoc = GetDocument();
 	CString	sWarn;
 	if (pDoc->m_arrSpline.GetSize()) {	// if spline has at least one segment
@@ -1158,4 +1198,46 @@ void CPotterDrawView::OnToolsMeshInfo()
 	} else	// no warnings
 		nType = MB_ICONINFORMATION;
 	AfxMessageBox(sMsg, nType);	// display message box
+}
+
+void CPotterDrawView::OnPaletteImport()
+{
+	CString	sFilter(LPCTSTR(IDS_PALETTE_FILES_FILTER));
+	CFileDialog	fd(true, _T(".pal"), NULL, OFN_HIDEREADONLY, sFilter);
+	if (fd.DoModal() == IDOK) {
+		CStdioFile	fp(fd.GetPathName(), CFile::modeRead);
+		CString	s;
+		CArrayEx<COLORREF, COLORREF>	arrPalette;
+		while (fp.ReadString(s)) {
+			int	r, g, b;
+			if (_stscanf_s(s, _T("%d %d %d"), &r, &g, &b) == 3) {
+				arrPalette.Add(RGB(r, g, b));
+			}
+		}
+		if (arrPalette.GetSize()) {	// if palette non-empty
+			CPotterDrawDoc	*pDoc = GetDocument();
+			pDoc->NotifyUndoableEdit(-1, UCODE_PALETTE);	// entire palette changed; size may have changed
+			pDoc->m_arrPalette = arrPalette;
+			pDoc->m_nColors = arrPalette.GetSize();
+			pDoc->UpdateAllViews(NULL, CPotterDrawDoc::HINT_PALETTE);
+			pDoc->SetModifiedFlag();
+		}
+	}
+}
+
+void CPotterDrawView::OnPaletteExport()
+{
+	CString	sFilter(LPCTSTR(IDS_PALETTE_FILES_FILTER));
+	CFileDialog	fd(false, _T(".pal"), NULL, OFN_OVERWRITEPROMPT, sFilter);
+	if (fd.DoModal() == IDOK) {
+		CStdioFile	fp(fd.GetPathName(), CFile::modeCreate | CFile::modeWrite);
+		const CPotterDrawDoc	*pDoc = GetDocument();
+		CString	s;
+		int	nColors = pDoc->m_arrPalette.GetSize();
+		for (int iColor = 0; iColor < nColors; iColor++) {	// for each palette color
+			COLORREF	c = pDoc->m_arrPalette[iColor];
+			s.Format(_T("%d\t%d\t%d\n"), GetRValue(c), GetGValue(c), GetBValue(c));
+			fp.WriteString(s);
+		}
+	}
 }

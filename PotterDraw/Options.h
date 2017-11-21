@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      05apr17	initial version
+		01		03nov17	add property subgroup
 		
 */
 
@@ -29,7 +30,7 @@ public:
 		GROUPS
 	};
 	enum {	// properties
-		#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) PROP_##name,
+		#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) PROP_##name,
 		#include "OptionsDef.h"
 		PROPERTIES
 	};
@@ -37,7 +38,7 @@ public:
 	static const PROPERTY_INFO	m_Info[PROPERTIES];	// fixed info for each property
 
 // Data members
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) type m_##name;
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) type m_##name;
 	#include "OptionsDef.h"
 
 // Overrides

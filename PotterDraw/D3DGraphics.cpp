@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      12mar17	initial version
+		01		06nov17	add get/set light
 
 */
 
@@ -46,6 +47,8 @@ const D3DVECTOR CD3DGraphics::m_vStandardView[STANDARD_VIEWS] = {
 	{0, float(M_PI_2), 0},		// right
 };
 
+const D3DVECTOR CD3DGraphics::m_vDefaultLightDir = {10.0f, EYE_Z / ABOVE_EYE_Y, 20.0f};
+
 CD3DGraphics::CD3DGraphics()
 {
 	m_szClient = CSize(0, 0);
@@ -55,7 +58,13 @@ CD3DGraphics::CD3DGraphics()
 	m_fZoom = 1;
 	m_vPan = D3DXVECTOR3(0, 0, 0);
 	m_vRotation = m_vStandardView[INITIAL_VIEW];
-	m_BkgndColor = D3DCOLOR_RGBA(255, 255, 255, 0);
+	m_clrBkgnd = D3DCOLOR_RGBA(255, 255, 255, 0);
+	ZeroMemory(&m_light, sizeof(m_light));
+	m_light.Direction = m_vDefaultLightDir;
+	m_light.Type = D3DLIGHT_DIRECTIONAL;
+	m_light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_light.Specular = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_light.Range = sqrtf(FLT_MAX);
 }
 
 CD3DGraphics::~CD3DGraphics()
@@ -155,16 +164,7 @@ bool CD3DGraphics::InitDevice(bool bResizing)
 	CHECK(m_pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));	// antialias textures
 	CHECK(m_pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
 	SetStyle(m_nStyle);
-	// set up light source
-	D3DLIGHT9	light;
-	ZeroMemory(&light, sizeof(light));
-	D3DXVECTOR3  vLightDir(10.0f, EYE_Z / ABOVE_EYE_Y, 20.0f);
-	D3DXVec3Normalize((D3DXVECTOR3*)&light.Direction, &vLightDir);
-	light.Type = D3DLIGHT_DIRECTIONAL;
-	light.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	light.Specular = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	light.Range = sqrtf(FLT_MAX);
-	CHECK(m_pDevice->SetLight(0, &light));
+	CHECK(m_pDevice->SetLight(0, &m_light));
 	CHECK(m_pDevice->LightEnable(0, true));
 	if (!UpdateProjectionTransform())
 		return false;
@@ -235,7 +235,7 @@ bool CD3DGraphics::Render()
 	if (!m_pDevice)
 		return false;
 	START_BENCHMARK;
-	CHECK(m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_BkgndColor, 1.0f, 0));
+	CHECK(m_pDevice->Clear(0, 0, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_clrBkgnd, 1.0f, 0));
 	CHECK(m_pDevice->BeginScene());
 	if (!OnRender())
 		return false;
@@ -333,7 +333,14 @@ void CD3DGraphics::ZoomRect(const CRect& rect)
 
 void CD3DGraphics::SetBkgndColor(D3DCOLOR Color)
 {
-	m_BkgndColor = Color;
+	m_clrBkgnd = Color;
+}
+
+bool CD3DGraphics::SetLight(const D3DLIGHT9& light)
+{
+	m_light = light;
+	CHECK(m_pDevice->SetLight(0, &m_light));
+	return true;
 }
 
 bool CD3DGraphics::ExportImage(LPCTSTR szPath, D3DXIMAGE_FILEFORMAT nFormat)

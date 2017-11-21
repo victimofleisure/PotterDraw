@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		03nov17	remove group array; add subitem expansion
 
 */
 
@@ -42,6 +43,8 @@ protected:
 
 // Helpers
 	void	TrackToolTip(CPoint point);
+	void	SaveSubitemExpansion(CString sRegKey, const CMFCPropertyGridProperty *pProp) const;
+	void	RestoreSubitemExpansion(CString sRegKey, CMFCPropertyGridProperty *pProp) const;
 
 // Message handlers
 	DECLARE_MESSAGE_MAP()
@@ -87,6 +90,5 @@ protected:
 	typedef CArrayEx<CMFCPropertyGridProperty *, CMFCPropertyGridProperty *> CPropertyPtrArray;
 
 // Data members
-	CPropertyPtrArray	m_arrGroup;	// pointers to groups
-	CPropertyPtrArray	m_arrProp;	// pointers to properties
+	CPropertyPtrArray	m_arrProp;	// pointers to value properties
 };

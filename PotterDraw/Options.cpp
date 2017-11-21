@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      05apr17	initial version
+		01		03nov17	add property subgroup
 		
 */
 
@@ -23,15 +24,15 @@ const COptions::OPTION_INFO COptions::m_Group[GROUPS] = {
 };
 
 const COptions::PROPERTY_INFO COptions::m_Info[PROPERTIES] = {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		{_T(#name), IDS_OPT_NAME_##name, IDS_OPT_DESC_##name, offsetof(COptions, m_##name), \
-		sizeof(type), &typeid(type), GROUP_##group, PT_##proptype, items, itemname, minval, maxval},
+		sizeof(type), &typeid(type), GROUP_##group, -1, PT_##proptype, items, itemname, minval, maxval},
 	#include "OptionsDef.h"
 };
 
 COptions::COptions()
 {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		m_##name = initval;
 	#include "OptionsDef.h"
 }
@@ -55,14 +56,14 @@ const COptions::PROPERTY_INFO& COptions::GetPropertyInfo(int iProp) const
 void COptions::GetVariants(CVariantArray& Var) const
 {
 	Var.SetSize(PROPERTIES);
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		Var[PROP_##name] = CComVariant(m_##name);
 	#include "OptionsDef.h"
 }
 
 void COptions::SetVariants(const CVariantArray& Var)
 {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		GetVariant(Var[PROP_##name], m_##name);
 	#include "OptionsDef.h"
 }
@@ -75,14 +76,14 @@ CString COptions::GetGroupName(int iGroup) const
 
 void COptions::ReadProperties()
 {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		RdReg(_T("Options\\")_T(#group), _T(#name), m_##name);
 	#include "OptionsDef.h"
 }
 
 void COptions::WriteProperties() const
 {
-	#define PROPDEF(group, proptype, type, name, initval, minval, maxval, itemname, items) \
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
 		WrReg(_T("Options\\")_T(#group), _T(#name), m_##name);
 	#include "OptionsDef.h"
 }
