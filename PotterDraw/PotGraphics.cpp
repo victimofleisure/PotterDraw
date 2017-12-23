@@ -26,6 +26,14 @@
 		16		15nov17	optimize modulo one wrapping
 		17		16nov17	in UpdateTextureCoords, avoid reading from vertex buffer
 		18		17nov17	in ExportPLY, handle texture file
+		19		23nov17	add modulation type flags
+		20		06dec17	add hit test and face and vertex accessors
+		21		06dec17	add optional showing of normals and face selection
+		22		07dec17	skip calculating unused inner wall vertices
+		23		10dec17	add azimuth and incline color patterns
+		24		12dec17	add operation, power and power type to ripple and bend
+		25		12dec17	in SetViewState, set standard view if applicable
+		26		15dec17	add edges color pattern
 
 */
 
@@ -35,6 +43,7 @@
 #include "Benchmark.h"
 #include "PathStr.h"
 #include "DPoint.h"
+#include "DPoint3.h"
 #include "Range.h"
 typedef CRange<double> CDblRange;
 
@@ -58,7 +67,7 @@ CPotGraphics::CPotGraphics()
 	m_mtrlPot = m_mtrlPotDefault;
 	m_nAdjRings = 0;
 	m_nAdjSides = 0;
-	m_bModulatingMesh = false;
+	m_nModType = 0;
 	m_fMinOuterRadius = 0;
 	m_fMaxOuterRadius = 0;
 	m_fOuterRadiusScale = 0;
@@ -87,6 +96,21 @@ bool CPotGraphics::OnRender()
 	if (m_pBounds != NULL) {	// if bounding box exists
 		DrawBoundingBox();
 	}
+#if POT_GFX_SHOW_FACE_NORMALS
+	if (m_vbFaceNormalLine.m_pVertBuf != NULL) {	// if drawing face normal lines
+		DrawFaceNormalLines();
+	}
+#endif	// POT_GFX_SHOW_FACE_NORMALS
+#if POT_GFX_SHOW_VERTEX_NORMALS
+	if (m_vbVertexNormalLine.m_pVertBuf != NULL) {	// if drawing vertex normal lines
+		DrawVertexNormalLines();
+	}
+#endif	// POT_GFX_SHOW_VERTEX_NORMALS
+#if POT_GFX_SHOW_FACE_SELECTION
+	if (m_vbSelectedFace.m_pVertBuf != NULL) {	// if drawing selected faces
+		DrawSelectedFaces();
+	}
+#endif	// POT_GFX_SHOW_FACE_SELECTION
 	return true;
 }
 
@@ -115,6 +139,22 @@ bool CPotGraphics::SetStyle(UINT nStyle)
 		} else
 			m_pBounds = NULL;
 	}
+#if POT_GFX_SHOW_FACE_NORMALS
+	if ((nStyle & ST_FACE_NORMALS) ^ (m_nStyle & ST_FACE_NORMALS)) {	// if face normals state changed
+		if (nStyle & ST_FACE_NORMALS) {	// if showing face normals
+			CreateFaceNormalLines();
+		} else
+			m_vbFaceNormalLine.m_pVertBuf = NULL;
+	}
+#endif	// POT_GFX_SHOW_FACE_NORMALS
+#if POT_GFX_SHOW_VERTEX_NORMALS
+	if ((nStyle & ST_VERTEX_NORMALS) ^ (m_nStyle & ST_VERTEX_NORMALS)) {	// if vertex normals state changed
+		if (nStyle & ST_VERTEX_NORMALS) {	// if showing vertex normals
+			CreateVertexNormalLines();
+		} else
+			m_vbVertexNormalLine.m_pVertBuf = NULL;
+	}
+#endif	// POT_GFX_SHOW_VERTEX_NORMALS
 	if (!CD3DGraphics::SetStyle(nStyle))
 		return false;
 	CHECK(m_pDevice->SetTexture(0, (nStyle & ST_TEXTURE) != 0 ? m_pTexture : NULL));
@@ -125,7 +165,7 @@ void CPotGraphics::SetProperties(const CPotProperties& Props)
 {
 	CPotProperties::operator=(Props);
 	SetBkgndColor(CvtFromColorRef(m_clrBackground));
-	m_bModulatingMesh = GetModulations(m_arrModIdx);
+	m_nModType = GetModulations(m_arrModIdx);
 }
 
 void CPotGraphics::GetViewState(CPotProperties& Props) const
@@ -146,6 +186,9 @@ void CPotGraphics::SetViewState(const CPotProperties& Props)
 	CD3DGraphics::m_fZoom = Props.m_fZoom;
 	m_light.Direction = Props.m_vLightDir;
 	m_mtrlPot = Props.m_mtrlPot;
+	int	iStdView = FindStandardView(Props.m_vRotation);
+	if (iStdView >= 0)	// if rotation is standard view
+		m_iStdView = iStdView;
 }
 
 bool CPotGraphics::SetPotMaterial(const D3DMATERIAL9& mtrlPot)
@@ -171,7 +214,20 @@ bool CPotGraphics::MakeMesh(bool bResizing)
 {
 //	printf("CPotGraphics::MakeMesh bResizing=%d\n", bResizing);
 	if (!bResizing) {	// if not resizing
-		CalcPotMesh();
+		switch (m_iColorPattern) {
+		case COLORPAT_RADIUS:
+		case COLORPAT_AZIMUTH:
+		case COLORPAT_INCLINE:
+		case COLORPAT_AZI_INC:
+		case COLORPAT_EDGES:
+			// color depends on mesh, so CalcPotMesh's GetTextureCoords calls are
+			// useless at best; save time by making GetTextureCoords do nothing
+			m_iColorPattern -= COLOR_PATTERNS;	// force color pattern out of range
+			break;
+		}
+		CalcPotMesh();	// calculate pot mesh
+		if (m_iColorPattern < 0)	// if color pattern was overridden above
+			m_iColorPattern += COLOR_PATTERNS;	// restore original color pattern
 	}
 	m_pMesh = NULL;
 	m_pBounds = NULL;
@@ -222,14 +278,36 @@ bool CPotGraphics::MakeMesh(bool bResizing)
 		return false;
 	if (m_nStyle & ST_BOUNDS)
 		CreateBoundingBox();
-	if (m_iColorPattern == COLORPAT_RADIUS) {	// if radius color pattern
-		ComputeOuterRadiusRange(m_fMinOuterRadius, m_fMaxOuterRadius);
-		double	fDeltaRad = m_fMaxOuterRadius - m_fMinOuterRadius;
-		if (fDeltaRad > 1e-6)	// if radius range is reasonable 
-			m_fOuterRadiusScale = 1 / fDeltaRad;
-		else	// radius range is infinitesimal
-			m_fOuterRadiusScale = 0;	// avoid excessive scale
+#if POT_GFX_SHOW_FACE_NORMALS
+	if (m_nStyle & ST_FACE_NORMALS)
+		CreateFaceNormalLines();
+#endif	// POT_GFX_SHOW_FACE_NORMALS
+#if POT_GFX_SHOW_VERTEX_NORMALS
+	if (m_nStyle & ST_VERTEX_NORMALS)
+		CreateVertexNormalLines();
+#endif	// POT_GFX_SHOW_VERTEX_NORMALS
+#if POT_GFX_SHOW_FACE_SELECTION
+	if (m_arrSelectedFaceIdx.GetSize())
+		CreateSelectedFaces();
+#endif	// POT_GFX_SHOW_FACE_SELECTION
+	switch (m_iColorPattern) {
+	case COLORPAT_RADIUS:	// if radius color pattern
+		{
+			ComputeOuterRadiusRange(m_fMinOuterRadius, m_fMaxOuterRadius);
+			double	fDeltaRad = m_fMaxOuterRadius - m_fMinOuterRadius;
+			if (fDeltaRad > 1e-6)	// if radius range is reasonable 
+				m_fOuterRadiusScale = 1 / fDeltaRad;
+			else	// radius range is infinitesimal
+				m_fOuterRadiusScale = 0;	// avoid excessive scale
+			UpdateTextureCoords();
+		}
+		break;
+	case COLORPAT_AZIMUTH:
+	case COLORPAT_INCLINE:
+	case COLORPAT_AZI_INC:
+	case COLORPAT_EDGES:
 		UpdateTextureCoords();
+		break;
 	}
 //m_pMesh = NULL;
 //CHECK(D3DXCreateCylinder(m_pDevice, 130, 100, 200, 50, 10, &m_pMesh, NULL));
@@ -283,19 +361,33 @@ void CPotGraphics::CalcPotMesh()
 	// vertices for inner and outer walls
 	double	fRingRad = 0;	// init to avoid warning
 	for (iWall = 0; iWall < WALLS; iWall++) {	// for each wall
-		for (iRing = 0; iRing < nRings; iRing++) {	// for each ring
+		int iFirstRing;
+		if (iWall == WALL_OUTER) {	// if outer wall
+			iFirstRing = 0;
+		} else {	// inner wall
+			int	nUnusedVerts = iFirstInnerRing * nStride;
+			ZeroMemory(&m_arrVert[iVert], sizeof(CVertex) * nUnusedVerts);
+			iVert += nUnusedVerts;
+			iFirstRing = iFirstInnerRing;	// skip calculating unused vertices
+		}
+		for (int iRing = iFirstRing; iRing < nRings; iRing++) {	// for each ring
 			double	fRing = double(iRing) / (nRings - 1);	// normalized ring
 			if (nMods)
 				ApplyModulations(fRing);
 			if (iWall == WALL_OUTER) {	// if outer wall
 				double	fRad = m_fRadius * m_arrSpline[iRing];
 				if (bHasRipples) {		// if ripples enabled
-					double	r = sin((fRing * m_fRipples + m_fRipplePhase) * M_PI * 2) * m_fRippleDepth;
+					double	r = sin((fRing * m_fRipples + m_fRipplePhase) * M_PI * 2);
 					ApplyMotif(m_iRippleMotif, r);
-					fRad += r;
+					ApplyPower(CModulationProps::RANGE_BIPOLAR, m_iRipplePowerType, m_fRipplePower, r);
+					r *= m_fRippleDepth;	// apply amplitude
+					if (m_iRippleOperation == OPER_ADD)	// if operation is add
+						fRad += r;
+					else	// operation is exponentiate
+						fRad *= pow(2, r);
 				}
 				if (bHasBends) {	// if bends enabled
-					fRingBend = cos((fRing * m_fBends + m_fBendPhase) * M_PI * 2) * m_fBendDepth;
+					fRingBend = cos((fRing * m_fBends + m_fBendPhase) * M_PI * 2);
 					ApplyMotif(m_iBendMotif, fRingBend);
 				}
 				fRingRad = fRad;
@@ -372,7 +464,12 @@ void CPotGraphics::CalcPotMesh()
 					if (bHasBends) {	// if bends enabled
 						double	r = fRingBend * cos((fSide * m_fBendPoles + m_fBendPolePhase) * M_PI * 2);
 						ApplyMotif(m_iBendPoleMotif, r);
-						fRad += r;
+						ApplyPower(CModulationProps::RANGE_BIPOLAR, m_iBendPowerType, m_fBendPower, r);
+						r *= m_fBendDepth;	// apply amplitude
+						if (m_iBendOperation == OPER_ADD)	// if operation is add
+							fRad += r;
+						else	// operation is exponentiate
+							fRad *= pow(2, r);
 					}
 					OUTER_RADIUS(iRing, iSide) = fRad;	// store outer radius for 2nd pass
 					GetTextureCoords(fRing, fSide, v.t);	// get texture coords
@@ -568,7 +665,78 @@ void CPotGraphics::GetTextureCoords(double fRing, double fSide, D3DXVECTOR2& t) 
 			t.y = float(fRing * m_fCyclesV + m_fOffsetV);
 		}
 		break;
+	case COLORPAT_AZIMUTH:
+		{
+			int	iVert = GetVertexIdx(fRing, fSide);
+			D3DXVECTOR3	vNormal(m_arrVert[iVert].n);
+			t.x = float(GetAzimuth(vNormal, fSide) * m_fColorCycles + m_fOffsetU);
+			t.y = float(fRing * m_fCyclesV + m_fOffsetV);
+		}
+		break;
+	case COLORPAT_INCLINE:
+		{
+			int	iVert = GetVertexIdx(fRing, fSide);
+			D3DXVECTOR3	vNormal(m_arrVert[iVert].n);
+			t.x = float(GetIncline(vNormal) * m_fColorCycles + m_fOffsetU);
+			t.y = float(fRing * m_fCyclesV + m_fOffsetV);
+		}
+		break;
+	case COLORPAT_AZI_INC:
+		{
+			int	iVert = GetVertexIdx(fRing, fSide);
+			D3DXVECTOR3	vNormal(m_arrVert[iVert].n);
+			t.x = float(GetAzimuth(vNormal, fSide) * m_fColorCycles + m_fOffsetU);
+			t.y = float(GetIncline(vNormal) * m_fCyclesV + m_fOffsetV);
+		}
+		break;
+	case COLORPAT_EDGES:
+		{
+			int	iVert = GetVertexIdx(fRing, fSide);
+			if (iVert < m_arrAdjaceny.GetSize()) {	// if vertex index in range
+				DPoint3	vMean(m_arrVert[iVert].n);	// vertex normal is mean of adjacent face normals
+				DPoint3	vStdDev(0, 0, 0);
+				const CAdjacency&	adj = m_arrAdjaceny[iVert];
+				for (int iAdj = 0; iAdj < adj.m_nFaces; iAdj++) {	// for each adjacent face
+					int	iFace = adj.m_arrFaceIdx[iAdj];
+					DPoint3	vFaceNormal(m_arrFaceNormal[iFace]);
+					vStdDev += (vFaceNormal - vMean).Square();	// add squared difference to sum
+				}
+				vStdDev = (vStdDev / adj.m_nFaces).SquareRoot();	// 3D standard deviation
+				double	m = vStdDev.Length();	// geometric mean of 3D standard deviation
+				double	fBase = pow(10, -m_fEdgeGain);	// smaller bases are more sensitive
+				double	fScale = fBase - 1;
+				if (fScale)	// avoid divide by zero
+					m = (pow(fBase, m) - 1) / fScale;
+				t.x = float(m * m_fColorCycles + m_fOffsetU);
+			} else	// vertex index out of range
+				t.x = 0;
+			t.y = float(fRing * m_fCyclesV + m_fOffsetV);
+		}
+		break;
 	}
+}
+
+__forceinline int CPotGraphics::GetVertexIdx(double fRing, double fSide) const
+{
+	int	nSides = m_nSides;
+	int iRing = round(fRing * (m_nRings - 1));
+	int iSide = round(fSide * nSides);
+	return iRing * (nSides + 1) + iSide;
+}
+
+__forceinline double CPotGraphics::GetAzimuth(const D3DXVECTOR3& vNormal, double fAzimuth)
+{
+	DPoint	vNormal2(vNormal.x, vNormal.z);
+	vNormal2.Normalize();	// convert 2D normal on ring plane to unit vector
+	double	fTheta = fAzimuth * M_PI * 2;	// convert azimuth to radians
+	DPoint	vRef(sin(fTheta), -cos(fTheta));	// minus to match 3D normal's handedness
+	double	fDP = vRef.Dot(vNormal2);	// dot product
+	return acos(CLAMP(fDP, -1, 1)) / M_PI_2;	// deviation from circular, as normalized angle
+}
+
+__forceinline double CPotGraphics::GetIncline(const D3DXVECTOR3& vNormal)
+{
+	return asin(fabs(vNormal.y)) / M_PI_2;	// deviation from vertical, as normalized angle
 }
 
 void CPotGraphics::UpdateAnimation()
@@ -579,7 +747,7 @@ void CPotGraphics::UpdateAnimation()
 			int	iProp = m_arrModIdx[iMod];
 			m_Mod[iProp].m_fPhase += m_Mod[iProp].m_fPhaseSpeed / m_fFrameRate;
 		}
-		if (m_bModulatingMesh)	// if at least one mesh modulation
+		if (m_nModType & MOD_ANIMATED_MESH)	// if at least one mesh modulation is animated
 			MakeMesh();
 		else	// texture modulations only
 			UpdateTextureCoords();
@@ -1368,4 +1536,179 @@ void CPotGraphics::ComputeOuterRadiusRange(double& fMinRadius, double& fMaxRadiu
 	}
 	fMinRadius = fMin;
 	fMaxRadius = fMax;
+}
+
+int CPotGraphics::HitTest(CPoint point) const
+{
+	D3DXVECTOR3	rayPos, rayDir;
+	GetRay(point, rayPos, rayDir);
+	int	nFaces = m_nFaces;
+	int	iHitFace = -1;
+	float	fHitDist = 1;
+	int	iIdx = 0;
+	for (int iFace = 0; iFace < nFaces; iFace++) {	// for each face
+		float	fDist;
+		BOOL	bHit = D3DXIntersectTri(&m_arrVert[m_arrIdx[iIdx + 0]].pt, &m_arrVert[m_arrIdx[iIdx + 1]].pt, 
+			&m_arrVert[m_arrIdx[iIdx + 2]].pt, &rayPos, &rayDir, NULL, NULL, &fDist);
+		// if ray intersects face and intersection is nearer than current contender
+		if (bHit && fDist < fHitDist) {
+			iHitFace = iFace;	// store index of intersecting face
+			fHitDist = fDist;	// update intersection distance
+		}
+		iIdx += 3;
+	}
+	return iHitFace;
+}
+
+void CPotGraphics::GetVertexCoords(int iVert, int& iWall, int& iRing, int& iSide) const
+{
+	int	nStride = m_nSides + 1;
+	int	nWallStride = m_nRings * nStride;
+	iWall = iVert / nWallStride;
+	int	iWallVert = iVert % nWallStride;
+	iRing = iWallVert / nStride;
+	iSide = iWallVert % nStride;
+}
+
+#if POT_GFX_SHOW_FACE_NORMALS
+bool CPotGraphics::CreateFaceNormalLines()
+{
+	const float	fNormalLineLength = 5.0f;
+	m_vbFaceNormalLine.m_pVertBuf = NULL;	// release previous vertex buffer if any
+	int	nFaces = m_nFaces;
+	if (!nFaces)
+		return false;
+	int	nBufSize = sizeof(C3DLine) * nFaces;
+	CHECK(m_pDevice->CreateVertexBuffer(nBufSize, 0, D3DFVF_XYZ, D3DPOOL_MANAGED, &m_vbFaceNormalLine.m_pVertBuf, NULL));
+	C3DLine	*pLine;
+	CHECK(m_vbFaceNormalLine.m_pVertBuf->Lock(0, 0, reinterpret_cast<LPVOID *>(&pLine), 0));	// lock vertex buffer
+	int	iIdx = 0;
+	for (int iFace = 0; iFace < nFaces; iFace++) {	// for each face
+		D3DXVECTOR3	vCtr = (m_arrVert[m_arrIdx[iIdx + 0]].pt + m_arrVert[m_arrIdx[iIdx + 1]].pt 
+			+ m_arrVert[m_arrIdx[iIdx + 2]].pt) / 3;	// compute triangle's centroid
+		pLine[iFace].v[0] = vCtr;
+		pLine[iFace].v[1] = vCtr + m_arrFaceNormal[iFace] * fNormalLineLength;
+		iIdx += 3;	// three indices per face
+	}
+	CHECK(m_vbFaceNormalLine.m_pVertBuf->Unlock());	// unlock vertex buffer
+	m_vbFaceNormalLine.m_nPrimitives = nFaces;
+	return true;
+}
+
+bool CPotGraphics::DrawFaceNormalLines()
+{
+	D3DMATERIAL9	material;
+	CHECK(m_pDevice->GetMaterial(&material));	// save material
+	CHECK(m_pDevice->SetMaterial(&m_mtrlBounds));
+	IDirect3DBaseTexture9	*pTexture;
+	CHECK(m_pDevice->GetTexture(0, &pTexture));	// save texture
+	CHECK(m_pDevice->SetTexture(0, NULL));	// disable texture
+	CHECK(m_pDevice->SetStreamSource(0, m_vbFaceNormalLine.m_pVertBuf, 0, sizeof(D3DXVECTOR3)));
+	CHECK(m_pDevice->DrawPrimitive(D3DPT_LINELIST, 0, m_vbFaceNormalLine.m_nPrimitives));
+	CHECK(m_pDevice->SetMaterial(&material));	// restore material
+	CHECK(m_pDevice->SetTexture(0, pTexture));	// restore texture
+	return true;
+}
+#endif	// POT_GFX_SHOW_FACE_NORMALS
+
+#if POT_GFX_SHOW_VERTEX_NORMALS
+bool CPotGraphics::CreateVertexNormalLines()
+{
+	const float	fNormalLineLength = 5.0f;
+	m_vbVertexNormalLine.m_pVertBuf = NULL;	// release previous vertex buffer if any
+	int	nVerts = m_arrVert.GetSize();
+	if (!nVerts)
+		return false;
+	int	nBufSize = sizeof(C3DLine) * nVerts;
+	CHECK(m_pDevice->CreateVertexBuffer(nBufSize, 0, D3DFVF_XYZ, D3DPOOL_MANAGED, &m_vbVertexNormalLine.m_pVertBuf, NULL));
+	C3DLine	*pLine;
+	CHECK(m_vbVertexNormalLine.m_pVertBuf->Lock(0, 0, reinterpret_cast<LPVOID *>(&pLine), 0));	// lock vertex buffer
+	for (int iVert = 0; iVert < nVerts; iVert++) {	// for each vertex
+		D3DXVECTOR3	v = m_arrVert[iVert].pt;
+		pLine[iVert].v[0] = v;
+		pLine[iVert].v[1] = v + m_arrVert[iVert].n * fNormalLineLength;
+	}
+	CHECK(m_vbVertexNormalLine.m_pVertBuf->Unlock());	// unlock vertex buffer
+	m_vbVertexNormalLine.m_nPrimitives = nVerts;
+	return true;
+}
+
+bool CPotGraphics::DrawVertexNormalLines()
+{
+	D3DMATERIAL9	material;
+	CHECK(m_pDevice->GetMaterial(&material));	// save material
+	CHECK(m_pDevice->SetMaterial(&m_mtrlBounds));
+	IDirect3DBaseTexture9	*pTexture;
+	CHECK(m_pDevice->GetTexture(0, &pTexture));	// save texture
+	CHECK(m_pDevice->SetTexture(0, NULL));	// disable texture
+	CHECK(m_pDevice->SetStreamSource(0, m_vbVertexNormalLine.m_pVertBuf, 0, sizeof(D3DXVECTOR3)));
+	CHECK(m_pDevice->DrawPrimitive(D3DPT_LINELIST, 0, m_vbVertexNormalLine.m_nPrimitives));
+	CHECK(m_pDevice->SetMaterial(&material));	// restore material
+	CHECK(m_pDevice->SetTexture(0, pTexture));	// restore texture
+	return true;
+}
+#endif	// POT_GFX_SHOW_VERTEX_NORMALS
+
+#if POT_GFX_SHOW_FACE_SELECTION
+bool CPotGraphics::CreateSelectedFaces()
+{
+	m_vbSelectedFace.m_pVertBuf = NULL;	// release previous vertex buffer if any
+	int	nSelFaces = m_arrSelectedFaceIdx.GetSize();
+	if (!nSelFaces)
+		return false;
+	int	nBufSize = sizeof(C3DTriangle) * nSelFaces;
+	CHECK(m_pDevice->CreateVertexBuffer(nBufSize, 0, D3DFVF_XYZ, D3DPOOL_MANAGED, &m_vbSelectedFace.m_pVertBuf, NULL));
+	C3DTriangle	*pTri;
+	CHECK(m_vbSelectedFace.m_pVertBuf->Lock(0, 0, reinterpret_cast<LPVOID *>(&pTri), 0));	// lock vertex buffer
+	for (int iSelFace = 0; iSelFace < nSelFaces; iSelFace++) {
+		int	iIdx = m_arrSelectedFaceIdx[iSelFace] * 3;
+		if (iIdx < m_arrIdx.GetSize()) {	// if index within range
+			pTri[iSelFace].v[0] = m_arrVert[m_arrIdx[iIdx + 0]].pt;
+			pTri[iSelFace].v[1] = m_arrVert[m_arrIdx[iIdx + 1]].pt;
+			pTri[iSelFace].v[2] = m_arrVert[m_arrIdx[iIdx + 2]].pt;
+		}
+	}
+	CHECK(m_vbSelectedFace.m_pVertBuf->Unlock());	// unlock vertex buffer
+	m_vbSelectedFace.m_nPrimitives = nSelFaces;
+	return true;
+}
+
+bool CPotGraphics::DrawSelectedFaces()
+{
+	DWORD	nFillMode;
+	CHECK(m_pDevice->GetRenderState(D3DRS_FILLMODE, &nFillMode));	// save fill mode
+	CHECK(m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));	// set wireframe mode
+	D3DMATERIAL9	material;
+	CHECK(m_pDevice->GetMaterial(&material));	// save material
+	CHECK(m_pDevice->SetMaterial(&m_mtrlBounds));
+	IDirect3DBaseTexture9	*pTexture;
+	CHECK(m_pDevice->GetTexture(0, &pTexture));	// save texture
+	CHECK(m_pDevice->SetTexture(0, NULL));	// disable texture
+	CHECK(m_pDevice->SetStreamSource(0, m_vbSelectedFace.m_pVertBuf, 0, sizeof(D3DXVECTOR3)));
+	CHECK(m_pDevice->DrawPrimitive(D3DPT_TRIANGLELIST, 0, m_vbSelectedFace.m_nPrimitives));
+	CHECK(m_pDevice->SetRenderState(D3DRS_FILLMODE, nFillMode));	// restore fill mode
+	CHECK(m_pDevice->SetMaterial(&material));	// restore material
+	CHECK(m_pDevice->SetTexture(0, pTexture));	// restore texture
+	return true;
+}
+#endif	// POT_GFX_SHOW_FACE_SELECTION
+
+void CPotGraphics::GetSelection(CIntArrayEx& arrFaceIdx) const
+{
+#if POT_GFX_SHOW_FACE_SELECTION
+	arrFaceIdx = m_arrSelectedFaceIdx;
+#else
+	ASSERT(0);	// optional feature disabled
+#endif	// POT_GFX_SHOW_FACE_SELECTION
+}
+
+bool CPotGraphics::SetSelection(const CIntArrayEx& arrFaceIdx)
+{
+#if POT_GFX_SHOW_FACE_SELECTION
+	m_arrSelectedFaceIdx = arrFaceIdx;
+	return CreateSelectedFaces();
+#else
+	ASSERT(0);	// optional feature disabled
+	return false;
+#endif	// POT_GFX_SHOW_FACE_SELECTION
 }

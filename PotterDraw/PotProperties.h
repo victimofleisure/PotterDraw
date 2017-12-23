@@ -11,6 +11,9 @@
 		01		01nov17	add IsPolygon
 		02		03nov17	add property subgroup
 		03		06nov17	add lighting
+		04		23nov17	add modulation type flags
+		05		24nov17	add animated modulation methods
+		06		12dec17	add operations (subset of modulation operations)
 		
 */
 
@@ -61,6 +64,11 @@ public:
 		#include "PotPropsDef.h"
 		MOTIFS
 	};
+	enum {	// operations
+		#define OPERATIONDEF(name) OPER_##name,
+		#include "PotPropsDef.h"
+		OPERATIONS
+	};
 	enum {	// render styles
 		#define RENDERSTYLEDEF(name, initval) RENDSTYLE_##name,
 		#include "PotPropsDef.h"
@@ -71,6 +79,7 @@ public:
 	static const OPTION_INFO	m_ColorPattern[COLOR_PATTERNS];	// pattern names
 	static const OPTION_INFO	m_PaletteType[PALETTE_TYPES];	// palette types
 	static const OPTION_INFO	m_Motif[MOTIFS];	// motifs
+	static const OPTION_INFO	m_Operation[OPERATIONS];	// operations
 	static const COLORREF		m_cDefaultPalette[];	// default palette
 	static const STYLE_INFO		m_RenderStyleInfo[RENDER_STYLES];	// render styles
 	static const D3DMATERIAL9	m_mtrlPotDefault;	// default pot material properties
@@ -80,6 +89,10 @@ public:
 		PROPERTIES
 	};
 	static const PROPERTY_INFO	m_Info[PROPERTIES];	// fixed info for each property
+	enum {	// modulation type flags
+		MOD_ANIMATED		= 0x01,	// at least one property is animated
+		MOD_ANIMATED_MESH	= 0x02,	// at least one mesh property is animated
+	};
 
 // Data members
 	int		m_nFileVersion;
@@ -112,12 +125,15 @@ public:
 	static	bool	CanModulate(int iProp);
 	bool	IsModulated(int iProp) const;
 	bool	IsAnimated(int iProp) const;
+	bool	IsAnimatedModulation(int iProp) const;
 	bool	HasScallops() const;
 	bool	HasRipples() const;
 	bool	HasBends() const;
 	bool	HasHelix() const;
 	bool	HasModulations() const;
 	bool	HasAnimatedModulations() const;
+	int		GetModulationCount() const;
+	int		GetAnimatedModulationCount() const;
 	bool	IsPolygon() const;
 	LPVOID	GetPropertyAddress(int iProp);
 	LPCVOID	GetPropertyAddress(int iProp) const;
@@ -127,7 +143,7 @@ public:
 	void	WriteProperties(LPCTSTR szPath) const;
 	static	int		FindProperty(LPCTSTR szInternalName);
 	static	int		FindRenderStyle(UINT nStyle);
-	bool	GetModulations(CBoundArray<int, PROPERTIES>& arrModIdx) const;
+	UINT	GetModulations(CBoundArray<int, PROPERTIES>& arrModIdx) const;
 };
 
 inline bool CPotProperties::IsModulated(int iProp) const
@@ -138,6 +154,11 @@ inline bool CPotProperties::IsModulated(int iProp) const
 inline bool CPotProperties::IsAnimated(int iProp) const
 {
 	return m_Mod[iProp].IsAnimated();
+}
+
+inline bool CPotProperties::IsAnimatedModulation(int iProp) const
+{
+	return m_Mod[iProp].IsAnimatedModulation();
 }
 
 inline bool CPotProperties::HasScallops() const

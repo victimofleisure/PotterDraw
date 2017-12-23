@@ -99,7 +99,7 @@ void CPropertiesBar::CMyPropertiesGridCtrl::UpdateModulationIndicators()
 	for (int iProp = 0; iProp < nProps; iProp++) {	// for each property
 		int	iModInd;
 		if (pDoc != NULL && pDoc->IsModulated(iProp)) {
-			if (pDoc->m_Mod[iProp].IsAnimated()) {
+			if (pDoc->IsAnimated(iProp)) {
 				if (pDoc->m_bAnimation)
 					iModInd = MI_ANIMATED;
 				else

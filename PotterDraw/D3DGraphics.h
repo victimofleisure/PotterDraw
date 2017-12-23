@@ -9,6 +9,7 @@
 		rev		date	comments
         00      12mar17	initial version
 		01		06nov17	add get/set light
+		02		12dec17	add transparent style
 		
 */
 
@@ -39,6 +40,7 @@ public:
 		ST_GOURAUD		= 0x0002,		// use Gouraud shading
 		ST_HIGHLIGHTS	= 0x0004,		// show specular highlights
 		ST_CULLING		= 0x0008,		// do back-face culling
+		ST_TRANSPARENT	= 0x0010,		// transparent material 
 	};
 	enum {	// standard views
 		SV_ABOVE,
@@ -88,6 +90,7 @@ public:
 	static	D3DCOLOR	CvtFromColorRef(COLORREF Color);
 	bool	ExportImage(LPCTSTR szPath, D3DXIMAGE_FILEFORMAT nFormat = D3DXIFF_BMP);
 	bool	ExportImage(LPCTSTR szPath, CSize szImage, D3DXIMAGE_FILEFORMAT nFormat = D3DXIFF_BMP);
+	static	int		FindStandardView(const D3DXVECTOR3& vRotation);
 
 protected:
 // Constants

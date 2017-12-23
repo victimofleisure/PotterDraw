@@ -11,6 +11,10 @@
 		01		06oct17	bump file version to 2
 		02		03nov17	add property subgroup
 		03		06nov17	add lighting
+		04		23nov17	add modulation type flags
+		05		24nov17	add animated modulation methods
+		06		12dec17	add operations (subset of modulation operations)
+		07		12dec17	bump file version to 3
 		
 */
 
@@ -23,7 +27,7 @@
 #include "PotGraphics.h"	// for style bits
 
 #define FILE_ID			_T("PotterDraw")
-#define	FILE_VERSION	2
+#define	FILE_VERSION	3
 
 #define RK_FILE_ID		_T("sFileID")
 #define RK_FILE_VERSION	_T("nFileVersion")
@@ -65,6 +69,11 @@ const CProperties::OPTION_INFO CPotProperties::m_PaletteType[PALETTE_TYPES] = {
 
 const CProperties::OPTION_INFO CPotProperties::m_Motif[MOTIFS] = {
 	#define MOTIFDEF(name) {_T(#name), IDS_PDR_OPT_MOTIF_##name},
+	#include "PotPropsDef.h"
+};
+
+const CProperties::OPTION_INFO CPotProperties::m_Operation[OPERATIONS] = {
+	#define OPERATIONDEF(name) {_T(#name), IDS_MOD_OPT_OPER_##name},
 	#include "PotPropsDef.h"
 };
 
@@ -304,21 +313,24 @@ int CPotProperties::FindRenderStyle(UINT nStyle)
 	return -1;
 }
 
-bool CPotProperties::GetModulations(CBoundArray<int, PROPERTIES>& arrModIdx) const
+UINT CPotProperties::GetModulations(CBoundArray<int, PROPERTIES>& arrModIdx) const
 {
-	bool	bModMesh = false;
+	UINT	nModType = 0;
 	arrModIdx.SetSize(PROPERTIES);
 	int	nMods = 0;
-	for (int iProp = 0; iProp < PROPERTIES; iProp++) {
-		if (IsModulated(iProp)) {
+	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
+		if (IsModulated(iProp)) {	// if property is modulated
 			arrModIdx[nMods] = iProp;
 			nMods++;
-			if (m_Info[iProp].iGroup == GROUP_MESH)
-				bModMesh = true;
+			if (IsAnimated(iProp)) {	// if property is animated
+				nModType |= MOD_ANIMATED;
+				if (m_Info[iProp].iGroup == GROUP_MESH)	// if mesh property
+					nModType |= MOD_ANIMATED_MESH;
+			}
 		}
 	}
 	arrModIdx.SetSize(nMods);
-	return bModMesh;
+	return nModType;
 }
 
 bool CPotProperties::HasModulations() const
@@ -333,10 +345,30 @@ bool CPotProperties::HasModulations() const
 bool CPotProperties::HasAnimatedModulations() const
 {
 	for (int iProp = 0; iProp < PROPERTIES; iProp++) {
-		if (IsModulated(iProp) && IsAnimated(iProp))
+		if (IsAnimatedModulation(iProp))
 			return true;
 	}
 	return false;
+}
+
+int CPotProperties::GetModulationCount() const
+{
+	int	nMods = 0;
+	for (int iProp = 0; iProp < PROPERTIES; iProp++) {
+		if (IsModulated(iProp))
+			nMods++;
+	}
+	return nMods;
+}
+
+int CPotProperties::GetAnimatedModulationCount() const
+{
+	int	nAnimMods = 0;
+	for (int iProp = 0; iProp < PROPERTIES; iProp++) {
+		if (IsAnimatedModulation(iProp))
+			nAnimMods++;
+	}
+	return nAnimMods;
 }
 
 bool CPotProperties::CanModulate(int iProp)

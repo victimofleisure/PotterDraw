@@ -71,6 +71,7 @@ public:
 	void	OnRecord(bool bEnable);
 	void	ShowRecordStatusDlg(bool bShow);
 	bool	CheckForUpdates(bool Explicit);
+	void	UpdateModulationBar(const CPotterDrawDoc *pDoc);
 
 // Overrides
 public:
@@ -119,7 +120,6 @@ protected:
 	CString	GetResolutionString() const;
 	void	FullScreen(bool bEnable);
 	void	UpdateOptions();
-	void	UpdateModulationBar(const CPotterDrawDoc *pDoc);
 	void	GotoNextPane(bool bPrev = false);
 	static	UINT	CheckForUpdatesThreadFunc(LPVOID Param);
 

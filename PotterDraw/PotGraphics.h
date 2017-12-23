@@ -12,6 +12,10 @@
 		02		06nov17	add get/set pot material
 		03		14nov17	add outer radius array
 		04		15nov17	optimize modulo one wrapping
+		05		23nov17	add modulation type flags
+		06		06dec17	add hit test and face and vertex accessors
+		07		06dec17	add optional showing of normals and face selection
+		08		10dec17	add azimuth and incline color patterns
 		
 */
 
@@ -21,6 +25,10 @@
 #include "DibEx.h"
 #include "PotProperties.h"
 #include "Spline.h"
+
+#define	POT_GFX_SHOW_FACE_NORMALS 0		// non-zero to enable showing face normals
+#define	POT_GFX_SHOW_VERTEX_NORMALS 0	// non-zero to enable showing vertex normals
+#define	POT_GFX_SHOW_FACE_SELECTION 0	// non-zero to enable showing face selection
 
 class DPoint;	// for plotting
 template<class T> class CRange;	// for plotting
@@ -34,9 +42,26 @@ public:
 
 // Constants
 	enum {	// derived styles; low word reserved for base class
-		ST_TEXTURE	= 0x00010000,	// show texture mapping
-		ST_BOUNDS	= 0x00020000,	// show bounding box
+		ST_TEXTURE			= 0x00010000,	// show texture mapping
+		ST_BOUNDS			= 0x00020000,	// show bounding box
+		ST_FACE_NORMALS		= 0x00040000,	// show face normals (if supported)
+		ST_VERTEX_NORMALS	= 0x00080000,	// show vertex normals (if supported)
 	};
+
+// Types
+	struct CFace {
+		int	arrIdx[3];	// array of vertex indices
+	};
+	class C3DVertexNormal {	// binary copy OK
+	public:
+		D3DXVECTOR3	pt;	// 3D point
+		D3DXVECTOR3	n;	// normal at point
+	};
+	class C3DVertexNormalTexture : public C3DVertexNormal {
+	public:
+		D3DXVECTOR2	t;	// texture coords
+	};
+	typedef C3DVertexNormalTexture CVertex;
 
 // Attributes
 	virtual	bool	SetStyle(UINT nStyle);
@@ -52,6 +77,14 @@ public:
 	bool	SetPotMaterial(const D3DMATERIAL9& mtrlPot);
 	static const D3DVECTOR&	GetDefaultLightDir();
 	void	GetOuterRadiusRange(double& fMinRadius, double& fMaxRadius) const;
+	int		GetModulationCount() const;
+	UINT	GetModulationType() const;
+	void	GetFace(int iFace, CFace& Face) const;
+	void	GetFaceNormal(int iFace, D3DXVECTOR3& vNormal) const;
+	void	GetVertex(int iVertex, CVertex& Vert) const;
+	void	GetVertexCoords(int iVertex, int& iWall, int& iRing, int& iSide) const;
+	void	GetSelection(CIntArrayEx& arrFaceIdx) const;
+	bool	SetSelection(const CIntArrayEx& arrFaceIdx);
 
 // Operations
 	bool	MakeMesh(bool bResizing = false);
@@ -67,6 +100,7 @@ public:
 	bool	ComputeBounds(D3DXVECTOR3& p1, D3DXVECTOR3& p2);
 	void	ComputeOuterRadiusRange(double& fMinRadius, double& fMaxRadius) const;
 	static	COLORREF	Interpolate(const CDibEx& dib, double x, double y);
+	int		HitTest(CPoint point) const;
 
 protected:
 // Constants
@@ -83,25 +117,16 @@ protected:
 		int		m_nPrimitives;	// number of primitives in vertex buffer
 		int		m_iMaterial;	// index into array of material properties
 	};
-	class C3DVertexNormal {	// binary copy OK
-	public:
-		D3DXVECTOR3	pt;	// 3D point
-		D3DXVECTOR3	n;	// normal at point
+	struct C3DLine {
+		D3DVECTOR	v[2];	// 3D line segment end points
 	};
-	class C3DVertexNormalTexture : public C3DVertexNormal {
-	public:
-		D3DXVECTOR2	t;	// texture coords
-	};
-	class C3DVertexNormalColor : public C3DVertexNormal {
-	public:
-		D3DCOLOR	c;	// vertex color
+	struct C3DTriangle {
+		D3DVECTOR	v[3];	// 3D triangle vertices
 	};
 	typedef CArrayEx<C3DVertexBuffer, C3DVertexBuffer&> C3DVertexBufferArray;
-	typedef CArrayEx<C3DVertexNormal, C3DVertexNormal&> C3DVertexNormalArray;
-	typedef CArrayEx<C3DVertexNormalTexture, C3DVertexNormalTexture&> C3DVertexNormalTextureArray;
-	typedef CArrayEx<C3DVertexNormalColor, C3DVertexNormalColor&> C3DVertexNormalColorArray;
-	typedef C3DVertexNormalTexture CVertex;
-	typedef C3DVertexNormalTextureArray CVertexArray;
+	typedef CArrayEx<CVertex, CVertex&> CVertexArray;
+	typedef CArrayEx<C3DLine, C3DLine&> C3DLineArray;
+	typedef CArrayEx<C3DTriangle, C3DTriangle&> C3DTriangleArray;
 	class CAdjacency {
 	public:
 		int		m_nFaces;			// number of faces stored in array
@@ -129,7 +154,7 @@ protected:
 	int		m_nAdjSides;		// number of sides in adjacency array
 	CPotProperties	m_arrSrcProps;	// source properties, used during modulation
 	CBoundArray<int, PROPERTIES>	m_arrModIdx;	// array of indices of properties to be modulated
-	bool	m_bModulatingMesh;	// true if modulating mesh
+	UINT	m_nModType;			// modulation type; see enum in PotProperties.h
 	CDoubleArray	m_arrSpline;	// spline as array of ring radii
 	DRect	m_rSplineBounds;	// spline bounds
 	CDoubleArray	m_faOuterRadius;	// 2D array of outer wall radii
@@ -161,6 +186,27 @@ protected:
 	void	RestoreModulatedProperties();
 	bool	ExportTexture(LPCTSTR szPath, CString& sNewPath);
 	static	double	ConvertPropertyToDouble(LPCVOID pSrc, const type_info *pType);
+	int		GetVertexIdx(double fRing, double fSide) const;
+	static	double	GetAzimuth(const D3DXVECTOR3& vNormal, double fAzimuth);
+	static	double	GetIncline(const D3DXVECTOR3& vNormal);
+
+// Optional features
+#if POT_GFX_SHOW_FACE_NORMALS
+	C3DVertexBuffer	m_vbFaceNormalLine;	// vertex buffer for face normal line segments
+	bool	CreateFaceNormalLines();
+	bool	DrawFaceNormalLines();
+#endif	// POT_GFX_SHOW_FACE_NORMALS
+#if POT_GFX_SHOW_VERTEX_NORMALS
+	C3DVertexBuffer	m_vbVertexNormalLine;	// vertex buffer for vertex normal line segments
+	bool	CreateVertexNormalLines();
+	bool	DrawVertexNormalLines();
+#endif	// POT_GFX_SHOW_VERTEX_NORMALS
+#if POT_GFX_SHOW_FACE_SELECTION
+	CIntArrayEx	m_arrSelectedFaceIdx;	// array of selected face indices
+	C3DVertexBuffer	m_vbSelectedFace;	// vertex buffer for selected faces
+	bool	CreateSelectedFaces();
+	bool	DrawSelectedFaces();
+#endif	// POT_GFX_SHOW_FACE_SELECTION
 };
 
 inline void CPotGraphics::GetProperties(CPotProperties& Props) const
@@ -197,4 +243,32 @@ inline void CPotGraphics::GetOuterRadiusRange(double& fMinRadius, double& fMaxRa
 {
 	fMaxRadius = m_fMaxOuterRadius;
 	fMinRadius = m_fMinOuterRadius;
+}
+
+inline int CPotGraphics::GetModulationCount() const
+{
+	return m_arrModIdx.GetSize();
+}
+
+inline UINT CPotGraphics::GetModulationType() const
+{
+	return m_nModType;
+}
+
+inline void CPotGraphics::GetFace(int iFace, CFace& Face) const
+{
+	int	iIdx = iFace * 3;
+	Face.arrIdx[0] = m_arrIdx[iIdx + 0];
+	Face.arrIdx[1] = m_arrIdx[iIdx + 1];
+	Face.arrIdx[2] = m_arrIdx[iIdx + 2];
+}
+
+inline void CPotGraphics::GetFaceNormal(int iFace, D3DXVECTOR3& vNormal) const
+{
+	vNormal = m_arrFaceNormal[iFace];
+}
+
+inline void CPotGraphics::GetVertex(int iVertex, CVertex& Vert) const
+{
+	Vert = m_arrVert[iVertex];
 }

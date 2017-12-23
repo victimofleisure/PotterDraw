@@ -10,6 +10,7 @@
         00      04may17	initial version
 		01		03nov17	add property subgroup
 		02		10nov17	add power types
+		03		24nov17	add animated modulation accessor
 		
 */
 
@@ -87,6 +88,7 @@ public:
 	bool	IsDefault() const;
 	bool	IsModulated() const;
 	bool	IsAnimated() const;
+	bool	IsAnimatedModulation() const;
 	bool	operator==(const CModulationProps& props) const;
 	bool	operator!=(const CModulationProps& props) const;
 
@@ -122,4 +124,9 @@ inline bool CModulationProps::IsModulated() const
 inline bool CModulationProps::IsAnimated() const
 {
 	return m_fPhaseSpeed != 0;
+}
+
+inline bool CModulationProps::IsAnimatedModulation() const
+{
+	return IsModulated() && IsAnimated();
 }

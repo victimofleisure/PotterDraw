@@ -11,6 +11,7 @@
 		01		25aug17	add check for updates
 		02		05sep17	add view spline drag
 		03		03nov17	add property subgroup
+		04		27nov17	lower min val for zoom step and pan step
 		
 */
 
@@ -28,8 +29,8 @@ GROUPDEF(	GENERAL		)
 #ifdef PROPDEF
 
 //			group		subgroup	proptype	type		name					initval			minval		maxval		itemname	items
-PROPDEF(	VIEW,		NONE,		VAR,		double,		fZoomStep,				10.0,			1.0,		100.0,		NULL,		0)
-PROPDEF(	VIEW,		NONE,		VAR,		double,		fPanStep,				30.0,			1.0,		100.0,		NULL,		0)
+PROPDEF(	VIEW,		NONE,		VAR,		double,		fZoomStep,				10.0,			0.1,		100.0,		NULL,		0)
+PROPDEF(	VIEW,		NONE,		VAR,		double,		fPanStep,				30.0,			0.1,		100.0,		NULL,		0)
 PROPDEF(	VIEW,		NONE,		VAR,		double,		fDragRotateStep,		0.57f,			0.01,		1.0,		NULL,		0)
 PROPDEF(	EXPORT,		NONE,		VAR,		bool,		bVertexColor,			0,				0,			0,			NULL,		0)
 PROPDEF(	EXPORT,		NONE,		VAR,		bool,		bCustomImageSize,		0,				0,			0,			NULL,		0)

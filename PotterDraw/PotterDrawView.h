@@ -11,6 +11,8 @@
 		01		09oct17	add pre-record auto-rotate and animation states
 		02		06nov17	add lighting dialog
 		03		15nov17	add palette import/export
+		04		23nov17	add step animation
+		05		12dec17	add transparent render style
 		
 */
 
@@ -44,12 +46,14 @@ public:
 	int		GetRecordDuration() const;
 	int		GetRecordFramesDone() const;
 	void	PlotProperty(int iProp, CArrayEx<DPoint, DPoint&>& arrPoint, CRange<double> *pRange);
+	void	GetAnimationState(CPotProperties& Props) const;
 
 // Operations
 public:
 	void	SetAnimation(bool bEnable);
 	double	MeasureFrameRate();
 	bool	Record(bool bEnable);
+	void	StepAnimation(bool bForward);
 
 // Overrides
 protected:
@@ -120,6 +124,7 @@ protected:
 	void	EndDrag();
 	void	UpdateAnimationEnable();
 	bool	ExportImage(LPCTSTR szPath, D3DXIMAGE_FILEFORMAT nFormat = D3DXIFF_BMP);
+	void	DumpFace(int iFace);
 	static	void	CALLBACK	TimerCallback(UINT uTimerID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
 	static	CString	MakeFileFilter(const FILE_TYPE *pType, int nTypes);
 	static	int		FindFileType(const FILE_TYPE *pType, int nTypes, LPCTSTR szExt);
@@ -151,20 +156,22 @@ protected:
 	afx_msg void OnUpdateViewRotateAuto(CCmdUI *pCmdUI);
 	afx_msg void OnViewRotateReset();
 	afx_msg void OnViewRotateEdit();
-	afx_msg void OnViewStyleWireframe();
-	afx_msg void OnUpdateViewStyleWireframe(CCmdUI *pCmdUI);
-	afx_msg void OnViewStyleGouraud();
-	afx_msg void OnUpdateViewStyleGouraud(CCmdUI *pCmdUI);
-	afx_msg void OnViewStyleHighlights();
-	afx_msg void OnUpdateViewStyleHighlights(CCmdUI *pCmdUI);
-	afx_msg void OnViewStyleCulling();
-	afx_msg void OnUpdateViewStyleCulling(CCmdUI *pCmdUI);
-	afx_msg void OnViewStyleTexture();
-	afx_msg void OnUpdateViewStyleTexture(CCmdUI *pCmdUI);
-	afx_msg void OnViewStyleAnimation();
-	afx_msg void OnUpdateViewStyleAnimation(CCmdUI *pCmdUI);
-	afx_msg void OnViewStyleBounds();
-	afx_msg void OnUpdateViewStyleBounds(CCmdUI *pCmdUI);
+	afx_msg void OnViewAnimation();
+	afx_msg void OnUpdateViewAnimation(CCmdUI *pCmdUI);
+	afx_msg void OnRenderWireframe();
+	afx_msg void OnUpdateRenderWireframe(CCmdUI *pCmdUI);
+	afx_msg void OnRenderGouraud();
+	afx_msg void OnUpdateRenderGouraud(CCmdUI *pCmdUI);
+	afx_msg void OnRenderHighlights();
+	afx_msg void OnUpdateRenderHighlights(CCmdUI *pCmdUI);
+	afx_msg void OnRenderCulling();
+	afx_msg void OnUpdateRenderCulling(CCmdUI *pCmdUI);
+	afx_msg void OnRenderTexture();
+	afx_msg void OnUpdateRenderTexture(CCmdUI *pCmdUI);
+	afx_msg void OnRenderTransparent();
+	afx_msg void OnUpdateRenderTransparent(CCmdUI *pCmdUI);
+	afx_msg void OnRenderBounds();
+	afx_msg void OnUpdateRenderBounds(CCmdUI *pCmdUI);
 	afx_msg void OnViewZoomIn();
 	afx_msg void OnViewZoomOut();
 	afx_msg void OnViewZoomReset();
@@ -187,10 +194,15 @@ protected:
 	afx_msg void OnUpdateFileRecord(CCmdUI *pCmdUI);
 	virtual void OnPrint(CDC* pDC, CPrintInfo* pInfo);
 	afx_msg void OnUpdateNextPane(CCmdUI* pCmdUI);
-	afx_msg void OnViewLighting();
+	afx_msg void OnRenderLighting();
 	afx_msg void OnToolsMeshInfo();
 	afx_msg void OnPaletteImport();
 	afx_msg void OnPaletteExport();
+	afx_msg void OnViewStepForward();
+	afx_msg void OnUpdateViewStepForward(CCmdUI *pCmdUI);
+	afx_msg void OnViewStepBackward();
+	afx_msg void OnUpdateViewStepBackward(CCmdUI *pCmdUI);
+	afx_msg void OnUpdateViewRandomPhase(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // debug version in PotterDrawView.cpp
@@ -258,4 +270,9 @@ inline int CPotterDrawView::GetRecordFramesDone() const
 inline void CPotterDrawView::PlotProperty(int iProp, CArrayEx<DPoint, DPoint&>& arrPoint, CRange<double> *pRange)
 {
 	m_Graphics.PlotProperty(iProp, arrPoint, pRange);
+}
+
+inline void CPotterDrawView::GetAnimationState(CPotProperties& Props) const
+{
+	m_Graphics.GetAnimationState(Props);
 }

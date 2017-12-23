@@ -11,6 +11,7 @@
 		01		24aug17	add load texture file command
 		02		06nov17	add lighting
 		03		07nov17	in OnEditUndo and OnEditRedo, set modified flag
+		04		24nov17	add save/restore phase for animation undo
 
 */
 
@@ -133,6 +134,42 @@ void CPotterDrawDoc::RestoreString(const CUndoState& State, CString& str)
 	str = pVal->m_str;
 }
 
+void CPotterDrawDoc::SavePhases(CUndoState& State)
+{
+	if (m_bAnimation && State.GetCode() == UCODE_PROPERTY) {	// if animating and property edit
+		POSITION	pos = GetFirstViewPosition();	// get first view
+		if (pos != NULL) {
+			CPotterDrawView	*pView = DYNAMIC_DOWNCAST(CPotterDrawView, GetNextView(pos));
+			if (pView != NULL)
+				pView->GetAnimationState(*this);	// retrieve current phases from vieew
+		}
+	}
+	CRefPtr<CUndoPhases>	pVal;
+	pVal.CreateObj();
+	int	nAnimMods = GetAnimatedModulationCount();	// extra iteration to get phase array size
+	pVal->m_arrPhase.SetSize(nAnimMods);	// allocate phase array
+	int	iPhase = 0;
+	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
+		if (IsAnimatedModulation(iProp)) {	// if property is animated modulation
+			pVal->m_arrPhase[iPhase] = m_Mod[iProp].m_fPhase;	// save modulation's phase
+			iPhase++;	// bump phase array index
+		}
+	}
+	State.SetObj(pVal);
+}
+
+void CPotterDrawDoc::RestorePhases(const CUndoState& State)
+{
+	CUndoPhases	*pVal = static_cast<CUndoPhases *>(State.GetObj());
+	int	iPhase = 0;
+	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
+		if (IsAnimatedModulation(iProp)) {	// if property is animated modulation
+			m_Mod[iProp].m_fPhase = pVal->m_arrPhase[iPhase];	// restore modulation's phase
+			iPhase++;	// bump phase array index
+		}
+	}
+}
+
 void CPotterDrawDoc::SaveUndoState(CUndoState& State)
 {
 	switch (State.GetCode()) {
@@ -146,8 +183,14 @@ void CPotterDrawDoc::SaveUndoState(CUndoState& State)
 			default:
 				// only scalars, no strings or pointers
 				GetValue(iProp, &State.m_Val, sizeof(State.m_Val));
-				if (iProp == PROP_nColors)
+				switch (iProp) {
+				case PROP_nColors:
 					SavePalette(State);
+					break;
+				case PROP_bAnimation:
+					SavePhases(State);
+					break;
+				}
 			}
 		}
 		break;
@@ -177,6 +220,11 @@ void CPotterDrawDoc::SaveUndoState(CUndoState& State)
 			pVal->m_mtrlPot = m_mtrlPot;
 			State.SetObj(pVal);
 		}
+		break;
+	case UCODE_STEP_ANIMATION:
+	case UCODE_RANDOM_PHASE:
+		SavePhases(State);
+		break;
 	}
 }
 
@@ -193,8 +241,14 @@ void CPotterDrawDoc::RestoreUndoState(const CUndoState& State)
 			default:
 				// only scalars, no strings or pointers
 				SetValue(iProp, &State.m_Val, sizeof(State.m_Val));
-				if (iProp == PROP_nColors)
+				switch (iProp) {
+				case PROP_nColors:
 					RestorePalette(State);
+					break;
+				case PROP_bAnimation:
+					RestorePhases(State);
+					break;
+				}
 			}
 			CPropertyHint	hint(iProp);
 			UpdateAllViews(NULL, HINT_PROPERTY, &hint);
@@ -228,6 +282,14 @@ void CPotterDrawDoc::RestoreUndoState(const CUndoState& State)
 			m_mtrlPot = pVal->m_mtrlPot;
 			UpdateAllViews(NULL, HINT_LIGHTING);
 		}
+		break;
+	case UCODE_STEP_ANIMATION:
+	case UCODE_RANDOM_PHASE:
+		{
+			RestorePhases(State);
+			UpdateAllViews(NULL, HINT_MOD_PHASE);
+		}
+		break;
 	}
 }
 
@@ -255,7 +317,13 @@ CString CPotterDrawDoc::GetUndoTitle(const CUndoState& State)
 		sTitle.LoadString(CSplineBar::GetUndoTitle(State.GetCtrlID()));
 		break;
 	case UCODE_LIGHTING:
-		sTitle.LoadString(IDS_LIGHTING);
+		sTitle.LoadString(IDS_UNDO_LIGHTING);
+		break;
+	case UCODE_STEP_ANIMATION:
+		sTitle.LoadString(IDS_UNDO_STEP_ANIMATION);
+		break;
+	case UCODE_RANDOM_PHASE:
+		sTitle.LoadString(IDS_UNDO_RANDOM_PHASE);
 		break;
 	}
 	return sTitle;
@@ -324,6 +392,7 @@ BEGIN_MESSAGE_MAP(CPotterDrawDoc, CDocument)
 	ON_COMMAND_RANGE(ID_SPLINE_CMD_FIRST, ID_SPLINE_CMD_LAST, OnSplineCmd)
 	ON_UPDATE_COMMAND_UI_RANGE(ID_SPLINE_CMD_FIRST, ID_SPLINE_CMD_LAST, OnUpdateSplineCmd)
 	ON_COMMAND(ID_FILE_LOAD_TEXTURE, OnFileLoadTexture)
+	ON_COMMAND(ID_VIEW_RANDOM_PHASE, OnViewRandomPhase)
 END_MESSAGE_MAP()
 
 // CPotterDrawDoc message handlers
@@ -512,4 +581,15 @@ void CPotterDrawDoc::OnFileLoadTexture()
 	if (fd.DoModal() == IDOK) {
 		LoadTexture(fd.GetPathName());
 	}
+}
+
+void CPotterDrawDoc::OnViewRandomPhase()
+{
+	NotifyUndoableEdit(0, UCODE_RANDOM_PHASE);
+	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
+		if (IsAnimatedModulation(iProp))	// if property is animated modulation
+			m_Mod[iProp].m_fPhase = rand() / double(RAND_MAX);	// randomize its phase
+	}
+	UpdateAllViews(NULL, HINT_MOD_PHASE);
+	SetModifiedFlag();
 }

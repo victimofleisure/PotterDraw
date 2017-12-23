@@ -3,19 +3,14 @@
 // under the terms of the GNU General Public License as published by the Free
 // Software Foundation; either version 2 of the License, or any later version.
 /*
-        chris korda
- 
-		revision history:
-		rev		date	comments
-		00		12mar17	1.0.00.000
-		01		27jul17	1.0.00.001
-		02		05sep17	1.0.01.000
-		03		07sep17	1.0.02.000
-		04		20oct17	1.0.03.000
-		05		26oct17	1.0.03.001
-		06		17nov17	1.0.04.000
-		07		15dec17	1.0.05.000
+		chris korda
 
-		DON'T FORGET TO CHANGE VERSION RESOURCE
+		rev		date	comments
+		00		14dec17	initial version
+
+		double-precision 3D coordinate
 
 */
+
+#include "stdafx.h"
+#include "DPoint3.h"

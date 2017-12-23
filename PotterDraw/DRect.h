@@ -7,6 +7,8 @@
 
 		rev		date		comments
 		00		28jan03		initial version
+		01		15dec17		make == and != exact, and add Compare with epsilon
+		02		15dec17		remove self-assignment check
 
 		rectangle container class
 
@@ -50,6 +52,7 @@ public:
 	DRect& operator-=(const DPoint& p);
 	bool operator==(const DRect& r) const;
 	bool operator!=(const DRect& r) const;
+	bool Compare(const DRect& r, double fEpsilon = 1e-10) const;
 	operator RECT() const;
 	DRect& Normalize();
 	void Union(const DRect& Rect1, const DRect& Rect2);
@@ -111,8 +114,6 @@ inline DRect::DRect(const DRect& r)
 
 inline DRect& DRect::operator=(const DRect& r)
 {
-	if (this == &r)
-		return(*this);	// self-assignment
 	x1 = r.x1;
 	y1 = r.y1;
 	x2 = r.x2;
@@ -206,6 +207,11 @@ inline bool DRect::operator==(const DRect& p) const
 inline bool DRect::operator!=(const DRect& p) const
 {
 	return(TopLeft() != p.TopLeft() || BottomRight() != p.BottomRight());
+}
+
+inline bool DRect::Compare(const DRect& r, double fEpsilon) const
+{
+	return(TopLeft().Compare(r.TopLeft(), fEpsilon) && BottomRight().Compare(r.BottomRight(), fEpsilon));
 }
 
 inline DRect::operator RECT() const

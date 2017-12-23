@@ -8,32 +8,16 @@
 		rev		date	comments
 		00		28jan03	initial version
         01		22jun17	add length, distance and intersect methods
+		02		15dec17	add Compare with epsilon
 
 		double-precision 2D coordinate
 
 */
 
 #include "stdafx.h"
-#include "DPoint.h"
 #define _USE_MATH_DEFINES
-#include "math.h"
-
-const double DPoint::Epsilon = 1e-10;
-
-bool DPoint::Equal(double a, double b)
-{
-	return(fabs(a - b) < Epsilon);	// less than this and they're equal
-}
-
-double DPoint::Length() const
-{
-	return(sqrt(x * x + y * y));
-}
-
-double DPoint::Distance(const DPoint& p) const
-{
-	return((p - *this).Length());
-}
+#include <math.h>
+#include "DPoint.h"
 
 DPoint DPoint::Intersect(DPoint p1, DPoint p2, DPoint& vIntersect) const
 {
@@ -46,16 +30,6 @@ DPoint DPoint::Intersect(DPoint p1, DPoint p2, DPoint& vIntersect) const
 	// rotate adjacent side to be colinear with input line segment
 	vIntersect = DPoint(sin(fThetaL), cos(fThetaL));	// intersection vector
 	return vIntersect * fLenAdj + p1;	// return intersection point
-}
-
-void DPoint::Scale(DPoint ptOrigin, double fScale)
-{
-	*this = (*this - ptOrigin) * fScale + ptOrigin;
-}
-
-void DPoint::Scale(DPoint ptOrigin, DPoint ptScale)
-{
-	*this = (*this - ptOrigin) * ptScale + ptOrigin;
 }
 
 void DPoint::Rotate(DPoint ptOrigin, double fRotation)

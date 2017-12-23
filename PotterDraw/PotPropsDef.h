@@ -15,6 +15,11 @@
 		05		03nov17	add property subgroup
 		06		10nov17	add scallop power type
 		07		15nov17	add radius color pattern
+		08		10dec17	add azimuth and incline color patterns
+		09		12dec17	add operations (subset of modulation operations)
+		10		12dec17	for ripple and bend, add operation, power and power type
+		11		12dec17	add transparent render style
+		12		15dec17	add edges color pattern
 		
 */
 
@@ -66,6 +71,9 @@ PROPDEF(	MESH,		RIPPLE,		VAR,		double,		fRipples,			0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		RIPPLE,		VAR,		double,		fRippleDepth,		0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		RIPPLE,		VAR,		double,		fRipplePhase,		0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		RIPPLE,		ENUM,		int,		iRippleMotif,		0,				0,			0,			m_Motif,	_countof(m_Motif))
+PROPDEF(	MESH,		RIPPLE,		ENUM,		int,		iRippleOperation,	0,				0,			0,			m_Operation,	_countof(m_Operation))
+PROPDEF(	MESH,		RIPPLE,		VAR,		double,		fRipplePower,		0,				0,			DBL_MAX,	NULL,		0)
+PROPDEF(	MESH,		RIPPLE,		ENUM,		int,		iRipplePowerType,	0,				0,			0,			CModulationProps::m_PowerType,	_countof(CModulationProps::m_PowerType))
 PROPDEF(	MESH,		BEND,		VAR,		double,		fBends,				0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		BEND,		VAR,		double,		fBendDepth,			0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		BEND,		VAR,		double,		fBendPhase,			0,				0,			0,			NULL,		0)
@@ -73,6 +81,9 @@ PROPDEF(	MESH,		BEND,		ENUM,		int,		iBendMotif,			0,				0,			0,			m_Motif,	_coun
 PROPDEF(	MESH,		BEND,		VAR,		double,		fBendPoles,			0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		BEND,		VAR,		double,		fBendPolePhase,		0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		BEND,		ENUM,		int,		iBendPoleMotif,		0,				0,			0,			m_Motif,	_countof(m_Motif))
+PROPDEF(	MESH,		BEND,		ENUM,		int,		iBendOperation,		0,				0,			0,			m_Operation,	_countof(m_Operation))
+PROPDEF(	MESH,		BEND,		VAR,		double,		fBendPower,			0,				0,			DBL_MAX,	NULL,		0)
+PROPDEF(	MESH,		BEND,		ENUM,		int,		iBendPowerType,		0,				0,			0,			CModulationProps::m_PowerType,	_countof(CModulationProps::m_PowerType))
 PROPDEF(	MESH,		HELIX,		VAR,		double,		fHelixFrequency,	0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		HELIX,		VAR,		double,		fHelixAmplitude,	0,				0,			0,			NULL,		0)
 PROPDEF(	TEXTURE,	NONE,		FILE,		CString,	sTexturePath,		_T(""),			0,			0,			NULL,		0)
@@ -88,6 +99,7 @@ PROPDEF(	TEXTURE,	NONE,		ENUM,		int,		iPaletteType,		0,				0,			0,			m_PaletteTy
 PROPDEF(	TEXTURE,	NONE,		VAR,		double,		fOffsetU,			0,				0,			0,			NULL,		0)
 PROPDEF(	TEXTURE,	NONE,		VAR,		double,		fOffsetV,			0,				0,			0,			NULL,		0)
 PROPDEF(	TEXTURE,	NONE,		VAR,		double,		fCyclesV,			1,				0,			0,			NULL,		0)
+PROPDEF(	TEXTURE,	NONE,		VAR,		double,		fEdgeGain,			6.0,			0,			0,			NULL,		0)
 PROPDEF(	VIEW,		NONE,		VAR,		bool,		bAnimation,			0,				0,			0,			NULL,		0)
 PROPDEF(	VIEW,		NONE,		VAR,		double,		fAutoRotateYaw,		0,				0,			0,			NULL,		0)
 PROPDEF(	VIEW,		NONE,		VAR,		double,		fAutoRotatePitch,	12,				0,			0,			NULL,		0)
@@ -106,6 +118,10 @@ PATTERNDEF(	RINGS)
 PATTERNDEF(	PETALS)
 PATTERNDEF(	POLAR)
 PATTERNDEF(	RADIUS)
+PATTERNDEF(	AZIMUTH)
+PATTERNDEF(	INCLINE)
+PATTERNDEF(	AZI_INC)
+PATTERNDEF(	EDGES)
 
 #undef PATTERNDEF
 #endif
@@ -128,6 +144,7 @@ RENDERSTYLEDEF(	HIGHLIGHTS,		1)
 RENDERSTYLEDEF(	CULLING,		1)
 RENDERSTYLEDEF(	TEXTURE,		1)
 RENDERSTYLEDEF(	BOUNDS,			0)
+RENDERSTYLEDEF(	TRANSPARENT,	0)
 
 #undef RENDERSTYLEDEF
 #endif
@@ -142,4 +159,13 @@ MOTIFDEF(	PARTED_REEDS)
 MOTIFDEF(	PARTED_FLUTES)
 
 #undef MOTIFDEF
+#endif
+
+#ifdef OPERATIONDEF
+
+// append only, to maintain compatibility with previously saved documents
+OPERATIONDEF(	ADD)
+OPERATIONDEF(	EXPONENTIATE)
+
+#undef OPERATIONDEF
 #endif

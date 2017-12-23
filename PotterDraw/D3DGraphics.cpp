@@ -9,6 +9,7 @@
 		rev		date	comments
         00      12mar17	initial version
 		01		06nov17	add get/set light
+		02		12dec17	add transparent style
 
 */
 
@@ -173,11 +174,26 @@ bool CD3DGraphics::InitDevice(bool bResizing)
 
 bool CD3DGraphics::SetStyle(UINT nStyle)
 {
+	UINT	nPrevStyle = m_nStyle;
 	m_nStyle = nStyle;
 	CHECK(m_pDevice->SetRenderState(D3DRS_FILLMODE, (m_nStyle & ST_WIREFRAME) != 0 ? D3DFILL_WIREFRAME : D3DFILL_SOLID));
 	CHECK(m_pDevice->SetRenderState(D3DRS_SHADEMODE, (m_nStyle & ST_GOURAUD) != 0 ? D3DSHADE_GOURAUD : D3DSHADE_FLAT));
 	CHECK(m_pDevice->SetRenderState(D3DRS_SPECULARENABLE, (m_nStyle & ST_HIGHLIGHTS) != 0));
 	CHECK(m_pDevice->SetRenderState(D3DRS_CULLMODE, (m_nStyle & ST_CULLING) != 0 ? D3DCULL_CCW : D3DCULL_NONE));
+	if (nStyle & ST_TRANSPARENT) {	// if transparent
+		CHECK(m_pDevice->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_MATERIAL));
+		CHECK(m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE));
+		CHECK(m_pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCCOLOR));
+		CHECK(m_pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR));
+		CHECK(m_pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE));	// disable culling, regardless of style
+	} else {	// not transparent
+		if (nPrevStyle & ST_TRANSPARENT) {	// if transparent state changed, restore defaults
+			CHECK(m_pDevice->SetRenderState(D3DRS_DIFFUSEMATERIALSOURCE, D3DMCS_COLOR1));
+			CHECK(m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE));
+			CHECK(m_pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE));
+			CHECK(m_pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO));
+		}
+	}
 	return true;
 }
 
@@ -251,6 +267,15 @@ void CD3DGraphics::SetStandardView(int iView)
 	m_iStdView = iView;
 	m_vRotation = m_vStandardView[iView];
 	VERIFY(UpdateWorldTransform());
+}
+
+int CD3DGraphics::FindStandardView(const D3DXVECTOR3& vRotation)
+{
+	for (int iView = 0; iView < STANDARD_VIEWS; iView++) {	// for each standard view
+		if (vRotation == m_vStandardView[iView])	// if rotation is standard
+			return iView;
+	}
+	return -1;	// rotation not found
 }
 
 void CD3DGraphics::SetZoom(double fZoom)

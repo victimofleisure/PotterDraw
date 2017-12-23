@@ -116,7 +116,7 @@ BEGIN
     SEPARATOR
     BUTTON      ID_VIEW_ROTATE_AUTO
     BUTTON      ID_VIEW_ROTATE_RESET
-    BUTTON      ID_VIEW_STYLE_ANIMATION
+    BUTTON      ID_VIEW_ANIMATION
     SEPARATOR
     BUTTON      ID_APP_ABOUT
 END
@@ -148,7 +148,7 @@ BEGIN
     SEPARATOR
     BUTTON      ID_VIEW_ROTATE_AUTO
     BUTTON      ID_VIEW_ROTATE_RESET
-    BUTTON      ID_VIEW_STYLE_ANIMATION
+    BUTTON      ID_VIEW_ANIMATION
     SEPARATOR
     BUTTON      ID_APP_ABOUT
 END
@@ -307,14 +307,22 @@ BEGIN
         MENUITEM "Zoom &Out",                   ID_VIEW_ZOOM_OUT
         MENUITEM "Zoom R&eset",                 ID_VIEW_ZOOM_RESET
         MENUITEM SEPARATOR
-        MENUITEM "&Wireframe",                  ID_VIEW_STYLE_WIREFRAME
-        MENUITEM "&Gouraud",                    ID_VIEW_STYLE_GOURAUD
-        MENUITEM "&Highlights",                 ID_VIEW_STYLE_HIGHLIGHTS
-        MENUITEM "&Culling",                    ID_VIEW_STYLE_CULLING
-        MENUITEM "Te&xture",                    ID_VIEW_STYLE_TEXTURE
-        MENUITEM "A&nimation",                  ID_VIEW_STYLE_ANIMATION
-        MENUITEM "&Bounds",                     ID_VIEW_STYLE_BOUNDS
-        MENUITEM "&Lighting...",                ID_VIEW_LIGHTING
+        MENUITEM "A&nimation",                  ID_VIEW_ANIMATION
+        MENUITEM "Step &Forward",               ID_VIEW_STEP_FORWARD
+        MENUITEM "Step &Backward",              ID_VIEW_STEP_BACKWARD
+        MENUITEM "Ran&dom Phase",               ID_VIEW_RANDOM_PHASE
+    END
+    POPUP "&Render"
+    BEGIN
+        MENUITEM "&Wireframe",                  ID_RENDER_WIREFRAME
+        MENUITEM "&Gouraud",                    ID_RENDER_GOURAUD
+        MENUITEM "&Highlights",                 ID_RENDER_HIGHLIGHTS
+        MENUITEM "&Culling",                    ID_RENDER_CULLING
+        MENUITEM "Te&xture",                    ID_RENDER_TEXTURE
+        MENUITEM "&Transparent",                ID_RENDER_TRANSPARENT
+        MENUITEM "&Bounds",                     ID_RENDER_BOUNDS
+        MENUITEM SEPARATOR
+        MENUITEM "&Lighting...",                ID_RENDER_LIGHTING
     END
     POPUP "&Spline"
     BEGIN
@@ -455,6 +463,7 @@ BEGIN
     "A",            ID_EDIT_SELECT_ALL,     VIRTKEY, CONTROL, NOINVERT
     "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
     "E",            ID_FILE_EXPORT,         VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_FILE_LOAD_TEXTURE,   VIRTKEY, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
@@ -463,16 +472,26 @@ BEGIN
     VK_F1,          ID_HELP_FINDER,         VIRTKEY, NOINVERT
     VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
     VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    "B",            ID_RENDER_BOUNDS,       VIRTKEY, SHIFT, NOINVERT
+    "C",            ID_RENDER_CULLING,      VIRTKEY, SHIFT, NOINVERT
+    "G",            ID_RENDER_GOURAUD,      VIRTKEY, SHIFT, NOINVERT
+    "H",            ID_RENDER_HIGHLIGHTS,   VIRTKEY, SHIFT, NOINVERT
+    "L",            ID_RENDER_LIGHTING,     VIRTKEY, SHIFT, NOINVERT
+    "X",            ID_RENDER_TEXTURE,      VIRTKEY, SHIFT, NOINVERT
+    "E",            ID_RENDER_TRANSPARENT,  VIRTKEY, SHIFT, NOINVERT
+    "W",            ID_RENDER_WIREFRAME,    VIRTKEY, SHIFT, NOINVERT
     "G",            ID_SPLINE_SHOW_GRID,    VIRTKEY, CONTROL, NOINVERT
     "W",            ID_SPLINE_SHOW_HORZ_MIRROR, VIRTKEY, CONTROL, NOINVERT
     "U",            ID_SPLINE_SHOW_RULERS,  VIRTKEY, CONTROL, NOINVERT
     "G",            ID_SPLINE_SNAP_TO_GRID, VIRTKEY, SHIFT, CONTROL, NOINVERT
     "O",            ID_TOOLS_OPTIONS,       VIRTKEY, SHIFT, NOINVERT
+    "N",            ID_VIEW_ANIMATION,      VIRTKEY, SHIFT, NOINVERT
     VK_DOWN,        ID_VIEW_PAN_DOWN,       VIRTKEY, CONTROL, NOINVERT
     "P",            ID_VIEW_PAN_EDIT,       VIRTKEY, CONTROL, ALT, NOINVERT
     VK_LEFT,        ID_VIEW_PAN_LEFT,       VIRTKEY, CONTROL, NOINVERT
     VK_RIGHT,       ID_VIEW_PAN_RIGHT,      VIRTKEY, CONTROL, NOINVERT
     VK_UP,          ID_VIEW_PAN_UP,         VIRTKEY, CONTROL, NOINVERT
+    VK_F9,          ID_VIEW_RANDOM_PHASE,   VIRTKEY, NOINVERT
     "A",            ID_VIEW_ROTATE_ABOVE,   VIRTKEY, SHIFT, NOINVERT
     "R",            ID_VIEW_ROTATE_AUTO,    VIRTKEY, SHIFT, NOINVERT
     "F",            ID_VIEW_ROTATE_BACK,    VIRTKEY, SHIFT, CONTROL, NOINVERT
@@ -483,19 +502,12 @@ BEGIN
     "Z",            ID_VIEW_ROTATE_RESET,   VIRTKEY, SHIFT, NOINVERT
     "S",            ID_VIEW_ROTATE_RIGHT,   VIRTKEY, SHIFT, CONTROL, NOINVERT
     "T",            ID_VIEW_ROTATE_TOP,     VIRTKEY, SHIFT, NOINVERT
-    "N",            ID_VIEW_STYLE_ANIMATION, VIRTKEY, SHIFT, NOINVERT
-    "B",            ID_VIEW_STYLE_BOUNDS,   VIRTKEY, SHIFT, NOINVERT
-    "C",            ID_VIEW_STYLE_CULLING,  VIRTKEY, SHIFT, NOINVERT
-    "G",            ID_VIEW_STYLE_GOURAUD,  VIRTKEY, SHIFT, NOINVERT
-    "H",            ID_VIEW_STYLE_HIGHLIGHTS, VIRTKEY, SHIFT, NOINVERT
-    "X",            ID_VIEW_STYLE_TEXTURE,  VIRTKEY, SHIFT, NOINVERT
-    "W",            ID_VIEW_STYLE_WIREFRAME, VIRTKEY, SHIFT, NOINVERT
+    VK_SPACE,       ID_VIEW_STEP_BACKWARD,  VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_SPACE,       ID_VIEW_STEP_FORWARD,   VIRTKEY, CONTROL, NOINVERT
     VK_OEM_PLUS,    ID_VIEW_ZOOM_IN,        VIRTKEY, CONTROL, NOINVERT
     VK_OEM_MINUS,   ID_VIEW_ZOOM_OUT,       VIRTKEY, CONTROL, NOINVERT
     "0",            ID_VIEW_ZOOM_RESET,     VIRTKEY, CONTROL, NOINVERT
     VK_F11,         ID_WINDOW_FULL_SCREEN,  VIRTKEY, NOINVERT
-    "L",            ID_FILE_LOAD_TEXTURE,   VIRTKEY, CONTROL, NOINVERT
-    "L",            ID_VIEW_LIGHTING,       VIRTKEY, SHIFT, NOINVERT
 END
 
 
@@ -672,8 +684,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,4,0
- PRODUCTVERSION 1,0,4,0
+ FILEVERSION 1,0,5,0
+ PRODUCTVERSION 1,0,5,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -690,12 +702,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Anal Software"
             VALUE "FileDescription", "PotterDraw"
-            VALUE "FileVersion", "1.0.4.0"
+            VALUE "FileVersion", "1.0.5.0"
             VALUE "InternalName", "PotterDraw.exe"
             VALUE "LegalCopyright", "Copyleft 2017 Chris Korda"
             VALUE "OriginalFilename", "PotterDraw.exe"
             VALUE "ProductName", "PotterDraw"
-            VALUE "ProductVersion", "1.0.4.0"
+            VALUE "ProductVersion", "1.0.5.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -896,7 +908,7 @@ BEGIN
     IDS_EXPLORER            "Explorer"
     IDS_EXPORT              "Export"
     IDS_HLINK_CANT_LAUNCH   "Can't launch browser."
-    IDS_LIGHTING            "Lighting"
+    IDS_MESH_INFO_FORMAT    "Vertices:\t%d\nFacets:\t%d\nWidth:\t%g\nHeight:\t%g\nDepth:\t%g"
     IDS_MODULATION_BAR      "Modulation"
     IDS_MOD_DESC_fAmplitude "Modulation amplitude"
     IDS_MOD_DESC_fBias      "Offset added to modulation"
@@ -908,6 +920,244 @@ BEGIN
     IDS_MOD_DESC_fPulseWidth 
                             "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
     IDS_MOD_DESC_fSlew      "Amount of slew, for pulse waveforms only; normalized from 0 to 1"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PROPERTIES_BAR      "Properties"
+    IDS_PROPS_MORE_COLORS   "More Colors..."
+    IDS_RECDLG_CUSTOM       "Custom"
+    IDS_RECORD_FOLDER       "Record Folder"
+    IDS_RESET_ALL_OPTIONS   "Reset all options to default values?"
+    IDS_SCALE_2D_SCALE      "&Scale:"
+    IDS_SCALE_2D_WIDTH      "&Width:"
+    IDS_SPLINE_BAR          "Spline"
+    IDS_SPLINE_NM_ADD_NODE  "Add Node"
+    IDS_SPLINE_NM_CHANGED   "Spline"
+    IDS_SPLINE_NM_CUT       "Cut"
+    IDS_SPLINE_NM_DELETE    "Delete"
+    IDS_SPLINE_NM_DELETE_NODE "Delete Node"
+    IDS_SPLINE_NM_FLIP_HORIZONTAL "Flip Horizontal"
+    IDS_SPLINE_NM_FLIP_VERTICAL "Flip Vertical"
+    IDS_SPLINE_NM_IMPORT    "Import"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_SPLINE_NM_NODE_TYPE "Node Type"
+    IDS_SPLINE_NM_PASTE     "Paste"
+    IDS_SPLINE_NM_ROTATE    "Rotate"
+    IDS_SPLINE_NM_SCALE     "Scale"
+    IDS_SPLINE_NM_SEGMENT_TYPE "Segment Type"
+    IDS_SPLINE_NM_TRANSLATE "Translate"
+    IDS_TEXTURE_FILES       "Texture Files"
+    IDS_TEXT_FILES_FILTER   "Text Files (*.txt)|*.txt|All Files (*.*)|*.*||"
+    IDS_TOOLBAR_CUSTOMIZE   "Customize..."
+    IDS_TOOLBAR_STANDARD    "Standard"
+    IDS_UNDO_LIGHTING       "Lighting"
+    IDS_UNDO_RANDOM_PHASE   "Random Phase"
+    IDS_UNDO_STEP_ANIMATION "Step Animation"
+    IDS_VIEW_PAN            "Pan"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_iScallopMotif "Scallop Motif"
+    IDS_PDR_NAME_iScallopOperation "Scallop Operation"
+    IDS_PDR_NAME_iScallopPowerType "Scallop Power Type"
+    IDS_PDR_NAME_iScallopRange "Scallop Range"
+    IDS_PDR_NAME_iScallopWaveform "Scallop Waveform"
+    IDS_PDR_NAME_nColorSharpness "Color Sharpness"
+    IDS_PDR_NAME_nColors    "Colors"
+    IDS_PDR_NAME_nRings     "Rings"
+    IDS_PDR_NAME_nSides     "Sides"
+    IDS_PDR_NAME_sTexturePath "Texture Path"
+    IDS_PDR_OPT_COLPAT_AZIMUTH "Azimuth"
+    IDS_PDR_OPT_COLPAT_AZI_INC "Azimuth & Incline"
+    IDS_PDR_OPT_COLPAT_EDGES "Edges"
+    IDS_PDR_OPT_COLPAT_INCLINE "Incline"
+    IDS_PDR_OPT_COLPAT_PETALS "Petals"
+    IDS_PDR_OPT_COLPAT_POLAR "Polar"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_fAspectRatio "Aspect Ratio"
+    IDS_PDR_NAME_fAutoRotatePitch "Auto Rotate Pitch"
+    IDS_PDR_NAME_fAutoRotateRoll "Auto Rotate Roll"
+    IDS_PDR_NAME_fAutoRotateYaw "Auto Rotate Yaw"
+    IDS_PDR_NAME_fBendDepth "Bend Depth"
+    IDS_PDR_NAME_fBendPhase "Bend Phase"
+    IDS_PDR_NAME_fBendPolePhase "Bend Pole Phase"
+    IDS_PDR_NAME_fBendPoles "Bend Poles"
+    IDS_PDR_NAME_fBendPower "Bend Power"
+    IDS_PDR_NAME_fBends     "Bends"
+    IDS_PDR_NAME_fColorCycles "Color Cycles"
+    IDS_PDR_NAME_fCyclesV   "Cycles V"
+    IDS_PDR_NAME_fEdgeGain  "Edge Gain"
+    IDS_PDR_NAME_fFrameRate "Frame Rate"
+    IDS_PDR_NAME_fHelixAmplitude "Helix Amplitude"
+    IDS_PDR_NAME_fHelixFrequency "Helix Frequency"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_DESC_clrBackground "Background color of view window"
+    IDS_PDR_DESC_fAspectRatio 
+                            "Width scaling for elliptical shapes; 1 for normal, > 1 for wider, < 1 for narrower"
+    IDS_PDR_DESC_fAutoRotatePitch 
+                            "Pitch speed when auto-rotating view, in degrees per second"
+    IDS_PDR_DESC_fAutoRotateRoll 
+                            "Roll speed when auto-rotating view, in degrees per second"
+    IDS_PDR_DESC_fAutoRotateYaw 
+                            "Yaw speed when auto-rotating view, in degrees per second"
+    IDS_PDR_DESC_fBendDepth "Depth of each bend"
+    IDS_PDR_DESC_fBendPhase "Initial phase of bends; normalized from 0 to 1"
+    IDS_PDR_DESC_fBendPolePhase 
+                            "Initial phase of bend poles; normalized from 0 to 1"
+    IDS_PDR_DESC_fBendPoles "Number of bend poles"
+    IDS_PDR_DESC_fBendPower "Base of bend waveform's power function, or zero if none"
+    IDS_PDR_DESC_fBends     "Number of bends"
+    IDS_PDR_DESC_fColorCycles "Number of times to cycle through palette"
+    IDS_PDR_DESC_fCyclesV   "Number of times to cycle V coordinate through its normalized range"
+    IDS_PDR_DESC_fEdgeGain  "Sensitivity of edge detection, for Edges color pattern"
+    IDS_PDR_DESC_fFrameRate "Frame rate in frames per second"
+    IDS_PDR_DESC_fHelixAmplitude "Magnitude of local origin's spiral"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_OPT_COLPAT_RADIUS "Radius"
+    IDS_PDR_OPT_COLPAT_RINGS "Rings"
+    IDS_PDR_OPT_COLPAT_STRIPES "Stripes"
+    IDS_PDR_OPT_MOTIF_FLUTES "Flutes"
+    IDS_PDR_OPT_MOTIF_NONE  "None"
+    IDS_PDR_OPT_MOTIF_PARTED_FLUTES "Parted Flutes"
+    IDS_PDR_OPT_MOTIF_PARTED_REEDS "Parted Reeds"
+    IDS_PDR_OPT_MOTIF_REEDS "Reeds"
+    IDS_PDR_OPT_PALTYPE_COMPLEMENT "Complement"
+    IDS_PDR_OPT_PALTYPE_LINEAR "Linear"
+    IDS_PDR_OPT_PALTYPE_SPLIT "Split"
+    IDS_PDR_SUBGROUP_MESH_BEND "Bend"
+    IDS_PDR_SUBGROUP_MESH_HELIX "Helix"
+    IDS_PDR_SUBGROUP_MESH_POLYGON "Polygon"
+    IDS_PDR_SUBGROUP_MESH_RIPPLE "Ripple"
+    IDS_PDR_SUBGROUP_MESH_SCALLOP "Scallop"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_fOffsetU   "U Offset"
+    IDS_PDR_NAME_fOffsetV   "V Offset"
+    IDS_PDR_NAME_fPetals    "Petals"
+    IDS_PDR_NAME_fPolygonBulge "Polygon Bulge"
+    IDS_PDR_NAME_fPolygonPhase "Polygon Phase"
+    IDS_PDR_NAME_fPolygonRoundness "Polygon Roundness"
+    IDS_PDR_NAME_fPolygonSides "Polygon Sides"
+    IDS_PDR_NAME_fRadius    "Radius"
+    IDS_PDR_NAME_fRippleDepth "Ripple Depth"
+    IDS_PDR_NAME_fRipplePhase "Ripple Phase"
+    IDS_PDR_NAME_fRipplePower "Ripple Power"
+    IDS_PDR_NAME_fRipples   "Ripples"
+    IDS_PDR_NAME_fScallopDepth "Scallop Depth"
+    IDS_PDR_NAME_fScallopPhase "Scallop Phase"
+    IDS_PDR_NAME_fScallopPower "Scallop Power"
+    IDS_PDR_NAME_fScallopPulseWidth "Scallop Pulse Width"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_DESC_fHelixFrequency "Number of turns in local origin's spiral"
+    IDS_PDR_DESC_fOffsetU   "Offset applied to U coordinate for texture mapping; normalized from 0 to 1"
+    IDS_PDR_DESC_fOffsetV   "Offset applied to V coordinate for texture mapping; normalized from 0 to 1"
+    IDS_PDR_DESC_fPetals    "Number of petals, for Petals color pattern"
+    IDS_PDR_DESC_fPolygonBulge "Amount to bulge or pinch polygon's sides"
+    IDS_PDR_DESC_fPolygonPhase 
+                            "Polygon rotation as a normalized angle from 0 to 1"
+    IDS_PDR_DESC_fPolygonRoundness 
+                            "Roundness of polygon's corners; normalized from -1 to 1"
+    IDS_PDR_DESC_fPolygonSides "Polygon's number of sides"
+    IDS_PDR_DESC_fRadius    "Radius scaling factor"
+    IDS_PDR_DESC_fRippleDepth "Depth of each ripple"
+    IDS_PDR_DESC_fRipplePhase 
+                            "Initial phase of ripples; normalized from 0 to 1"
+    IDS_PDR_DESC_fRipplePower 
+                            "Base of ripple waveform's power function, or zero if none"
+    IDS_PDR_DESC_fRipples   "Number of ripples"
+    IDS_PDR_DESC_fScallopDepth "Depth of each scallop"
+    IDS_PDR_DESC_fScallopPhase 
+                            "Initial phase of scallop rotation; normalized from 0 to 1"
+    IDS_PDR_DESC_fScallopPower 
+                            "Base of scallop waveform's power function, or zero if none"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_fScallopSlew "Scallop Slew"
+    IDS_PDR_NAME_fScallops  "Scallops"
+    IDS_PDR_NAME_fStripeAmplitude "Stripe Amplitude"
+    IDS_PDR_NAME_fStripeFrequency "Stripe Frequency"
+    IDS_PDR_NAME_fStripePhase "Stripe Phase"
+    IDS_PDR_NAME_fTwist     "Twist"
+    IDS_PDR_NAME_fWallThickness "Wall Thickness"
+    IDS_PDR_NAME_iBendMotif "Bend Motif"
+    IDS_PDR_NAME_iBendOperation "Bend Operation"
+    IDS_PDR_NAME_iBendPoleMotif "Bend Pole Motif"
+    IDS_PDR_NAME_iBendPowerType "Bend Power Type"
+    IDS_PDR_NAME_iColorPattern "Color Pattern"
+    IDS_PDR_NAME_iPaletteType "Palette Type"
+    IDS_PDR_NAME_iRippleMotif "Ripple Motif"
+    IDS_PDR_NAME_iRippleOperation "Ripple Operation"
+    IDS_PDR_NAME_iRipplePowerType "Power Type"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_DESC_fScallopPulseWidth 
+                            "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
+    IDS_PDR_DESC_fScallopSlew 
+                            "Amount of slew, for pulse waveforms only; normalized from 0 to 1"
+    IDS_PDR_DESC_fScallops  "Number of scallops"
+    IDS_PDR_DESC_fStripeAmplitude "Amplitude of stripe waves"
+    IDS_PDR_DESC_fStripeFrequency 
+                            "Frequency of stripe waves, normalized to number of waves per height"
+    IDS_PDR_DESC_fStripePhase 
+                            "Initial phase of stripe waves; normalized from 0 to 1"
+    IDS_PDR_DESC_fTwist     "Corkscrew effect, normalized so that 1 twists 360 degrees from bottom to top"
+    IDS_PDR_DESC_fWallThickness "Distance between inner and outer wall"
+    IDS_PDR_DESC_iBendMotif "Function applied to bend waveform"
+    IDS_PDR_DESC_iBendOperation "Operation of bend waveform on radius"
+    IDS_PDR_DESC_iBendPoleMotif "Function applied to bend pole waveform"
+    IDS_PDR_DESC_iBendPowerType 
+                            "Type of power function applied to bend waveform"
+    IDS_PDR_DESC_iColorPattern "Type of color pattern"
+    IDS_PDR_DESC_iPaletteType "Type of palette"
+    IDS_PDR_DESC_iRippleMotif "Function applied to ripple waveform"
+    IDS_PDR_DESC_iRippleOperation "Operation of ripple waveform on radius"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_DESC_iRipplePowerType 
+                            "Type of power function applied to ripple waveform"
+    IDS_PDR_DESC_iScallopMotif "Function applied to scallop waveform"
+    IDS_PDR_DESC_iScallopOperation "Operation of scallop waveform on radius"
+    IDS_PDR_DESC_iScallopPowerType 
+                            "Type of power function applied to scallop waveform"
+    IDS_PDR_DESC_iScallopRange "Range of scallop waveform"
+    IDS_PDR_DESC_iScallopWaveform "Type of waveform used for scallops"
+    IDS_PDR_DESC_nColorSharpness 
+                            "Sharpness of stripes; 1 is fuzziest, 100 is sharpest"
+    IDS_PDR_DESC_nColors    "Number of colors in palette"
+    IDS_PDR_DESC_nRings     "Number of rings"
+    IDS_PDR_DESC_nSides     "Number of sides in each ring"
+    IDS_PDR_DESC_sTexturePath 
+                            "Path of file to use as texture, if any; if specified, overrides palette"
+    IDS_PDR_GROUP_MESH      "Mesh"
+    IDS_PDR_GROUP_TEXTURE   "Texture"
+    IDS_PDR_GROUP_VIEW      "View"
+    IDS_PDR_NAME_bAnimation "Animation"
+    IDS_PDR_NAME_clrBackground "Background Color"
 END
 
 STRINGTABLE
@@ -1023,217 +1273,6 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_PDR_DESC_clrBackground "Background color of view window"
-    IDS_PDR_DESC_fAspectRatio 
-                            "Width scaling for elliptical shapes; 1 for normal, > 1 for wider, < 1 for narrower"
-    IDS_PDR_DESC_fAutoRotatePitch 
-                            "Pitch speed when auto-rotating view, in degrees per second"
-    IDS_PDR_DESC_fAutoRotateRoll 
-                            "Roll speed when auto-rotating view, in degrees per second"
-    IDS_PDR_DESC_fAutoRotateYaw 
-                            "Yaw speed when auto-rotating view, in degrees per second"
-    IDS_PDR_DESC_fBendDepth "Depth of each bend"
-    IDS_PDR_DESC_fBendPhase "Initial phase of bends; normalized from 0 to 1"
-    IDS_PDR_DESC_fBendPolePhase 
-                            "Initial phase of bend poles; normalized from 0 to 1"
-    IDS_PDR_DESC_fBendPoles "Number of bend poles"
-    IDS_PDR_DESC_fBends     "Number of bends"
-    IDS_PDR_DESC_fColorCycles "Number of times to cycle through palette"
-    IDS_PDR_DESC_fCyclesV   "Number of times to cycle V coordinate through its normalized range"
-    IDS_PDR_DESC_fFrameRate "Frame rate in frames per second"
-    IDS_PDR_DESC_fHelixAmplitude "Magnitude of local origin's spiral"
-    IDS_PDR_DESC_fHelixFrequency "Number of turns in local origin's spiral"
-    IDS_PDR_DESC_fOffsetU   "Offset applied to U coordinate for texture mapping; normalized from 0 to 1"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_PDR_DESC_fOffsetV   "Offset applied to V coordinate for texture mapping; normalized from 0 to 1"
-    IDS_PDR_DESC_fPetals    "Number of petals"
-    IDS_PDR_DESC_fPolygonBulge "Amount to bulge or pinch polygon's sides"
-    IDS_PDR_DESC_fPolygonPhase 
-                            "Polygon rotation as a normalized angle from 0 to 1"
-    IDS_PDR_DESC_fPolygonRoundness 
-                            "Roundness of polygon's corners; normalized from -1 to 1"
-    IDS_PDR_DESC_fPolygonSides "Polygon's number of sides"
-    IDS_PDR_DESC_fRadius    "Radius scaling factor"
-    IDS_PDR_DESC_fRippleDepth "Depth of each ripple"
-    IDS_PDR_DESC_fRipplePhase 
-                            "Initial phase of ripples; normalized from 0 to 1"
-    IDS_PDR_DESC_fRipples   "Number of ripples"
-    IDS_PDR_DESC_fScallopDepth "Depth of each scallop"
-    IDS_PDR_DESC_fScallopPhase 
-                            "Initial phase of scallop rotation; normalized from 0 to 1"
-    IDS_PDR_DESC_fScallopPower 
-                            "Base of scallop waveform's power function, or zero if none"
-    IDS_PDR_DESC_fScallopPulseWidth 
-                            "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
-    IDS_PDR_DESC_fScallopSlew 
-                            "Amount of slew, for pulse waveforms only; normalized from 0 to 1"
-    IDS_PDR_DESC_fScallops  "Number of scallops"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_PDR_DESC_fStripeAmplitude "Amplitude of stripe waves"
-    IDS_PDR_DESC_fStripeFrequency 
-                            "Frequency of stripe waves, normalized to number of waves per height"
-    IDS_PDR_DESC_fStripePhase 
-                            "Initial phase of stripe waves; normalized from 0 to 1"
-    IDS_PDR_DESC_fTwist     "Corkscrew effect, normalized so that 1 twists 360 degrees from bottom to top"
-    IDS_PDR_DESC_fWallThickness "Distance between inner and outer wall"
-    IDS_PDR_DESC_iBendMotif "Function applied to bend waveform"
-    IDS_PDR_DESC_iBendPoleMotif "Function applied to bend pole waveform"
-    IDS_PDR_DESC_iColorPattern "Type of color pattern"
-    IDS_PDR_DESC_iPaletteType "Type of palette"
-    IDS_PDR_DESC_iRippleMotif "Function applied to ripple waveform"
-    IDS_PDR_DESC_iScallopMotif "Function applied to scallop waveform"
-    IDS_PDR_DESC_iScallopOperation "Operation of scallop waveform on radius"
-    IDS_PDR_DESC_iScallopPowerType 
-                            "Type of power function applied to scallop waveform"
-    IDS_PDR_DESC_iScallopRange "Range of scallop waveform"
-    IDS_PDR_DESC_iScallopWaveform "Type of waveform used for scallops"
-    IDS_PDR_DESC_nColorSharpness 
-                            "Sharpness of stripes; 1 is fuzziest, 100 is sharpest"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_PDR_DESC_nColors    "Number of colors in palette"
-    IDS_PDR_DESC_nRings     "Number of rings"
-    IDS_PDR_DESC_nSides     "Number of sides in each ring"
-    IDS_PDR_DESC_sTexturePath 
-                            "Path of file to use as texture, if any; if specified, overrides palette"
-    IDS_PDR_GROUP_MESH      "Mesh"
-    IDS_PDR_GROUP_TEXTURE   "Texture"
-    IDS_PDR_GROUP_VIEW      "View"
-    IDS_PDR_NAME_bAnimation "Animation"
-    IDS_PDR_NAME_clrBackground "Background Color"
-    IDS_PDR_NAME_fAspectRatio "Aspect Ratio"
-    IDS_PDR_NAME_fAutoRotatePitch "Auto Rotate Pitch"
-    IDS_PDR_NAME_fAutoRotateRoll "Auto Rotate Roll"
-    IDS_PDR_NAME_fAutoRotateYaw "Auto Rotate Yaw"
-    IDS_PDR_NAME_fBendDepth "Bend Depth"
-    IDS_PDR_NAME_fBendPhase "Bend Phase"
-    IDS_PDR_NAME_fBendPolePhase "Bend Pole Phase"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_PDR_NAME_fBendPoles "Bend Poles"
-    IDS_PDR_NAME_fBends     "Bends"
-    IDS_PDR_NAME_fColorCycles "Color Cycles"
-    IDS_PDR_NAME_fCyclesV   "Cycles V"
-    IDS_PDR_NAME_fFrameRate "Frame Rate"
-    IDS_PDR_NAME_fHelixAmplitude "Helix Amplitude"
-    IDS_PDR_NAME_fHelixFrequency "Helix Frequency"
-    IDS_PDR_NAME_fOffsetU   "U Offset"
-    IDS_PDR_NAME_fOffsetV   "V Offset"
-    IDS_PDR_NAME_fPetals    "Petals"
-    IDS_PDR_NAME_fPolygonBulge "Polygon Bulge"
-    IDS_PDR_NAME_fPolygonPhase "Polygon Phase"
-    IDS_PDR_NAME_fPolygonRoundness "Polygon Roundness"
-    IDS_PDR_NAME_fPolygonSides "Polygon Sides"
-    IDS_PDR_NAME_fRadius    "Radius"
-    IDS_PDR_NAME_fRippleDepth "Ripple Depth"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_PDR_NAME_fRipplePhase "Ripple Phase"
-    IDS_PDR_NAME_fRipples   "Ripples"
-    IDS_PDR_NAME_fScallopDepth "Scallop Depth"
-    IDS_PDR_NAME_fScallopPhase "Scallop Phase"
-    IDS_PDR_NAME_fScallopPower "Scallop Power"
-    IDS_PDR_NAME_fScallopPulseWidth "Scallop Pulse Width"
-    IDS_PDR_NAME_fScallopSlew "Scallop Slew"
-    IDS_PDR_NAME_fScallops  "Scallops"
-    IDS_PDR_NAME_fStripeAmplitude "Stripe Amplitude"
-    IDS_PDR_NAME_fStripeFrequency "Stripe Frequency"
-    IDS_PDR_NAME_fStripePhase "Stripe Phase"
-    IDS_PDR_NAME_fTwist     "Twist"
-    IDS_PDR_NAME_fWallThickness "Wall Thickness"
-    IDS_PDR_NAME_iBendMotif "Bend Motif"
-    IDS_PDR_NAME_iBendPoleMotif "Bend Pole Motif"
-    IDS_PDR_NAME_iColorPattern "Color Pattern"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_PDR_NAME_iPaletteType "Palette Type"
-    IDS_PDR_NAME_iRippleMotif "Ripple Motif"
-    IDS_PDR_NAME_iScallopMotif "Scallop Motif"
-    IDS_PDR_NAME_iScallopOperation "Scallop Operation"
-    IDS_PDR_NAME_iScallopPowerType "Scallop Power Type"
-    IDS_PDR_NAME_iScallopRange "Scallop Range"
-    IDS_PDR_NAME_iScallopWaveform "Scallop Waveform"
-    IDS_PDR_NAME_nColorSharpness "Color Sharpness"
-    IDS_PDR_NAME_nColors    "Colors"
-    IDS_PDR_NAME_nRings     "Rings"
-    IDS_PDR_NAME_nSides     "Sides"
-    IDS_PDR_NAME_sTexturePath "Texture Path"
-    IDS_PDR_OPT_COLPAT_PETALS "Petals"
-    IDS_PDR_OPT_COLPAT_POLAR "Polar"
-    IDS_PDR_OPT_COLPAT_RADIUS "Radius"
-    IDS_PDR_OPT_COLPAT_RINGS "Rings"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_PDR_OPT_COLPAT_STRIPES "Stripes"
-    IDS_PDR_OPT_MOTIF_FLUTES "Flutes"
-    IDS_PDR_OPT_MOTIF_NONE  "None"
-    IDS_PDR_OPT_MOTIF_PARTED_FLUTES "Parted Flutes"
-    IDS_PDR_OPT_MOTIF_PARTED_REEDS "Parted Reeds"
-    IDS_PDR_OPT_MOTIF_REEDS "Reeds"
-    IDS_PDR_OPT_PALTYPE_COMPLEMENT "Complement"
-    IDS_PDR_OPT_PALTYPE_LINEAR "Linear"
-    IDS_PDR_OPT_PALTYPE_SPLIT "Split"
-    IDS_PDR_SUBGROUP_MESH_BEND "Bend"
-    IDS_PDR_SUBGROUP_MESH_HELIX "Helix"
-    IDS_PDR_SUBGROUP_MESH_POLYGON "Polygon"
-    IDS_PDR_SUBGROUP_MESH_RIPPLE "Ripple"
-    IDS_PDR_SUBGROUP_MESH_SCALLOP "Scallop"
-    IDS_PROPERTIES_BAR      "Properties"
-    IDS_PROPS_MORE_COLORS   "More Colors..."
-END
-
-STRINGTABLE
-BEGIN
-    IDS_RECDLG_CUSTOM       "Custom"
-    IDS_RECORD_FOLDER       "Record Folder"
-    IDS_RESET_ALL_OPTIONS   "Reset all options to default values?"
-    IDS_SCALE_2D_SCALE      "&Scale:"
-    IDS_SCALE_2D_WIDTH      "&Width:"
-    IDS_SPLINE_BAR          "Spline"
-    IDS_SPLINE_NM_ADD_NODE  "Add Node"
-    IDS_SPLINE_NM_CHANGED   "Spline"
-    IDS_SPLINE_NM_CUT       "Cut"
-    IDS_SPLINE_NM_DELETE    "Delete"
-    IDS_SPLINE_NM_DELETE_NODE "Delete Node"
-    IDS_SPLINE_NM_FLIP_HORIZONTAL "Flip Horizontal"
-    IDS_SPLINE_NM_FLIP_VERTICAL "Flip Vertical"
-    IDS_SPLINE_NM_IMPORT    "Import"
-    IDS_SPLINE_NM_NODE_TYPE "Node Type"
-    IDS_SPLINE_NM_PASTE     "Paste"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_SPLINE_NM_ROTATE    "Rotate"
-    IDS_SPLINE_NM_SCALE     "Scale"
-    IDS_SPLINE_NM_SEGMENT_TYPE "Segment Type"
-    IDS_SPLINE_NM_TRANSLATE "Translate"
-    IDS_TEXTURE_FILES       "Texture Files"
-    IDS_TEXT_FILES_FILTER   "Text Files (*.txt)|*.txt|All Files (*.*)|*.*||"
-    IDS_TOOLBAR_CUSTOMIZE   "Customize..."
-    IDS_TOOLBAR_STANDARD    "Standard"
-    IDS_VIEW_PAN            "Pan"
-    IDS_MESH_INFO_FORMAT    "Vertices:\t%d\nFacets:\t%d\nWidth:\t%g\nHeight:\t%g\nDepth:\t%g"
-END
-
-STRINGTABLE
-BEGIN
     ID_APP_CHECK_FOR_UPDATES "Check for a newer version\nCheck for Updates"
     ID_APP_HOME_PAGE        "Go to the PotterDraw home page\nHome Page"
     ID_EDIT_DELETE          "Delete selected items\nDelete"
@@ -1250,11 +1289,23 @@ END
 STRINGTABLE
 BEGIN
     ID_PALETTE_IMPORT       "Import palette from a file\nImport Palette"
+    ID_RENDER_BOUNDS        "Show bounding box\nBounds"
+    ID_RENDER_CULLING       "Cull hidden surfaces\nCulling"
+    ID_RENDER_GOURAUD       "Use Gouraud shading\nGouraud"
+    ID_RENDER_HIGHLIGHTS    "Show specular highlights\nHighlights"
+    ID_RENDER_LIGHTING      "Edit lighting properties\nEdit Lighting"
+    ID_RENDER_TEXTURE       "Show texture map\nTexture"
+    ID_RENDER_TRANSPARENT   "Show transparent material\nTransparent"
+    ID_RENDER_WIREFRAME     "Show wireframe\nWireframe"
     ID_SPLINE_ADD_NODE      "Add node to spline\nAdd Node"
     ID_SPLINE_DELETE_NODE   "Delete selected node\nDelete Node"
     ID_SPLINE_EXPORT        "Export spline to file\nExport Spline"
     ID_SPLINE_FLIP_HORIZONTAL 
                             "Flip selected segments horizontally\nFlip Horizontal"
+END
+
+STRINGTABLE
+BEGIN
     ID_SPLINE_FLIP_VERTICAL "Flip selected segments vertically\nFlip Vertical"
     ID_SPLINE_GRID_SETUP    "Edit grid settings\nGrid Setup"
     ID_SPLINE_IMPORT        "Import spline from file\nImport Spline"
@@ -1264,10 +1315,6 @@ BEGIN
                             "Set type of selected nodes to symmetrical\nSymmetrical"
     ID_SPLINE_ROTATE        "Rotate selected segments\nRotate"
     ID_SPLINE_SCALE         "Scale selected segments\nScale"
-END
-
-STRINGTABLE
-BEGIN
     ID_SPLINE_SEGMENT_TYPE1_CURVE 
                             "Set type of selected segments to curve\nCurve"
     ID_SPLINE_SEGMENT_TYPE2_LINE "Set type of selected segments to line\nLine"
@@ -1277,27 +1324,28 @@ BEGIN
     ID_SPLINE_SNAP_TO_GRID  "Toggle snap to grid\nSnap to Grid"
     ID_SPLINE_TRANSLATE     "Translate selected segments\translate"
     ID_SPLINE_ZOOM_IN       "Zoom in\nZoom In"
+END
+
+STRINGTABLE
+BEGIN
     ID_SPLINE_ZOOM_OUT      "Zoom out\nZoom Out"
     ID_SPLINE_ZOOM_RESET    "Reset zoom\nReset Zoom"
     ID_TOOLS_MESH_INFO      "Show mesh information\nMesh Info"
     ID_TOOLS_OPTIONS        "Edit options\nOptions"
+    ID_VIEW_ANIMATION       "Enable animation\nAnimation"
     ID_VIEW_APPLOOK_MDI_TABS "Use MDI tabs\nMDI Tabs"
 END
 
 STRINGTABLE
 BEGIN
     ID_VIEW_CUSTOMIZE       " "
-    ID_VIEW_LIGHTING        "Edit lighting properties\nEdit Lighting"
     ID_VIEW_PAN_DOWN        "Pan view down\nPan Down"
     ID_VIEW_PAN_EDIT        "Edit panning numerically\nEdit Panning"
     ID_VIEW_PAN_LEFT        "Pan view left\nPan Left"
     ID_VIEW_PAN_RIGHT       "Pan view right\nPan Right"
     ID_VIEW_PAN_UP          "Pan view up\nPan Up"
+    ID_VIEW_RANDOM_PHASE    "Randomize phases of animated modulations\nRandom Phase"
     ID_VIEW_RECORD_STATUS   "Show or hide the record status dialog\nRecord Status"
-END
-
-STRINGTABLE
-BEGIN
     ID_VIEW_ROTATE_ABOVE    "View from above\nAbove View"
     ID_VIEW_ROTATE_AUTO     "Automatically rotate view\nAuto Rotate View"
     ID_VIEW_ROTATE_BACK     "View from back\nBack View"
@@ -1305,20 +1353,15 @@ BEGIN
     ID_VIEW_ROTATE_EDIT     "Edit rotation numerically\nEdit Rotation"
     ID_VIEW_ROTATE_FRONT    "View from front\nFront View"
     ID_VIEW_ROTATE_LEFT     "View from left\nLeft View"
-    ID_VIEW_ROTATE_RESET    "Reset view rotation and panning\nReset View"
-    ID_VIEW_ROTATE_RIGHT    "View from right\nRight View"
-    ID_VIEW_ROTATE_TOP      "View from top\nTop View"
-    ID_VIEW_STYLE_ANIMATION "Enable animation\nAnimation"
-    ID_VIEW_STYLE_BOUNDS    "Show bounding box\nBounds"
-    ID_VIEW_STYLE_CULLING   "Cull hidden surfaces\nCulling"
-    ID_VIEW_STYLE_GOURAUD   "Use Gouraud shading\nGouraud"
-    ID_VIEW_STYLE_HIGHLIGHTS "Show specular highlights\nHighlights"
-    ID_VIEW_STYLE_TEXTURE   "Show texture map\nTexture"
 END
 
 STRINGTABLE
 BEGIN
-    ID_VIEW_STYLE_WIREFRAME "Show wireframe\nWireframe"
+    ID_VIEW_ROTATE_RESET    "Reset view rotation and panning\nReset View"
+    ID_VIEW_ROTATE_RIGHT    "View from right\nRight View"
+    ID_VIEW_ROTATE_TOP      "View from top\nTop View"
+    ID_VIEW_STEP_BACKWARD   "Step animation backward one frame\nStep Backward"
+    ID_VIEW_STEP_FORWARD    "Step animation forward one frame\nStep Forward"
     ID_VIEW_ZOOM_IN         "Zoom in to center of view\nZoom In"
     ID_VIEW_ZOOM_OUT        "Zoom out from center of view\nZoom Out"
     ID_VIEW_ZOOM_RESET      "Reset zoom and panning to defaults\nReset Zoom"

@@ -10,6 +10,7 @@
         00      12mar17	initial version
 		01		05sep17	add spline drag hint
 		02		06nov17	add lighting
+		03		24nov17	add save/restore phase for animation undo
 
 */
 
@@ -37,6 +38,7 @@ protected: // create from serialization only
 		HINT_SPLINE,		// spline edit
 		HINT_SPLINE_DRAG,	// spline drag
 		HINT_LIGHTING,		// lighting edit
+		HINT_MOD_PHASE,		// modulation phase change
 		HINTS
 	};
 	static const LPCTSTR	m_arrTextureFileExt[];	// array of texture file extensions
@@ -108,12 +110,18 @@ protected:
 		D3DVECTOR	m_vLightDir;
 		D3DMATERIAL9	m_mtrlPot;
 	};
+	class CUndoPhases : public CRefObj {
+	public:
+		CDoubleArray	m_arrPhase;
+	};
 
 // Helpers
 	void	SavePalette(CUndoState& State, int iColor = -1) const;
 	void	RestorePalette(const CUndoState& State, int iColor = -1);
 	void	SaveString(CUndoState& State, const CString& str) const;
 	void	RestoreString(const CUndoState& State, CString& str);
+	void	SavePhases(CUndoState& State);
+	void	RestorePhases(const CUndoState& State);
 	void	RelaySplineCmd(WPARAM nCmdID);
 	void	RelaySplineUpdateCmdUI(CCmdUI *pCmdUI);
 	void	RelayEditCmd(WPARAM nCmdID);
@@ -140,4 +148,5 @@ protected:
 	afx_msg	void OnSplineCmd(UINT nID);
 	afx_msg void OnUpdateSplineCmd(CCmdUI *pCmdUI);
 	afx_msg void OnFileLoadTexture();
+	afx_msg void OnViewRandomPhase();
 };

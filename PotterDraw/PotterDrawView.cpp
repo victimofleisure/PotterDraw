@@ -17,6 +17,11 @@
 		07		13nov17	in OnUpdate, use mesh subgroups
 		08		15nov17	add palette import/export
 		09		16nov17	in OnUpdate, if radius color pattern selected, remake mesh
+		10		22nov17	in OnUpdate, for modulation hint, add mesh group check
+		11		23nov17	add step animation
+		12		24nov17	don't sync phases during undo/redo animation
+		13		06dec17	in OnLButtonDown, add optional face selection
+		14		12dec17	add transparent render style
 
 */
 
@@ -145,18 +150,34 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 {
 	printf("CPotterDrawView::OnUpdate %Ix %Id %Ix\n", pSender, lHint, pHint);
 	CPotterDrawDoc	*pDoc = GetDocument();
-	if (m_Graphics.m_bAnimation) {	// if currently animating texture
-		bool	bSync;
-		if (lHint == CPotterDrawDoc::HINT_MODULATION) {	// if modulation edit
-			ASSERT(pHint != NULL);
-			CPotterDrawDoc::CModulationHint	*pModHint = static_cast<CPotterDrawDoc::CModulationHint *>(pHint);
-			bSync = pModHint->m_iModProp != CModulationProps::PROP_fPhase;	// don't synchronize for phase edit
-		} else	// not modulation edit
-			bSync = true;
+	if (m_Graphics.m_bAnimation) {	// if currently animating
+		bool	bSync = true;
+		switch (lHint) {
+		case CPotterDrawDoc::HINT_PROPERTY:
+			{
+				ASSERT(pHint != NULL);
+				CPotterDrawDoc::CPropertyHint	*pPropHint = static_cast<CPotterDrawDoc::CPropertyHint *>(pHint);
+				if (pPropHint->m_iProp == CPotProperties::PROP_bAnimation) {	// if animation edit
+					if (pDoc->IsUndoing() || pDoc->IsRedoing())	// if undo/redo in progress
+						bSync = false; // don't synchronize
+				}
+			}
+			break;
+		case CPotterDrawDoc::HINT_MODULATION:
+			{
+				ASSERT(pHint != NULL);
+				CPotterDrawDoc::CModulationHint	*pModHint = static_cast<CPotterDrawDoc::CModulationHint *>(pHint);
+				if (pModHint->m_iModProp == CModulationProps::PROP_fPhase)	// if phase edit
+					bSync = false; // don't synchronize
+			}
+			break;
+		case CPotterDrawDoc::HINT_MOD_PHASE:
+			bSync = false;	// don't synchronize
+			break;
+		}
 		if (bSync) {	// if synchronization needed
 			UpdateWindow();	// synchronize window with animation state
-			CPotProperties&	props = *pDoc;
-			m_Graphics.GetAnimationState(props);	// update document's animation state
+			m_Graphics.GetAnimationState(*pDoc);	// update document's animation state
 		}
 	}
 	if (!m_Graphics.IsDeviceCreated()) {	// if device not created
@@ -180,19 +201,24 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				case CPotProperties::GROUP_MESH:
 					switch (CPotProperties::m_Info[iProp].iSubgroup) {	// mesh subgroups
 					case CPotProperties::SUBGROUP_POLYGON:
-						bMakeMesh = pDoc->IsPolygon() || m_Graphics.IsPolygon();
+						if (pDoc->IsPolygon() || m_Graphics.IsPolygon())
+							bMakeMesh = true;
 						break;
 					case CPotProperties::SUBGROUP_SCALLOP:
-						bMakeMesh = pDoc->HasScallops() || m_Graphics.HasScallops();
+						if (pDoc->HasScallops() || m_Graphics.HasScallops())
+							bMakeMesh = true;
 						break;
 					case CPotProperties::SUBGROUP_RIPPLE:
-						bMakeMesh = pDoc->HasRipples() || m_Graphics.HasRipples();
+						if (pDoc->HasRipples() || m_Graphics.HasRipples())
+							bMakeMesh = true;
 						break;
 					case CPotProperties::SUBGROUP_BEND:
-						bMakeMesh = pDoc->HasBends() || m_Graphics.HasBends();
+						if (pDoc->HasBends() || m_Graphics.HasBends())
+							bMakeMesh = true;
 						break;
 					case CPotProperties::SUBGROUP_HELIX:
-						bMakeMesh = pDoc->HasHelix() || m_Graphics.HasHelix();
+						if (pDoc->HasHelix() || m_Graphics.HasHelix())
+							bMakeMesh = true;
 						break;
 					default:
 						// mesh properties in subgroups should be handled above
@@ -237,6 +263,11 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 							SetAnimation(true);
 						}
 						break;
+					case CPotProperties::PROP_bAnimation:
+						if ((m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED_MESH)	// if animating mesh
+						&& (pDoc->IsUndoing() || pDoc->IsRedoing()))	// and undo/redo in progress
+							bMakeMesh = true;	// mesh animation phases were restored above
+						break;
 					}
 					break;
 				}
@@ -250,7 +281,9 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				ASSERT(pHint != NULL);
 				CPotterDrawDoc::CModulationHint	*pModHint = static_cast<CPotterDrawDoc::CModulationHint *>(pHint);
 				int	iTarget = pModHint->m_iTarget;
-				bMakeMesh = pDoc->IsModulated(iTarget) || m_Graphics.IsModulated(iTarget);
+				if ((pDoc->IsModulated(iTarget) || m_Graphics.IsModulated(iTarget))	// if target will be or is modulated
+				&& CPotProperties::m_Info[iTarget].iGroup == CPotProperties::GROUP_MESH)	// and target is mesh property
+					bMakeMesh = true;
 			}
 			break;
 		case CPotterDrawDoc::HINT_SPLINE:
@@ -272,6 +305,10 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				Invalidate();	// necessary due to early out below
 			}
 			return;	// early out, to avoid needlessly updating texture
+		case CPotterDrawDoc::HINT_MOD_PHASE:
+			if (m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED_MESH)
+				bMakeMesh = true;
+			break;
 		default:	// no hint
 			bMakeMesh = true;
 			bMakeSpline = true;
@@ -458,6 +495,40 @@ bool CPotterDrawView::Record(bool bEnable)
 	return true;
 }
 
+void CPotterDrawView::StepAnimation(bool bForward)
+{
+	CPotterDrawDoc	*pDoc = GetDocument();
+	pDoc->NotifyUndoableEdit(0, UCODE_STEP_ANIMATION, CUndoable::UE_COALESCE);
+	double	fFrameRate = m_Graphics.m_fFrameRate;	// save frame rate
+	if (!bForward)	// if stepping backward
+		m_Graphics.m_fFrameRate = -fFrameRate;	// negate frame rate
+	m_Graphics.UpdateAnimation();
+	m_Graphics.m_fFrameRate = fFrameRate;	// restore frame rate
+	RedrawWindow();	// redraw immediately, no lagging
+	m_Graphics.GetAnimationState(*pDoc);	// update document's animation state
+	theApp.GetMainFrame()->UpdateModulationBar(pDoc);	// update modulation bar
+}
+
+void CPotterDrawView::DumpFace(int iFace)
+{
+	fprintf(stdout, "iFace=%d\n", iFace);
+	if (iFace >= 0) {
+		CPotGraphics::CFace	face;
+		m_Graphics.GetFace(iFace, face);
+		for (int iFV = 0; iFV < 3; iFV++) {	// for each of face's vertices
+			CPotGraphics::CVertex	vert;
+			int	iVert = face.arrIdx[iFV];
+			m_Graphics.GetVertex(iVert, vert);
+			int	iWall, iRing, iSide;
+			m_Graphics.GetVertexCoords(iVert, iWall, iRing, iSide);
+			fprintf(stdout, "iVert=%d iWall=%d iRing=%d iSide=%d  t=%g, %g\n", 
+				iVert, iWall, iRing, iSide, vert.t.x, vert.t.y);
+			fprintf(stdout, "v=%g, %g, %g  n=%g, %g, %g\n", 
+				vert.pt.x, vert.pt.y, vert.pt.z, vert.n.x, vert.n.y, vert.n.z);
+		}
+	}
+}
+
 // CPotterDrawView drawing
 
 void CPotterDrawView::OnDraw(CDC *pDC)
@@ -615,26 +686,28 @@ BEGIN_MESSAGE_MAP(CPotterDrawView, CView)
 	ON_COMMAND(ID_VIEW_PAN_LEFT, OnViewPanLeft)
 	ON_COMMAND(ID_VIEW_PAN_RIGHT, OnViewPanRight)
 	ON_COMMAND(ID_VIEW_PAN_EDIT, OnViewPanEdit)
+	ON_COMMAND(ID_VIEW_ANIMATION, OnViewAnimation)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_ANIMATION, OnUpdateViewAnimation)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_MOUSEWHEEL()
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
 	ON_WM_MBUTTONDOWN()
 	ON_WM_MBUTTONUP()
-	ON_COMMAND(ID_VIEW_STYLE_WIREFRAME, OnViewStyleWireframe)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_STYLE_WIREFRAME, OnUpdateViewStyleWireframe)
-	ON_COMMAND(ID_VIEW_STYLE_GOURAUD, OnViewStyleGouraud)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_STYLE_GOURAUD, OnUpdateViewStyleGouraud)
-	ON_COMMAND(ID_VIEW_STYLE_HIGHLIGHTS, OnViewStyleHighlights)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_STYLE_HIGHLIGHTS, OnUpdateViewStyleHighlights)
-	ON_COMMAND(ID_VIEW_STYLE_CULLING, OnViewStyleCulling)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_STYLE_CULLING, OnUpdateViewStyleCulling)
-	ON_COMMAND(ID_VIEW_STYLE_TEXTURE, OnViewStyleTexture)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_STYLE_TEXTURE, OnUpdateViewStyleTexture)
-	ON_COMMAND(ID_VIEW_STYLE_ANIMATION, OnViewStyleAnimation)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_STYLE_ANIMATION, OnUpdateViewStyleAnimation)
-	ON_COMMAND(ID_VIEW_STYLE_BOUNDS, OnViewStyleBounds)
-	ON_UPDATE_COMMAND_UI(ID_VIEW_STYLE_BOUNDS, OnUpdateViewStyleBounds)
+	ON_COMMAND(ID_RENDER_WIREFRAME, OnRenderWireframe)
+	ON_UPDATE_COMMAND_UI(ID_RENDER_WIREFRAME, OnUpdateRenderWireframe)
+	ON_COMMAND(ID_RENDER_GOURAUD, OnRenderGouraud)
+	ON_UPDATE_COMMAND_UI(ID_RENDER_GOURAUD, OnUpdateRenderGouraud)
+	ON_COMMAND(ID_RENDER_HIGHLIGHTS, OnRenderHighlights)
+	ON_UPDATE_COMMAND_UI(ID_RENDER_HIGHLIGHTS, OnUpdateRenderHighlights)
+	ON_COMMAND(ID_RENDER_CULLING, OnRenderCulling)
+	ON_UPDATE_COMMAND_UI(ID_RENDER_CULLING, OnUpdateRenderCulling)
+	ON_COMMAND(ID_RENDER_TEXTURE, OnRenderTexture)
+	ON_UPDATE_COMMAND_UI(ID_RENDER_TEXTURE, OnUpdateRenderTexture)
+	ON_COMMAND(ID_RENDER_TRANSPARENT, OnRenderTransparent)
+	ON_UPDATE_COMMAND_UI(ID_RENDER_TRANSPARENT, OnUpdateRenderTransparent)
+	ON_COMMAND(ID_RENDER_BOUNDS, OnRenderBounds)
+	ON_UPDATE_COMMAND_UI(ID_RENDER_BOUNDS, OnUpdateRenderBounds)
 	ON_MESSAGE(UWM_DEFERRED_UPDATE, OnDeferredUpdate)
 	ON_MESSAGE(UWM_FRAME_TIMER, OnFrameTimer)
 	ON_MESSAGE(UWM_SET_RECORD, OnSetRecord)
@@ -643,10 +716,15 @@ BEGIN_MESSAGE_MAP(CPotterDrawView, CView)
 	ON_UPDATE_COMMAND_UI(ID_FILE_RECORD, OnUpdateFileRecord)
 	ON_UPDATE_COMMAND_UI(ID_NEXT_PANE, OnUpdateNextPane)
 	ON_UPDATE_COMMAND_UI(ID_PREV_PANE, OnUpdateNextPane)
-	ON_COMMAND(ID_VIEW_LIGHTING, OnViewLighting)
+	ON_COMMAND(ID_RENDER_LIGHTING, OnRenderLighting)
 	ON_COMMAND(ID_TOOLS_MESH_INFO, OnToolsMeshInfo)
 	ON_COMMAND(ID_PALETTE_IMPORT, OnPaletteImport)
 	ON_COMMAND(ID_PALETTE_EXPORT, OnPaletteExport)
+	ON_COMMAND(ID_VIEW_STEP_FORWARD, OnViewStepForward)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_STEP_FORWARD, OnUpdateViewStepForward)
+	ON_COMMAND(ID_VIEW_STEP_BACKWARD, OnViewStepBackward)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_STEP_BACKWARD, OnUpdateViewStepBackward)
+	ON_UPDATE_COMMAND_UI(ID_VIEW_RANDOM_PHASE, OnUpdateViewRandomPhase)
 END_MESSAGE_MAP()
 
 // CPotterDrawView message handlers
@@ -690,6 +768,35 @@ void CPotterDrawView::OnUpdateNextPane(CCmdUI* pCmdUI)
 
 void CPotterDrawView::OnLButtonDown(UINT nFlags, CPoint point)
 {
+#if POT_GFX_SHOW_FACE_SELECTION	// if face selection enabled
+	if (GetKeyState(VK_MENU) & GKS_DOWN) {	// if menu key down
+		AfxGetMainWnd()->PostMessage(WM_SYSKEYUP, VK_MENU);	// cancel menu state
+		int	iFace = m_Graphics.HitTest(point);
+		CIntArrayEx	arrFaceIdx;
+		if (iFace >= 0) {	// if face hit
+			m_Graphics.GetSelection(arrFaceIdx);	// get current selection
+			int	nSels = arrFaceIdx.GetSize();
+			int iSel;
+			for (iSel = 0; iSel < nSels; iSel++) {	// for each selected face
+				if (arrFaceIdx[iSel] == iFace)	// if hit face found
+					break;
+			}
+			if (nFlags & MK_CONTROL) {	// if control key also down
+				if (iSel < nSels)	// if hit face found in selection
+					arrFaceIdx.RemoveAt(iSel);	// remove hit face from selection
+				else	// hit face not found
+					arrFaceIdx.Add(iFace);	// add hit face to selection
+			} else {	// control key up
+				arrFaceIdx.SetSize(1);	// set selection to hit face
+				arrFaceIdx[0] = iFace;
+			}
+		}
+		m_Graphics.SetSelection(arrFaceIdx);
+		Invalidate();
+		DumpFace(iFace);
+		return;
+	}
+#endif	// POT_GFX_SHOW_FACE_SELECTION
 	if (nFlags & MK_CONTROL) {	// if control key down
 		HCURSOR hCur = theApp.LoadCursor(IDC_CURSOR_MAGNIFIER);
 		SetCursor(hCur);
@@ -784,14 +891,15 @@ LRESULT CPotterDrawView::OnFrameTimer(WPARAM wParam, LPARAM lParam)
 			if (theApp.GetMainFrame()->GetActiveMDIView() == this) {	// if we're active view
 				CPotterDrawDoc	*pDoc = GetDocument();
 				if (wndOscBar.GetShowAllModulations()) {	// if showing all modulations
-					if (pDoc->HasAnimatedModulations())
+					// if at least one modulated property is animated
+					if (m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED)
 						wndOscBar.Update(false);	// don't refit to data to avoid ruler flicker
 				} else {	// showing current modulation target only
 					int	iProp = pDoc->m_iModTarget;
 					if (iProp >= 0) {	// if modulation target is valid property
 						const CModulationProps&	mod = pDoc->m_Mod[iProp];
 						// if target property is modulated and modulation is animated
-						if (mod.IsModulated() && mod.IsAnimated())
+						if (mod.IsAnimatedModulation())
 							wndOscBar.Update(false);	// don't refit to data to avoid ruler flicker
 					}
 				}
@@ -1014,85 +1122,6 @@ void CPotterDrawView::OnViewRotateEdit()
 		m_Graphics.SetRotation(dlg.m_vRotation * float(M_PI / 180));
 }
 
-void CPotterDrawView::OnViewStyleWireframe()
-{
-	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CD3DGraphics::ST_WIREFRAME);
-	Invalidate();
-}
-
-void CPotterDrawView::OnUpdateViewStyleWireframe(CCmdUI *pCmdUI)
-{
-	pCmdUI->SetCheck((m_Graphics.GetStyle() & CD3DGraphics::ST_WIREFRAME) != 0);
-}
-
-void CPotterDrawView::OnViewStyleGouraud()
-{
-	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CD3DGraphics::ST_GOURAUD);
-	Invalidate();
-}
-
-void CPotterDrawView::OnUpdateViewStyleGouraud(CCmdUI *pCmdUI)
-{
-	pCmdUI->SetCheck((m_Graphics.GetStyle() & CD3DGraphics::ST_GOURAUD) != 0);
-}
-
-void CPotterDrawView::OnViewStyleHighlights()
-{
-	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CD3DGraphics::ST_HIGHLIGHTS);
-	Invalidate();
-}
-
-void CPotterDrawView::OnUpdateViewStyleHighlights(CCmdUI *pCmdUI)
-{
-	pCmdUI->SetCheck((m_Graphics.GetStyle() & CD3DGraphics::ST_HIGHLIGHTS) != 0);
-}
-
-void CPotterDrawView::OnViewStyleCulling()
-{
-	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CD3DGraphics::ST_CULLING);
-	Invalidate();
-}
-
-void CPotterDrawView::OnUpdateViewStyleCulling(CCmdUI *pCmdUI)
-{
-	pCmdUI->SetCheck((m_Graphics.GetStyle() & CD3DGraphics::ST_CULLING) != 0);
-}
-
-void CPotterDrawView::OnViewStyleTexture()
-{
-	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CPotGraphics::ST_TEXTURE);
-	Invalidate();
-}
-
-void CPotterDrawView::OnUpdateViewStyleTexture(CCmdUI *pCmdUI)
-{
-	pCmdUI->SetCheck((m_Graphics.GetStyle() & CPotGraphics::ST_TEXTURE) != 0);
-}
-
-void CPotterDrawView::OnViewStyleAnimation()
-{
-	CPotterDrawDoc	*pDoc = GetDocument();
-	pDoc->NotifyUndoableEdit(CPotterDrawDoc::PROP_bAnimation, UCODE_PROPERTY);
-	pDoc->m_bAnimation ^= 1;
-	pDoc->OnPropertyEdit(CPotterDrawDoc::PROP_bAnimation);
-}
-
-void CPotterDrawView::OnUpdateViewStyleAnimation(CCmdUI *pCmdUI)
-{
-	pCmdUI->SetCheck(GetDocument()->m_bAnimation);
-}
-
-void CPotterDrawView::OnViewStyleBounds()
-{
-	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CPotGraphics::ST_BOUNDS);
-	Invalidate();
-}
-
-void CPotterDrawView::OnUpdateViewStyleBounds(CCmdUI *pCmdUI)
-{
-	pCmdUI->SetCheck((m_Graphics.GetStyle() & CPotGraphics::ST_BOUNDS) != 0);
-}
-
 void CPotterDrawView::OnViewZoomIn()
 {
 	m_Graphics.SetZoom(m_Graphics.GetZoom() * CalcZoomStep());
@@ -1152,7 +1181,122 @@ void CPotterDrawView::OnViewPanEdit()
 		m_Graphics.SetPan(dlg.m_vRotation * float(M_PI / 180));
 }
 
-void CPotterDrawView::OnViewLighting()
+void CPotterDrawView::OnViewAnimation()
+{
+	CPotterDrawDoc	*pDoc = GetDocument();
+	pDoc->NotifyUndoableEdit(CPotterDrawDoc::PROP_bAnimation, UCODE_PROPERTY);
+	pDoc->m_bAnimation ^= 1;
+	pDoc->OnPropertyEdit(CPotterDrawDoc::PROP_bAnimation);
+}
+
+void CPotterDrawView::OnUpdateViewAnimation(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck(GetDocument()->m_bAnimation);
+}
+
+void CPotterDrawView::OnViewStepForward()
+{
+	StepAnimation(true);	// forward
+}
+
+void CPotterDrawView::OnUpdateViewStepForward(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(!IsAnimating() && (m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED));
+}
+
+void CPotterDrawView::OnViewStepBackward()
+{
+	StepAnimation(false);	// backward
+}
+
+void CPotterDrawView::OnUpdateViewStepBackward(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(!IsAnimating() && (m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED));
+}
+
+void CPotterDrawView::OnUpdateViewRandomPhase(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable(m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED);
+}
+
+void CPotterDrawView::OnRenderWireframe()
+{
+	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CD3DGraphics::ST_WIREFRAME);
+	Invalidate();
+}
+
+void CPotterDrawView::OnUpdateRenderWireframe(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck((m_Graphics.GetStyle() & CD3DGraphics::ST_WIREFRAME) != 0);
+}
+
+void CPotterDrawView::OnRenderGouraud()
+{
+	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CD3DGraphics::ST_GOURAUD);
+	Invalidate();
+}
+
+void CPotterDrawView::OnUpdateRenderGouraud(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck((m_Graphics.GetStyle() & CD3DGraphics::ST_GOURAUD) != 0);
+}
+
+void CPotterDrawView::OnRenderHighlights()
+{
+	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CD3DGraphics::ST_HIGHLIGHTS);
+	Invalidate();
+}
+
+void CPotterDrawView::OnUpdateRenderHighlights(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck((m_Graphics.GetStyle() & CD3DGraphics::ST_HIGHLIGHTS) != 0);
+}
+
+void CPotterDrawView::OnRenderCulling()
+{
+	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CD3DGraphics::ST_CULLING);
+	Invalidate();
+}
+
+void CPotterDrawView::OnUpdateRenderCulling(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck((m_Graphics.GetStyle() & CD3DGraphics::ST_CULLING) != 0);
+}
+
+void CPotterDrawView::OnRenderTexture()
+{
+	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CPotGraphics::ST_TEXTURE);
+	Invalidate();
+}
+
+void CPotterDrawView::OnUpdateRenderTexture(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck((m_Graphics.GetStyle() & CPotGraphics::ST_TEXTURE) != 0);
+}
+
+void CPotterDrawView::OnRenderTransparent()
+{
+	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CPotGraphics::ST_TRANSPARENT);
+	Invalidate();
+}
+
+void CPotterDrawView::OnUpdateRenderTransparent(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck((m_Graphics.GetStyle() & CPotGraphics::ST_TRANSPARENT) != 0);
+}
+
+void CPotterDrawView::OnRenderBounds()
+{
+	m_Graphics.SetStyle(m_Graphics.GetStyle() ^ CPotGraphics::ST_BOUNDS);
+	Invalidate();
+}
+
+void CPotterDrawView::OnUpdateRenderBounds(CCmdUI *pCmdUI)
+{
+	pCmdUI->SetCheck((m_Graphics.GetStyle() & CPotGraphics::ST_BOUNDS) != 0);
+}
+
+void CPotterDrawView::OnRenderLighting()
 {
 	CPotterDrawDoc	*pDoc = GetDocument();
 	CLightingDlg	dlg;

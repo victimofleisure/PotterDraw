@@ -235,6 +235,7 @@
     <ClInclude Include="DocIter.h" />
     <ClInclude Include="DoubleBufDC.h" />
     <ClInclude Include="DPoint.h" />
+    <ClInclude Include="DPoint3.h" />
     <ClInclude Include="DRect.h" />
     <ClInclude Include="FixedArray.h" />
     <ClInclude Include="FocusEdit.h" />
@@ -317,6 +318,7 @@
     <ClCompile Include="DocIter.cpp" />
     <ClCompile Include="DoubleBufDC.cpp" />
     <ClCompile Include="DPoint.cpp" />
+    <ClCompile Include="DPoint3.cpp" />
     <ClCompile Include="DRect.cpp" />
     <ClCompile Include="FocusEdit.cpp" />
     <ClCompile Include="FolderDialog.cpp" />
