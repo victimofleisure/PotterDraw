@@ -9,6 +9,7 @@
 		rev		date	comments
         00      23mar17	initial version
 		01		01sep17	call help directly
+		02		02jan18	in InitPropList, make ruffle child of bend
 		
 */
 
@@ -64,6 +65,16 @@ void CPropertiesBar::InitPropList(const CProperties& Props)
 	m_Grid.SetVSDotNetLook();
 //	m_Grid.MarkModifiedProperties();
 	m_Grid.InitPropList(Props);
+	// ruffle wants to be child of bend, but we only support two-level hierarchy, hence this
+	// kludge, which changes grid control ONLY; otherwise ruffle remains a subgroup of mesh
+	CMFCPropertyGridProperty	*pMeshGroup = m_Grid.GetProperty(CPotProperties::GROUP_MESH);
+	int	iFirstSubgroup = pMeshGroup->GetSubItemsCount() - CPotProperties::MESH_SUBGROUPS;
+	int	iBendSubgroup = iFirstSubgroup + CPotProperties::SUBGROUP_BEND;
+	int	iRuffleSubgroup = iFirstSubgroup + CPotProperties::SUBGROUP_RUFFLE;
+	CMFCPropertyGridProperty	*pRuffleSubgroup = pMeshGroup->GetSubItem(iRuffleSubgroup);
+	VERIFY(pMeshGroup->RemoveSubItem(pRuffleSubgroup, FALSE));	// don't delete subitem
+	CMFCPropertyGridProperty	*pBendSubgroup = pMeshGroup->GetSubItem(iBendSubgroup);
+	VERIFY(pBendSubgroup->AddSubItem(pRuffleSubgroup));	// make ruffle child of bend
 }
 
 CPropertiesBar::CMyPropertiesGridCtrl::CMyPropertiesGridCtrl()

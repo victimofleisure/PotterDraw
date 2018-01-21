@@ -684,8 +684,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,5,0
- PRODUCTVERSION 1,0,5,0
+ FILEVERSION 1,0,6,2
+ PRODUCTVERSION 1,0,6,2
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -702,12 +702,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Anal Software"
             VALUE "FileDescription", "PotterDraw"
-            VALUE "FileVersion", "1.0.5.0"
+            VALUE "FileVersion", "1.0.6.2"
             VALUE "InternalName", "PotterDraw.exe"
             VALUE "LegalCopyright", "Copyleft 2017 Chris Korda"
             VALUE "OriginalFilename", "PotterDraw.exe"
             VALUE "ProductName", "PotterDraw"
-            VALUE "ProductVersion", "1.0.5.0"
+            VALUE "ProductVersion", "1.0.6.2"
         END
     END
     BLOCK "VarFileInfo"
@@ -924,6 +924,11 @@ END
 
 STRINGTABLE
 BEGIN
+    IDS_PDR_SUBGROUP_MESH_HELIX "Helix"
+    IDS_PDR_SUBGROUP_MESH_POLYGON "Polygon"
+    IDS_PDR_SUBGROUP_MESH_RIPPLE "Ripple"
+    IDS_PDR_SUBGROUP_MESH_RUFFLE "Ruffle"
+    IDS_PDR_SUBGROUP_MESH_SCALLOP "Scallop"
     IDS_PROPERTIES_BAR      "Properties"
     IDS_PROPS_MORE_COLORS   "More Colors..."
     IDS_RECDLG_CUSTOM       "Custom"
@@ -935,15 +940,15 @@ BEGIN
     IDS_SPLINE_NM_ADD_NODE  "Add Node"
     IDS_SPLINE_NM_CHANGED   "Spline"
     IDS_SPLINE_NM_CUT       "Cut"
+END
+
+STRINGTABLE
+BEGIN
     IDS_SPLINE_NM_DELETE    "Delete"
     IDS_SPLINE_NM_DELETE_NODE "Delete Node"
     IDS_SPLINE_NM_FLIP_HORIZONTAL "Flip Horizontal"
     IDS_SPLINE_NM_FLIP_VERTICAL "Flip Vertical"
     IDS_SPLINE_NM_IMPORT    "Import"
-END
-
-STRINGTABLE
-BEGIN
     IDS_SPLINE_NM_NODE_TYPE "Node Type"
     IDS_SPLINE_NM_PASTE     "Paste"
     IDS_SPLINE_NM_ROTATE    "Rotate"
@@ -955,13 +960,85 @@ BEGIN
     IDS_TOOLBAR_CUSTOMIZE   "Customize..."
     IDS_TOOLBAR_STANDARD    "Standard"
     IDS_UNDO_LIGHTING       "Lighting"
-    IDS_UNDO_RANDOM_PHASE   "Random Phase"
-    IDS_UNDO_STEP_ANIMATION "Step Animation"
-    IDS_VIEW_PAN            "Pan"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_UNDO_RANDOM_PHASE   "Random Phase"
+    IDS_UNDO_STEP_ANIMATION "Step Animation"
+    IDS_VIEW_PAN            "Pan"
+    IDS_PDR_SUBGROUP_VIEW_AUTOROTATE "Auto Rotate"
+    IDS_PDR_NAME_fAutoRotateZoom "Auto Rotate Zoom"
+    IDS_PDR_DESC_fAutoRotateZoom 
+                            "Zoom speed when auto-rotating view, in percent per second"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_fBendPolePhase "Bend Pole Phase"
+    IDS_PDR_NAME_fBendPoles "Bend Poles"
+    IDS_PDR_NAME_fBendPower "Bend Power"
+    IDS_PDR_NAME_fBends     "Bends"
+    IDS_PDR_NAME_fColorCycles "Color Cycles"
+    IDS_PDR_NAME_fCyclesV   "Cycles V"
+    IDS_PDR_NAME_fEdgeGain  "Edge Gain"
+    IDS_PDR_NAME_fFrameRate "Frame Rate"
+    IDS_PDR_NAME_fHelixAmplitude "Helix Amplitude"
+    IDS_PDR_NAME_fHelixFrequency "Helix Frequency"
+    IDS_PDR_NAME_fOffsetU   "U Offset"
+    IDS_PDR_NAME_fOffsetV   "V Offset"
+    IDS_PDR_NAME_fPetals    "Petals"
+    IDS_PDR_NAME_fPolygonBulge "Polygon Bulge"
+    IDS_PDR_NAME_fPolygonPhase "Polygon Phase"
+    IDS_PDR_NAME_fPolygonRoundness "Polygon Roundness"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_fPolygonSides "Polygon Sides"
+    IDS_PDR_NAME_fRadius    "Radius"
+    IDS_PDR_NAME_fRingPhase "Ring Phase"
+    IDS_PDR_NAME_fRippleDepth "Ripple Depth"
+    IDS_PDR_NAME_fRipplePhase "Ripple Phase"
+    IDS_PDR_NAME_fRipplePower "Ripple Power"
+    IDS_PDR_NAME_fRipples   "Ripples"
+    IDS_PDR_NAME_fRuffleDepth "Ruffle Depth"
+    IDS_PDR_NAME_fRufflePhase "Ruffle Phase"
+    IDS_PDR_NAME_fRufflePower "Ruffle Power"
+    IDS_PDR_NAME_fRufflePulseWidth "Ruffle Pulse Width"
+    IDS_PDR_NAME_fRuffleSlew "Ruffle Slew"
+    IDS_PDR_NAME_fRuffles   "Ruffles"
+    IDS_PDR_NAME_fScallopDepth "Scallop Depth"
+    IDS_PDR_NAME_fScallopPhase "Scallop Phase"
+    IDS_PDR_NAME_fScallopPower "Scallop Power"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_fScallopPulseWidth "Scallop Pulse Width"
+    IDS_PDR_NAME_fScallopSlew "Scallop Slew"
+    IDS_PDR_NAME_fScallops  "Scallops"
+    IDS_PDR_NAME_fStripeAmplitude "Stripe Amplitude"
+    IDS_PDR_NAME_fStripeFrequency "Stripe Frequency"
+    IDS_PDR_NAME_fStripePhase "Stripe Phase"
+    IDS_PDR_NAME_fTwist     "Twist"
+    IDS_PDR_NAME_fWallThickness "Wall Thickness"
+    IDS_PDR_NAME_iBendMotif "Bend Motif"
+    IDS_PDR_NAME_iBendOperation "Bend Operation"
+    IDS_PDR_NAME_iBendPoleMotif "Bend Pole Motif"
+    IDS_PDR_NAME_iBendPowerType "Bend Power Type"
+    IDS_PDR_NAME_iColorPattern "Color Pattern"
+    IDS_PDR_NAME_iPaletteType "Palette Type"
+    IDS_PDR_NAME_iRippleMotif "Ripple Motif"
+    IDS_PDR_NAME_iRippleOperation "Ripple Operation"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_NAME_iRipplePowerType "Ripple Power Type"
+    IDS_PDR_NAME_iRuffleMotif "Ruffle Motif"
+    IDS_PDR_NAME_iRufflePowerType "Ruffle Power Type"
+    IDS_PDR_NAME_iRuffleWaveform "Ruffle Waveform"
     IDS_PDR_NAME_iScallopMotif "Scallop Motif"
     IDS_PDR_NAME_iScallopOperation "Scallop Operation"
     IDS_PDR_NAME_iScallopPowerType "Scallop Power Type"
@@ -974,30 +1051,48 @@ BEGIN
     IDS_PDR_NAME_sTexturePath "Texture Path"
     IDS_PDR_OPT_COLPAT_AZIMUTH "Azimuth"
     IDS_PDR_OPT_COLPAT_AZI_INC "Azimuth & Incline"
-    IDS_PDR_OPT_COLPAT_EDGES "Edges"
-    IDS_PDR_OPT_COLPAT_INCLINE "Incline"
-    IDS_PDR_OPT_COLPAT_PETALS "Petals"
-    IDS_PDR_OPT_COLPAT_POLAR "Polar"
 END
 
 STRINGTABLE
 BEGIN
+    IDS_PDR_OPT_COLPAT_EDGES "Edges"
+    IDS_PDR_OPT_COLPAT_INCLINE "Incline"
+    IDS_PDR_OPT_COLPAT_PETALS "Petals"
+    IDS_PDR_OPT_COLPAT_POLAR "Polar"
+    IDS_PDR_OPT_COLPAT_RADIUS "Radius"
+    IDS_PDR_OPT_COLPAT_RINGS "Rings"
+    IDS_PDR_OPT_COLPAT_STRIPES "Stripes"
+    IDS_PDR_OPT_MOTIF_FLUTES "Flutes"
+    IDS_PDR_OPT_MOTIF_NONE  "None"
+    IDS_PDR_OPT_MOTIF_PARTED_FLUTES "Parted Flutes"
+    IDS_PDR_OPT_MOTIF_PARTED_REEDS "Parted Reeds"
+    IDS_PDR_OPT_MOTIF_REEDS "Reeds"
+    IDS_PDR_OPT_PALTYPE_COMPLEMENT "Complement"
+    IDS_PDR_OPT_PALTYPE_LINEAR "Linear"
+    IDS_PDR_OPT_PALTYPE_SPLIT "Split"
+    IDS_PDR_SUBGROUP_MESH_BEND "Bend"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_DESC_nColorSharpness 
+                            "Sharpness of stripes; 1 is fuzziest, 100 is sharpest"
+    IDS_PDR_DESC_nColors    "Number of colors in palette"
+    IDS_PDR_DESC_nRings     "Number of rings"
+    IDS_PDR_DESC_nSides     "Number of sides in each ring"
+    IDS_PDR_DESC_sTexturePath 
+                            "Path of file to use as texture, if any; if specified, overrides palette"
+    IDS_PDR_GROUP_MESH      "Mesh"
+    IDS_PDR_GROUP_TEXTURE   "Texture"
+    IDS_PDR_GROUP_VIEW      "View"
+    IDS_PDR_NAME_bAnimation "Animation"
+    IDS_PDR_NAME_clrBackground "Background Color"
     IDS_PDR_NAME_fAspectRatio "Aspect Ratio"
     IDS_PDR_NAME_fAutoRotatePitch "Auto Rotate Pitch"
     IDS_PDR_NAME_fAutoRotateRoll "Auto Rotate Roll"
     IDS_PDR_NAME_fAutoRotateYaw "Auto Rotate Yaw"
     IDS_PDR_NAME_fBendDepth "Bend Depth"
     IDS_PDR_NAME_fBendPhase "Bend Phase"
-    IDS_PDR_NAME_fBendPolePhase "Bend Pole Phase"
-    IDS_PDR_NAME_fBendPoles "Bend Poles"
-    IDS_PDR_NAME_fBendPower "Bend Power"
-    IDS_PDR_NAME_fBends     "Bends"
-    IDS_PDR_NAME_fColorCycles "Color Cycles"
-    IDS_PDR_NAME_fCyclesV   "Cycles V"
-    IDS_PDR_NAME_fEdgeGain  "Edge Gain"
-    IDS_PDR_NAME_fFrameRate "Frame Rate"
-    IDS_PDR_NAME_fHelixAmplitude "Helix Amplitude"
-    IDS_PDR_NAME_fHelixFrequency "Helix Frequency"
 END
 
 STRINGTABLE
@@ -1027,46 +1122,6 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_PDR_OPT_COLPAT_RADIUS "Radius"
-    IDS_PDR_OPT_COLPAT_RINGS "Rings"
-    IDS_PDR_OPT_COLPAT_STRIPES "Stripes"
-    IDS_PDR_OPT_MOTIF_FLUTES "Flutes"
-    IDS_PDR_OPT_MOTIF_NONE  "None"
-    IDS_PDR_OPT_MOTIF_PARTED_FLUTES "Parted Flutes"
-    IDS_PDR_OPT_MOTIF_PARTED_REEDS "Parted Reeds"
-    IDS_PDR_OPT_MOTIF_REEDS "Reeds"
-    IDS_PDR_OPT_PALTYPE_COMPLEMENT "Complement"
-    IDS_PDR_OPT_PALTYPE_LINEAR "Linear"
-    IDS_PDR_OPT_PALTYPE_SPLIT "Split"
-    IDS_PDR_SUBGROUP_MESH_BEND "Bend"
-    IDS_PDR_SUBGROUP_MESH_HELIX "Helix"
-    IDS_PDR_SUBGROUP_MESH_POLYGON "Polygon"
-    IDS_PDR_SUBGROUP_MESH_RIPPLE "Ripple"
-    IDS_PDR_SUBGROUP_MESH_SCALLOP "Scallop"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_PDR_NAME_fOffsetU   "U Offset"
-    IDS_PDR_NAME_fOffsetV   "V Offset"
-    IDS_PDR_NAME_fPetals    "Petals"
-    IDS_PDR_NAME_fPolygonBulge "Polygon Bulge"
-    IDS_PDR_NAME_fPolygonPhase "Polygon Phase"
-    IDS_PDR_NAME_fPolygonRoundness "Polygon Roundness"
-    IDS_PDR_NAME_fPolygonSides "Polygon Sides"
-    IDS_PDR_NAME_fRadius    "Radius"
-    IDS_PDR_NAME_fRippleDepth "Ripple Depth"
-    IDS_PDR_NAME_fRipplePhase "Ripple Phase"
-    IDS_PDR_NAME_fRipplePower "Ripple Power"
-    IDS_PDR_NAME_fRipples   "Ripples"
-    IDS_PDR_NAME_fScallopDepth "Scallop Depth"
-    IDS_PDR_NAME_fScallopPhase "Scallop Phase"
-    IDS_PDR_NAME_fScallopPower "Scallop Power"
-    IDS_PDR_NAME_fScallopPulseWidth "Scallop Pulse Width"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_DESC_fHelixFrequency "Number of turns in local origin's spiral"
     IDS_PDR_DESC_fOffsetU   "Offset applied to U coordinate for texture mapping; normalized from 0 to 1"
     IDS_PDR_DESC_fOffsetV   "Offset applied to V coordinate for texture mapping; normalized from 0 to 1"
@@ -1078,41 +1133,32 @@ BEGIN
                             "Roundness of polygon's corners; normalized from -1 to 1"
     IDS_PDR_DESC_fPolygonSides "Polygon's number of sides"
     IDS_PDR_DESC_fRadius    "Radius scaling factor"
+    IDS_PDR_DESC_fRingPhase "Initial phase of each ring; normalized from 0 to 1"
     IDS_PDR_DESC_fRippleDepth "Depth of each ripple"
     IDS_PDR_DESC_fRipplePhase 
                             "Initial phase of ripples; normalized from 0 to 1"
     IDS_PDR_DESC_fRipplePower 
                             "Base of ripple waveform's power function, or zero if none"
     IDS_PDR_DESC_fRipples   "Number of ripples"
+    IDS_PDR_DESC_fRuffleDepth "Depth of each ruffle"
+    IDS_PDR_DESC_fRufflePhase 
+                            "Initial phase of ruffles; normalized from 0 to 1"
+END
+
+STRINGTABLE
+BEGIN
+    IDS_PDR_DESC_fRufflePower 
+                            "Base of ruffle waveform's power function, or zero if none"
+    IDS_PDR_DESC_fRufflePulseWidth 
+                            "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
+    IDS_PDR_DESC_fRuffleSlew 
+                            "Amount of slew, for pulse waveforms only; normalized from 0 to 1"
+    IDS_PDR_DESC_fRuffles   "Number of ruffles"
     IDS_PDR_DESC_fScallopDepth "Depth of each scallop"
     IDS_PDR_DESC_fScallopPhase 
                             "Initial phase of scallop rotation; normalized from 0 to 1"
     IDS_PDR_DESC_fScallopPower 
                             "Base of scallop waveform's power function, or zero if none"
-END
-
-STRINGTABLE
-BEGIN
-    IDS_PDR_NAME_fScallopSlew "Scallop Slew"
-    IDS_PDR_NAME_fScallops  "Scallops"
-    IDS_PDR_NAME_fStripeAmplitude "Stripe Amplitude"
-    IDS_PDR_NAME_fStripeFrequency "Stripe Frequency"
-    IDS_PDR_NAME_fStripePhase "Stripe Phase"
-    IDS_PDR_NAME_fTwist     "Twist"
-    IDS_PDR_NAME_fWallThickness "Wall Thickness"
-    IDS_PDR_NAME_iBendMotif "Bend Motif"
-    IDS_PDR_NAME_iBendOperation "Bend Operation"
-    IDS_PDR_NAME_iBendPoleMotif "Bend Pole Motif"
-    IDS_PDR_NAME_iBendPowerType "Bend Power Type"
-    IDS_PDR_NAME_iColorPattern "Color Pattern"
-    IDS_PDR_NAME_iPaletteType "Palette Type"
-    IDS_PDR_NAME_iRippleMotif "Ripple Motif"
-    IDS_PDR_NAME_iRippleOperation "Ripple Operation"
-    IDS_PDR_NAME_iRipplePowerType "Power Type"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_DESC_fScallopPulseWidth 
                             "Width of pulse, for pulse waveforms only; normalized from 0 to 1"
     IDS_PDR_DESC_fScallopSlew 
@@ -1126,6 +1172,10 @@ BEGIN
     IDS_PDR_DESC_fTwist     "Corkscrew effect, normalized so that 1 twists 360 degrees from bottom to top"
     IDS_PDR_DESC_fWallThickness "Distance between inner and outer wall"
     IDS_PDR_DESC_iBendMotif "Function applied to bend waveform"
+END
+
+STRINGTABLE
+BEGIN
     IDS_PDR_DESC_iBendOperation "Operation of bend waveform on radius"
     IDS_PDR_DESC_iBendPoleMotif "Function applied to bend pole waveform"
     IDS_PDR_DESC_iBendPowerType 
@@ -1134,30 +1184,18 @@ BEGIN
     IDS_PDR_DESC_iPaletteType "Type of palette"
     IDS_PDR_DESC_iRippleMotif "Function applied to ripple waveform"
     IDS_PDR_DESC_iRippleOperation "Operation of ripple waveform on radius"
-END
-
-STRINGTABLE
-BEGIN
     IDS_PDR_DESC_iRipplePowerType 
                             "Type of power function applied to ripple waveform"
+    IDS_PDR_DESC_iRuffleMotif "Function applied to ruffle waveform"
+    IDS_PDR_DESC_iRufflePowerType 
+                            "Type of power function applied to ruffle waveform"
+    IDS_PDR_DESC_iRuffleWaveform "Type of waveform used for ruffles"
     IDS_PDR_DESC_iScallopMotif "Function applied to scallop waveform"
     IDS_PDR_DESC_iScallopOperation "Operation of scallop waveform on radius"
     IDS_PDR_DESC_iScallopPowerType 
                             "Type of power function applied to scallop waveform"
     IDS_PDR_DESC_iScallopRange "Range of scallop waveform"
     IDS_PDR_DESC_iScallopWaveform "Type of waveform used for scallops"
-    IDS_PDR_DESC_nColorSharpness 
-                            "Sharpness of stripes; 1 is fuzziest, 100 is sharpest"
-    IDS_PDR_DESC_nColors    "Number of colors in palette"
-    IDS_PDR_DESC_nRings     "Number of rings"
-    IDS_PDR_DESC_nSides     "Number of sides in each ring"
-    IDS_PDR_DESC_sTexturePath 
-                            "Path of file to use as texture, if any; if specified, overrides palette"
-    IDS_PDR_GROUP_MESH      "Mesh"
-    IDS_PDR_GROUP_TEXTURE   "Texture"
-    IDS_PDR_GROUP_VIEW      "View"
-    IDS_PDR_NAME_bAnimation "Animation"
-    IDS_PDR_NAME_clrBackground "Background Color"
 END
 
 STRINGTABLE

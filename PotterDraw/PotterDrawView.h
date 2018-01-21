@@ -13,7 +13,8 @@
 		03		15nov17	add palette import/export
 		04		23nov17	add step animation
 		05		12dec17	add transparent render style
-		
+		06		15jan18	add auto zoom
+
 */
 
 // PotterDrawView.h : interface of the CPotterDrawView class
@@ -99,6 +100,7 @@ protected:
 	D3DXVECTOR3	m_vDragPan;			// panning at start of drag, in view coords
 	D3DXVECTOR3	m_vDragRotation;	// rotation at start of drag, in radians
 	D3DXVECTOR3	m_vAutoRotateSpeed;	// auto-rotate speed, in radians per timer tick
+	double	m_fAutoZoomScale;		// auto-zoom scaling factor per timer tick
 	CMMTimerPeriod	m_TimerPeriod;	// multimedia timer's precision
 	CMMTimer	m_FrameTimer;		// multimedia frame timer
 	UINT	m_nBenchFrames;			// number of frames rendered per benchmark

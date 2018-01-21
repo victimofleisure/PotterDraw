@@ -14,7 +14,9 @@
 		04		23nov17	add modulation type flags
 		05		24nov17	add animated modulation methods
 		06		12dec17	add operations (subset of modulation operations)
-		07		12dec17	bump file version to 3
+		07		12dec17	bump file version to 3 for app version 1.0.5
+		08		02jan18	bump file version to 4 for app version 1.0.6
+		09		15jan18	add view subgroup for auto rotate
 		
 */
 
@@ -27,7 +29,7 @@
 #include "PotGraphics.h"	// for style bits
 
 #define FILE_ID			_T("PotterDraw")
-#define	FILE_VERSION	3
+#define	FILE_VERSION	4
 
 #define RK_FILE_ID		_T("sFileID")
 #define RK_FILE_VERSION	_T("nFileVersion")
@@ -54,6 +56,11 @@ const CProperties::OPTION_INFO CPotProperties::m_Group[GROUPS] = {
 
 const CProperties::OPTION_INFO CPotProperties::m_MeshSubgroup[MESH_SUBGROUPS] = {
 #define MESHSUBGROUPDEF(name) {_T(#name), IDS_PDR_SUBGROUP_MESH_##name},
+	#include "PotPropsDef.h"
+};
+
+const CProperties::OPTION_INFO CPotProperties::m_ViewSubgroup[VIEW_SUBGROUPS] = {
+#define VIEWSUBGROUPDEF(name) {_T(#name), IDS_PDR_SUBGROUP_VIEW_##name},
 	#include "PotPropsDef.h"
 };
 
@@ -177,9 +184,19 @@ CString	CPotProperties::GetSubgroupName(int iGroup, int iSubgroup) const
 {
 	ASSERT(IsValidGroup(iGroup));
 	CString	sName;
-	if (iGroup == GROUP_MESH) {
-		sName.LoadString(m_MeshSubgroup[iSubgroup].nNameID);
+	int	nNameID;
+	switch (iGroup) {
+	case GROUP_MESH:
+		nNameID = m_MeshSubgroup[iSubgroup].nNameID;
+		break;
+	case GROUP_VIEW:
+		nNameID = m_ViewSubgroup[iSubgroup].nNameID;
+		break;
+	default:
+		nNameID = 0;
 	}
+	if (nNameID)
+		sName.LoadString(nNameID);
 	return sName;
 }
 

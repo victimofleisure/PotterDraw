@@ -34,6 +34,8 @@
 		24		12dec17	add operation, power and power type to ripple and bend
 		25		12dec17	in SetViewState, set standard view if applicable
 		26		15dec17	add edges color pattern
+		27		02jan18	add ruffle properties
+		28		03jan18	add ring phase
 
 */
 
@@ -347,6 +349,7 @@ void CPotGraphics::CalcPotMesh()
 	bool	bHasScallops = HasScallops();
 	bool	bHasRipples = HasRipples();
 	bool	bHasBends = HasBends();
+	bool	bHasRuffles = HasRuffles();
 	bool	bHasHelix = HasHelix();
 	bool	bIsPolygon = IsPolygon();
 	double	fRingBend = 0;
@@ -386,13 +389,13 @@ void CPotGraphics::CalcPotMesh()
 					else	// operation is exponentiate
 						fRad *= pow(2, r);
 				}
-				if (bHasBends) {	// if bends enabled
+				if (bHasBends && !bHasRuffles) {	// if bends enabled, but not ruffles
 					fRingBend = cos((fRing * m_fBends + m_fBendPhase) * M_PI * 2);
 					ApplyMotif(m_iBendMotif, fRingBend);
 				}
 				fRingRad = fRad;
 			}
-			double	fRingTwist = m_fTwist * M_PI * 2 * fRing;	// optimization
+			double	fRingPhase = (m_fTwist * fRing + m_fRingPhase) * M_PI * 2;	// optimization
 			if (bHasHelix) {	// if helix enabled
 				double	fHelixTheta = fRing * m_fHelixFrequency * M_PI * 2;
 				vOrigin.x = sin(fHelixTheta) * m_fHelixAmplitude;
@@ -462,6 +465,15 @@ void CPotGraphics::CalcPotMesh()
 						}
 					}
 					if (bHasBends) {	// if bends enabled
+						if (bHasRuffles) {	// if ruffles enabled, fRingBend can vary per side
+							double	fPhase = fSide * m_fRuffles + m_fBendPolePhase + m_fRufflePhase;
+							double	fRuffle = GetWave(m_iRuffleWaveform + 1, fPhase, m_fRufflePulseWidth, m_fRuffleSlew);
+							ApplyMotif(m_iRuffleMotif, fRuffle);
+							ApplyPower(CModulationProps::RANGE_BIPOLAR, m_iRufflePowerType, m_fRufflePower, fRuffle);
+							fRuffle = fRing + fRuffle * m_fRuffleDepth;
+							fRingBend = cos((fRuffle * m_fBends + m_fBendPhase) * M_PI * 2);
+							ApplyMotif(m_iBendMotif, fRingBend);
+						}
 						double	r = fRingBend * cos((fSide * m_fBendPoles + m_fBendPolePhase) * M_PI * 2);
 						ApplyMotif(m_iBendPoleMotif, r);
 						ApplyPower(CModulationProps::RANGE_BIPOLAR, m_iBendPowerType, m_fBendPower, r);
@@ -484,7 +496,7 @@ void CPotGraphics::CalcPotMesh()
 					fRad = max(fRad, 0);	// avoid negative radius
 					v.t = m_arrVert[iVert - nWallStride].t;	// copy outer wall's texture coords
 				}
-				double	fTheta = fDelta * iSide + fRingTwist;
+				double	fTheta = fDelta * iSide + fRingPhase;
 				double	x = sin(fTheta) * m_fAspectRatio;
 				double	y = cos(fTheta);
 				double	z = (fRing - 0.5) * fHeight;

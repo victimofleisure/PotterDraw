@@ -11,6 +11,7 @@
 		01		03nov17	add property subgroup
 		02		10nov17	add power types
 		03		24nov17	add animated modulation accessor
+		04		03jan18	change target enum's prefix to avoid conflicts
 		
 */
 
@@ -33,7 +34,7 @@ public:
 		GROUPS
 	};
 	enum {	// targets
-		#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) PROP_##name,
+		#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) TARG_##name,
 		#include "PotPropsDef.h"
 		TARGETS
 	};

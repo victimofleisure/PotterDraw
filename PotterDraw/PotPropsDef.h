@@ -20,6 +20,9 @@
 		10		12dec17	for ripple and bend, add operation, power and power type
 		11		12dec17	add transparent render style
 		12		15dec17	add edges color pattern
+		13		02jan18	add ruffle properties
+		14		03jan18	add ring phase
+		15		15jan18	add view subgroup for auto rotate; add auto zoom
 		
 */
 
@@ -38,9 +41,17 @@ MESHSUBGROUPDEF(	POLYGON		)
 MESHSUBGROUPDEF(	SCALLOP		)
 MESHSUBGROUPDEF(	RIPPLE		)
 MESHSUBGROUPDEF(	BEND		)
+MESHSUBGROUPDEF(	RUFFLE		)
 MESHSUBGROUPDEF(	HELIX		)
 
 #undef MESHSUBGROUPDEF
+#endif
+
+#ifdef VIEWSUBGROUPDEF
+
+VIEWSUBGROUPDEF(	AUTOROTATE	)
+
+#undef VIEWSUBGROUPDEF
 #endif
 
 #ifdef PROPDEF
@@ -51,6 +62,7 @@ PROPDEF(	MESH,		NONE,		VAR,		int,		nSides,				100,			3,			SHRT_MAX,	NULL,		0)
 PROPDEF(	MESH,		NONE,		VAR,		double,		fRadius,			1,				1e-6,		1e6,		NULL,		0)
 PROPDEF(	MESH,		NONE,		VAR,		double,		fWallThickness,		5,				1e-6,		1e6,		NULL,		0)
 PROPDEF(	MESH,		NONE,		VAR,		double,		fTwist,				0,				0,			0,			NULL,		0)
+PROPDEF(	MESH,		NONE,		VAR,		double,		fRingPhase,			0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		NONE,		VAR,		double,		fAspectRatio,		1,				0.1,		10.0,		NULL,		0)
 PROPDEF(	MESH,		POLYGON,	VAR,		double,		fPolygonSides,		0,				0,			1e6,		NULL,		0)
 PROPDEF(	MESH,		POLYGON,	VAR,		double,		fPolygonRoundness,	0,				-1.0,		1.0,		NULL,		0)
@@ -84,6 +96,15 @@ PROPDEF(	MESH,		BEND,		ENUM,		int,		iBendPoleMotif,		0,				0,			0,			m_Motif,	_c
 PROPDEF(	MESH,		BEND,		ENUM,		int,		iBendOperation,		0,				0,			0,			m_Operation,	_countof(m_Operation))
 PROPDEF(	MESH,		BEND,		VAR,		double,		fBendPower,			0,				0,			DBL_MAX,	NULL,		0)
 PROPDEF(	MESH,		BEND,		ENUM,		int,		iBendPowerType,		0,				0,			0,			CModulationProps::m_PowerType,	_countof(CModulationProps::m_PowerType))
+PROPDEF(	MESH,		RUFFLE,		VAR,		double,		fRuffles,			0,				0,			0,			NULL,		0)
+PROPDEF(	MESH,		RUFFLE,		VAR,		double,		fRuffleDepth,		0,				0,			0,			NULL,		0)
+PROPDEF(	MESH,		RUFFLE,		VAR,		double,		fRufflePhase,		0,				0,			0,			NULL,		0)
+PROPDEF(	MESH,		RUFFLE,		ENUM,		int,		iRuffleWaveform,	0,				0,			0,			CModulationProps::m_Waveform + 1,	_countof(CModulationProps::m_Waveform) - 1)
+PROPDEF(	MESH,		RUFFLE,		ENUM,		int,		iRuffleMotif,		0,				0,			0,			m_Motif,	_countof(m_Motif))
+PROPDEF(	MESH,		RUFFLE,		VAR,		double,		fRufflePower,		0,				0,			DBL_MAX,	NULL,		0)
+PROPDEF(	MESH,		RUFFLE,		ENUM,		int,		iRufflePowerType,	0,				0,			0,			CModulationProps::m_PowerType,	_countof(CModulationProps::m_PowerType))
+PROPDEF(	MESH,		RUFFLE,		VAR,		double,		fRufflePulseWidth,	0.5,			0,			0,			NULL,		0)
+PROPDEF(	MESH,		RUFFLE,		VAR,		double,		fRuffleSlew,		0.5,			0,			0,			NULL,		0)
 PROPDEF(	MESH,		HELIX,		VAR,		double,		fHelixFrequency,	0,				0,			0,			NULL,		0)
 PROPDEF(	MESH,		HELIX,		VAR,		double,		fHelixAmplitude,	0,				0,			0,			NULL,		0)
 PROPDEF(	TEXTURE,	NONE,		FILE,		CString,	sTexturePath,		_T(""),			0,			0,			NULL,		0)
@@ -101,11 +122,12 @@ PROPDEF(	TEXTURE,	NONE,		VAR,		double,		fOffsetV,			0,				0,			0,			NULL,		0)
 PROPDEF(	TEXTURE,	NONE,		VAR,		double,		fCyclesV,			1,				0,			0,			NULL,		0)
 PROPDEF(	TEXTURE,	NONE,		VAR,		double,		fEdgeGain,			6.0,			0,			0,			NULL,		0)
 PROPDEF(	VIEW,		NONE,		VAR,		bool,		bAnimation,			0,				0,			0,			NULL,		0)
-PROPDEF(	VIEW,		NONE,		VAR,		double,		fAutoRotateYaw,		0,				0,			0,			NULL,		0)
-PROPDEF(	VIEW,		NONE,		VAR,		double,		fAutoRotatePitch,	12,				0,			0,			NULL,		0)
-PROPDEF(	VIEW,		NONE,		VAR,		double,		fAutoRotateRoll,	0,				0,			0,			NULL,		0)
 PROPDEF(	VIEW,		NONE,		VAR,		double,		fFrameRate,			30,				0.01,		100.0,		NULL,		0)
 PROPDEF(	VIEW,		NONE,		COLOR,		COLORREF,	clrBackground,		0xffffff,		0,			0,			NULL,		0)
+PROPDEF(	VIEW,		AUTOROTATE,	VAR,		double,		fAutoRotateYaw,		0,				0,			0,			NULL,		0)
+PROPDEF(	VIEW,		AUTOROTATE,	VAR,		double,		fAutoRotatePitch,	12,				0,			0,			NULL,		0)
+PROPDEF(	VIEW,		AUTOROTATE,	VAR,		double,		fAutoRotateRoll,	0,				0,			0,			NULL,		0)
+PROPDEF(	VIEW,		AUTOROTATE,	VAR,		double,		fAutoRotateZoom,	0,				0,			0,			NULL,		0)
 
 #undef PROPDEF
 #endif

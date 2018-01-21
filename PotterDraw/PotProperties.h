@@ -14,6 +14,8 @@
 		04		23nov17	add modulation type flags
 		05		24nov17	add animated modulation methods
 		06		12dec17	add operations (subset of modulation operations)
+		07		02jan18	add ruffle properties
+		08		15jan18	add view subgroup for auto rotate
 		
 */
 
@@ -49,6 +51,11 @@ public:
 		#include "PotPropsDef.h"
 		MESH_SUBGROUPS
 	};
+	enum {	// view subgroups
+		#define VIEWSUBGROUPDEF(name) SUBGROUP_##name,
+		#include "PotPropsDef.h"
+		VIEW_SUBGROUPS
+	};
 	enum {	// color patterns
 		#define PATTERNDEF(name) COLORPAT_##name,
 		#include "PotPropsDef.h"
@@ -76,6 +83,7 @@ public:
 	};
 	static const OPTION_INFO	m_Group[GROUPS];	// group names
 	static const OPTION_INFO	m_MeshSubgroup[MESH_SUBGROUPS];	// mesh subgroup names
+	static const OPTION_INFO	m_ViewSubgroup[VIEW_SUBGROUPS];	// view subgroup names
 	static const OPTION_INFO	m_ColorPattern[COLOR_PATTERNS];	// pattern names
 	static const OPTION_INFO	m_PaletteType[PALETTE_TYPES];	// palette types
 	static const OPTION_INFO	m_Motif[MOTIFS];	// motifs
@@ -129,6 +137,7 @@ public:
 	bool	HasScallops() const;
 	bool	HasRipples() const;
 	bool	HasBends() const;
+	bool	HasRuffles() const;
 	bool	HasHelix() const;
 	bool	HasModulations() const;
 	bool	HasAnimatedModulations() const;
@@ -174,6 +183,11 @@ inline bool CPotProperties::HasRipples() const
 inline bool CPotProperties::HasBends() const
 {
 	return (m_fBends && m_fBendDepth) || IsModulated(PROP_fBends) || IsModulated(PROP_fBendDepth);
+}
+
+inline bool CPotProperties::HasRuffles() const
+{
+	return (m_fRuffles && m_fRuffleDepth) || IsModulated(PROP_fRuffles) || IsModulated(PROP_fRuffleDepth);
 }
 
 inline bool CPotProperties::HasHelix() const

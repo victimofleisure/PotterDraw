@@ -10,6 +10,8 @@
         00      23mar17	initial version
 		01		10oct17	enable spin control for integer numeric properties
 		02		03nov17	add property subgroup
+		03		15jan18	in InitPropList, add error checking
+		04		15jan18	in InitPropList, handle multi-word subgroup names
 
 */
 
@@ -264,7 +266,7 @@ void CValidPropertyGridCtrl::SaveSubitemExpansion(CString sRegKey, const CMFCPro
 		const CMFCPropertyGridProperty	*pSubitem = pProp->GetSubItem(iSubitem);
 		if (pSubitem->IsGroup()) {	// if subitem is a group
 			CString	sKey(CString(sRegKey) + '\\' + pProp->GetName());
-			pApp->WriteProfileInt(sKey, pSubitem->GetName(), pSubitem->IsExpanded());
+			VERIFY(pApp->WriteProfileInt(sKey, pSubitem->GetName(), pSubitem->IsExpanded()));
 			SaveSubitemExpansion(sKey, pSubitem);	// recurse into subitem
 		}
 	}
@@ -291,7 +293,7 @@ void CValidPropertyGridCtrl::SaveGroupExpansion(LPCTSTR szRegKey) const
 	while (pos != NULL) {	// for each top-level property
 		const CMFCPropertyGridProperty	*pProp = m_lstProps.GetNext(pos);
 		if (pProp->IsGroup()) {	// if property is a group
-			pApp->WriteProfileInt(szRegKey, pProp->GetName(), pProp->IsExpanded());
+			VERIFY(pApp->WriteProfileInt(szRegKey, pProp->GetName(), pProp->IsExpanded()));
 			SaveSubitemExpansion(szRegKey, pProp);	// recursively save subitem expansion
 		}
 	}
@@ -399,7 +401,7 @@ void CPropertiesGridCtrl::InitPropList(const CProperties& Props)
 		if (iGroup != iPrevGroup) {	// if group changed
 			CString	sGroupName(Props.GetGroupName(iGroup));
 			pGroup = new CMFCPropertyGridProperty(sGroupName, DWORD_PTR(-1));
-			AddProperty(pGroup);	// add group to grid control
+			VERIFY(AddProperty(pGroup) >= 0);	// add group to grid control
 			iPrevGroup = iGroup;
 		}
 		int	iSubgroup = Props.GetSubgroup(iProp);
@@ -407,12 +409,15 @@ void CPropertiesGridCtrl::InitPropList(const CProperties& Props)
 			CString	sSubgroupName(Props.GetSubgroupName(iGroup, iSubgroup));
 			if (iSubgroup != iPrevSubgroup) {	// if subgroup changed
 				pSubgroup = new CMFCPropertyGridProperty(sSubgroupName, DWORD_PTR(-1));
-				pGroup->AddSubItem(pSubgroup);	// add subgroup to its parent group
+				VERIFY(pGroup->AddSubItem(pSubgroup));	// add subgroup to its parent group
 				iPrevSubgroup = iSubgroup;
 			}
-			int	iPos = sPropName.Find(' ');	// if property name's first word is subgroup name
-			if (iPos >= 0 && sPropName.Left(iPos) == sSubgroupName)
-				sPropName.Delete(0, iPos + 1);	// delete property name's first word
+			int	iPos = sPropName.Find(sSubgroupName);
+			if (!iPos) {	// if property name starts with subgroup name
+				int	nLen = sSubgroupName.GetLength();	// if property name's next char is space
+				if (sPropName.GetLength() > nLen && sPropName[nLen] == ' ')
+					sPropName.Delete(0, nLen + 1);	// delete subgroup name from property name
+			}
 			pParentProp = pSubgroup;	// parent is subgroup
 		} else {	// property doesn't belong to a subgroup
 			iPrevSubgroup = -1;	// reset subgroup index
@@ -425,7 +430,7 @@ void CPropertiesGridCtrl::InitPropList(const CProperties& Props)
 				pProp = new CMFCPropertyGridProperty(sPropName, _T(""), sPropDescrip, iProp);
 				int	nOptions = Props.GetOptionCount(iProp);
 				for (int iOption = 0; iOption < nOptions; iOption++)	// for each option
-					pProp->AddOption(Props.GetOptionName(iProp, iOption));
+					VERIFY(pProp->AddOption(Props.GetOptionName(iProp, iOption)));
 				pProp->AllowEdit(false);
 			}
 			break;
@@ -452,7 +457,7 @@ void CPropertiesGridCtrl::InitPropList(const CProperties& Props)
 			if (Props.GetType(iProp) == &typeid(int))	// if integer type, enable spin control
 				pNumProp->EnableSpinControl(TRUE, pNumProp->m_vMinVal.intVal, pNumProp->m_vMaxVal.intVal);
 		}
-		pParentProp->AddSubItem(pProp);	// add property to its parent property
+		VERIFY(pParentProp->AddSubItem(pProp));	// add property to its parent property
 		m_arrProp[iProp] = pProp;	// store pointer in value property array
 	}
 }

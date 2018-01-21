@@ -22,6 +22,8 @@
 		12		24nov17	don't sync phases during undo/redo animation
 		13		06dec17	in OnLButtonDown, add optional face selection
 		14		12dec17	add transparent render style
+		15		02jan18	add ruffle properties
+		16		15jan18	add auto zoom
 
 */
 
@@ -72,6 +74,7 @@ CPotterDrawView::CPotterDrawView()
 	m_vDragPan = D3DXVECTOR3(0, 0, 0);
 	m_vDragRotation = D3DXVECTOR3(0, 0, 0);
 	m_vAutoRotateSpeed = D3DXVECTOR3(0, 0, 0);
+	m_fAutoZoomScale = 0;
 	m_nBenchFrames = 0;
 	m_iRecordFileFormat = 0;
 	m_nRecordDuration = 0;
@@ -108,7 +111,7 @@ bool CPotterDrawView::CreateDevice()
 	CRect	rc;
 	GetClientRect(rc);
 	CSize	szClient(rc.Size());
-	printf("CPotterDrawView::CreateDevice this=%Ix cy=%d cx=%d\n", this, szClient.cx, szClient.cy);
+	printf("view %Ix CreateDevice cy=%d cx=%d\n", this, szClient.cx, szClient.cy);
 	if (!(szClient.cx && szClient.cy))	// if window has a zero dimension
 		return false;
 	CWaitCursor	wc;
@@ -136,7 +139,7 @@ bool CPotterDrawView::IsActive() const
 
 void CPotterDrawView::OnInitialUpdate()
 {
-	printf("CPotterDrawView::OnInitialUpdate this=%Ix\n", this);
+	printf("view %Ix OnInitialUpdate\n", this);
 	theApp.GetMainFrame()->SetDeferredUpdate(true);
 	CPotterDrawDoc	*pDoc = GetDocument();
 	if (!pDoc->GetPathName().IsEmpty())	// if not new document
@@ -148,7 +151,7 @@ void CPotterDrawView::OnInitialUpdate()
 
 void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 {
-	printf("CPotterDrawView::OnUpdate %Ix %Id %Ix\n", pSender, lHint, pHint);
+	printf("view %Ix OnUpdate %Ix %Id %Ix\n", this, pSender, lHint, pHint);
 	CPotterDrawDoc	*pDoc = GetDocument();
 	if (m_Graphics.m_bAnimation) {	// if currently animating
 		bool	bSync = true;
@@ -216,6 +219,11 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 						if (pDoc->HasBends() || m_Graphics.HasBends())
 							bMakeMesh = true;
 						break;
+					case CPotProperties::SUBGROUP_RUFFLE:
+						if ((pDoc->HasBends() || m_Graphics.HasBends()) 
+						&& (pDoc->HasRuffles() || m_Graphics.HasRuffles()))
+							bMakeMesh = true;
+						break;
 					case CPotProperties::SUBGROUP_HELIX:
 						if (pDoc->HasHelix() || m_Graphics.HasHelix())
 							bMakeMesh = true;
@@ -254,6 +262,7 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 					case CPotProperties::PROP_fAutoRotateYaw:
 					case CPotProperties::PROP_fAutoRotatePitch:
 					case CPotProperties::PROP_fAutoRotateRoll:
+					case CPotProperties::PROP_fAutoRotateZoom:
 						UpdateAutoRotateSpeed();
 						break;
 					case CPotProperties::PROP_fFrameRate:
@@ -314,6 +323,8 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			bMakeSpline = true;
 			UpdateAutoRotateSpeed();
 		}
+		printf("view %Ix OnUpdate mesh=%d texture=%d spline=%d resize=%d\n", 
+			this, bMakeMesh, bMakeTexture, bMakeSpline, bResizing);
 		m_Graphics.SetProperties(*pDoc);	// update graphics properties from document
 		theApp.GetMainFrame()->OnUpdate(pSender, lHint, pHint);	// relay update to main frame
 		if (bMakeSpline)
@@ -386,6 +397,15 @@ void CPotterDrawView::UpdateAutoRotateSpeed()
 	m_vAutoRotateSpeed.x = float(CalcAutoRotateSpeed(pDoc->m_fAutoRotateYaw, fFrameRate));
 	m_vAutoRotateSpeed.y = float(CalcAutoRotateSpeed(pDoc->m_fAutoRotatePitch, fFrameRate));
 	m_vAutoRotateSpeed.z = float(CalcAutoRotateSpeed(pDoc->m_fAutoRotateRoll, fFrameRate));
+	if (pDoc->m_fAutoRotateZoom) {	// if auto zooming
+		bool	bIsNeg = pDoc->m_fAutoRotateZoom < 0;
+		double	fScale = fabs(pDoc->m_fAutoRotateZoom) / 100 + 1;
+		fScale = exp(log(fScale) / fFrameRate);	// compensate for frame rate
+		if (bIsNeg)	// if zoom percentage was negative
+			fScale = 1 / fScale;	// take reciprocal
+		m_fAutoZoomScale = fScale;
+	} else	// not auto zooming
+		m_fAutoZoomScale = 0;
 }
 
 double CPotterDrawView::MeasureFrameRate()
@@ -533,7 +553,7 @@ void CPotterDrawView::DumpFace(int iFace)
 
 void CPotterDrawView::OnDraw(CDC *pDC)
 {
-	printf("CPotterDrawView::OnDraw this=%Ix\n", this);
+	printf("view %Ix OnDraw\n", this);
 //	CPotterDrawDoc* pDoc = GetDocument();
 //	ASSERT_VALID(pDoc);
 	if (m_Graphics.IsDeviceCreated()) {
@@ -572,7 +592,7 @@ void CPotterDrawView::OnEndPrinting(CDC* /*pDC*/, CPrintInfo* pInfo)
 
 void CPotterDrawView::OnPrint(CDC* pDC, CPrintInfo* pInfo)
 {
-	printf("CPotterDrawView::OnPrint this=%Ix\n", this);
+	printf("view %Ix OnPrint\n", this);
 	CSize	szPrint(pInfo->m_rectDraw.Size());	// size of printable area
 	CSize	szImage;
 	if (m_dibPrint.IsEmpty()) {	// if print bitmap not created yet
@@ -731,7 +751,7 @@ END_MESSAGE_MAP()
 
 LRESULT CPotterDrawView::OnDeferredUpdate(WPARAM wParam, LPARAM lParam)
 {
-	printf("CPotterDrawView::OnDeferredUpdate\n");
+	printf("view %Ix OnDeferredUpdate\n", this);
 	theApp.GetMainFrame()->SetDeferredUpdate(false);
 	OnUpdate(NULL, 0, NULL);
 	return 0;
@@ -739,7 +759,7 @@ LRESULT CPotterDrawView::OnDeferredUpdate(WPARAM wParam, LPARAM lParam)
 
 void CPotterDrawView::OnSize(UINT nType, int cx, int cy)
 {
-	printf("CPotterDrawView::OnSize this=%Ix nType=%d cx=%d cy=%d\n", this, nType, cx, cy);
+	printf("view %Ix OnSize nType=%d cx=%d cy=%d\n", this, nType, cx, cy);
 	CView::OnSize(nType, cx, cy);
 	if (!theApp.GetMainFrame()->GetDeferredSizing()) {
 		if (m_Graphics.IsDeviceCreated() && cx && cy)
@@ -749,7 +769,7 @@ void CPotterDrawView::OnSize(UINT nType, int cx, int cy)
 
 void CPotterDrawView::OnActivateView(BOOL bActivate, CView* pActivateView, CView* pDeactiveView)
 {
-	printf("CPotterDrawView::OnActivateView this=%Ix\n", this);
+	printf("view %Ix OnActivateView\n", this);
 	CView::OnActivateView(bActivate, pActivateView, pDeactiveView);
 	if (bActivate)	// if activating
 		Invalidate();	// force render
@@ -908,6 +928,8 @@ LRESULT CPotterDrawView::OnFrameTimer(WPARAM wParam, LPARAM lParam)
 	}
 	if (m_bAutoRotate) {
 		m_Graphics.SetRotation(m_Graphics.GetRotation() + m_vAutoRotateSpeed);
+		if (m_fAutoZoomScale)	// if auto zooming
+			m_Graphics.SetZoom(m_Graphics.GetZoom() * m_fAutoZoomScale);
 	}
 	Invalidate();
 	m_nBenchFrames++;
