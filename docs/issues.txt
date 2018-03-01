@@ -1,0 +1,180 @@
+open	close	type	description	rev	user
+03/12/17	03/15/17	done	generate mesh and texture	1.0.00.001	
+03/15/17	03/15/17	done	export PLY file	1.0.00.001	
+03/16/17	03/16/17	done	generate inner wall	1.0.00.001	
+03/17/17	03/17/17	done	wall ripple	1.0.00.001	
+03/21/17	03/21/17	done	martini glass	1.0.00.001	
+03/22/17	03/22/17	done	animate color	1.0.00.001	
+03/22/17	03/22/17	done	export image as bitmap	1.0.00.001	
+03/22/17	03/22/17	done	record video as image sequence	1.0.00.001	
+03/22/17	03/22/17	done	full screen	1.0.00.001	
+03/22/17	03/24/17	done	exiting full screen mode via Esc key fails to restore MDI tabs	1.0.00.001	
+03/23/17	03/24/17	done	entering full screen flickers badly; disable redraw while maximizing child frame	1.0.00.001	
+03/23/17	03/24/17	done	invert stripe amplitude	1.0.00.001	
+03/23/17	03/24/17	done	organize properties into groups: mesh, texture, etc.	1.0.00.001	
+03/23/17	03/24/17	done	property validation	1.0.00.001	
+03/23/17	03/24/17	done	properties window	1.0.00.001	
+03/23/17	03/24/17	done	make MDI tabs optional	1.0.00.001	
+03/23/17	03/26/17	done	add license to about box	1.0.00.001	
+03/24/17	03/26/17	done	in non-tabbed MDI, maximize setting doesn't persist	1.0.00.001	
+03/23/17	03/27/17	done	texture property edits needlessly recreate mesh	1.0.00.001	
+03/23/17	03/27/17	done	scallops and ripples	1.0.00.001	
+03/23/17	03/28/17	done	add background color property	1.0.00.001	
+03/23/17	03/28/17	done	add properties for auto-rotate yaw, pitch, and roll speeds	1.0.00.001	
+03/23/17	03/28/17	done	document persistence; INI file	1.0.00.001	
+03/23/17	03/28/17	done	undo and redo	1.0.00.001	
+03/23/17	03/28/17	done	unify exports into a single command	1.0.00.001	
+03/24/17	03/28/17	done	add window cascade and tile commands for non-tabbed MDI	1.0.00.001	
+03/28/17	03/28/17	done	color animation hangs app for big meshes; prevent frame timer from overflowing message queue	1.0.00.001	
+03/28/17	03/28/17	done	make properties window reusable; abstract properties container	1.0.00.001	
+03/23/17	03/30/17	done	edit palette	1.0.00.001	
+03/30/17	03/31/17	done	if palette contains multiple instances of the same color, all are highlighted; override OnSendCommand	1.0.00.001	
+03/30/17	03/31/17	done	dockable bars flicker when opening existing document, due to spurious activation; defer updates	1.0.00.001	
+03/30/17	03/31/17	done	accelerators don't work if color dialog property page has focus; implement handle dlg key message	1.0.00.001	
+03/30/17	03/31/17	done	in palette bar, apply button should only be enabled while new color is unapplied	1.0.00.001	
+03/31/17	03/31/17	done	in palette bar's color bar, arrow keys should change selection	1.0.00.001	
+03/31/17	03/31/17	done	palette bar's selected color should belong to document	1.0.00.001	
+03/31/17	04/03/17	done	double-clicking a swatch in palette bar's standard color dialog should apply change immediately	1.0.00.001	
+03/31/17	04/03/17	done	reorder palette entries via drag and drop	1.0.00.001	
+03/31/17	04/03/17	done	in palette bar, add buttons to insert or delete palette entry	1.0.00.001	
+03/31/17	04/04/17	done	full screen still shows a border; make background black to see it better	1.0.00.001	
+03/23/17	04/05/17	done	options dialog for global settings	1.0.00.001	
+03/28/17	04/05/17	done	STL export	1.0.00.001	
+03/28/17	04/05/17	done	twist effect	1.0.00.001	
+04/05/17	04/05/17	done	in palette bar, add clipboard commands and context menu	1.0.00.001	
+03/28/17	04/06/17	done	optionally export vertex color instead of texture coordinates; requires bilinear interpolation	1.0.00.001	
+03/23/17	04/07/17	done	texture from image file instead of palette	1.0.00.001	
+04/07/17	04/08/17	done	polar texture mapping function	1.0.00.001	
+03/23/17	04/09/17	done	refactor texture animation to make it fully configurable and independent of auto-rotation	1.0.00.001	
+04/10/17	04/11/17	done	convert property names and descriptions to resource strings	1.0.00.001	
+03/23/17	04/12/17	done	print and print preview	1.0.00.001	
+04/11/17	04/12/17	done	make property expansion persistent	1.0.00.001	
+04/12/17	04/13/17	done	optional custom image size for image export	1.0.00.001	
+03/23/17	04/15/17	done	optional record to PNG instead of BMP; slower but conserves disk space	1.0.00.001	
+03/24/17	04/15/17	done	record dialog	1.0.00.001	
+03/24/17	04/16/17	done	record status dialog	1.0.00.001	
+03/23/17	04/17/17	done	optional descriptions in properties bar	1.0.00.001	
+04/16/17	04/17/17	done	in record dialog, add options to start texture animation and auto-rotation	1.0.00.001	
+03/28/17	04/21/17	done	aspect ratio effect; to avoid distortion of scallops, use cos instead of sin for fSides	1.0.00.001	
+04/19/17	04/21/17	done	include graphics settings in document: rotation, pan, zoom, render style	1.0.00.001	
+03/23/17	04/24/17	done	show bounding box	1.0.00.001	
+04/24/17	04/26/17	done	Direct3D compute normals is too slow, home brew version is 300X faster; only rebuild adjacency if needed	1.0.00.001	
+03/15/17	05/02/17	done	fractional number of scallops causes tear in wall; ring's first and last vertex must specify same 3D point	1.0.00.001	
+04/17/17	05/03/17	done	edit rotation and panning numerically	1.0.00.001	
+04/17/17	05/03/17	done	pinch; doable via flutes	1.0.00.001	
+05/02/17	05/03/17	done	motifs: reeds, flutes, disjoint reeds, disjoint flutes	1.0.00.001	
+04/17/17	05/04/17	done	bend	1.0.00.001	
+04/01/17	05/13/17	done	modulation bar	1.0.00.001	
+05/09/17	05/13/17	done	add target drop list to modulation bar	1.0.00.001	
+05/11/17	05/13/17	done	store enumerated values as strings, for improved robustness	1.0.00.001	
+04/25/17	05/17/17	done	origin rotation for true helix	1.0.00.001	
+04/25/17	05/17/17	done	skew; amplitude modulation of helix with ramp wave	1.0.00.001	
+05/16/17	05/18/17	done	indicate which properties are modulated	1.0.00.001	
+05/10/17	05/19/17	done	if texture is large, entering full screen is slow but doesn't show hourglass cursor; defer resizing mesh	1.0.00.001	
+04/27/17	05/22/17	done	if texture file not found when opening document, try same in folder as document	1.0.00.001	
+05/16/17	05/22/17	done	show plot of modulation waveform	1.0.00.001	
+05/22/17	05/24/17	done	if selected property name is truncated, left-clicking it stalls message loop until mouse leaves name	1.0.00.001	
+05/28/17	06/05/17	done	in oscilloscope bar, optionally show all modulations instead of current modulation target	1.0.00.001	
+06/01/17	06/05/17	done	in plot, calculate x-axis range from modulation properties instead of fitting to data, to avoid instability	1.0.00.001	
+06/01/17	06/05/17	done	left-clicking plot control doesn't activate parent dock bar; handle parent notify	1.0.00.001	
+06/06/17	06/06/17	done	make color cycles real instead of integer	1.0.00.001	
+06/06/17	06/06/17	done	add property for number of petals; swap with color cycles in docs that use petals	1.0.00.001	
+06/06/17	06/07/17	done	Ctrl+Arrow shortcuts should only pan view when view has focus, else they interfere with property editing	1.0.00.001	
+06/08/17	06/08/17	done	modulation icons are drawn in property grid's description pane; set clip region to list rect	1.0.00.001	
+06/09/17	06/10/17	done	drag and wheel zoom in oscilloscope bar	1.0.00.001	
+06/06/17	06/12/17	done	modulation icon should indicate playing and paused states	1.0.00.001	
+03/23/17	07/11/17	done	custom shapes via Bézier curves (cubic splines)	1.0.00.001	
+03/23/17	07/17/17	done	project icon	1.0.00.001	
+05/22/17	07/19/17	done	finish property descriptions	1.0.00.001	
+07/21/17	07/24/17	done	export Wavefront OBJ with material	1.0.00.001	
+07/12/17	07/25/17	done	installer	1.0.00.001	
+07/27/17	07/27/17	done	context-sensitive help	1.0.00.001	
+04/20/17	07/31/17	done	can't recover from closing and reopening laptop (device lost); avoid reentry and reset device	1.0.00.001	
+08/05/17	08/08/17	done	palette bar should support systemwide editing commands on edit menu and toolbar; use Windows clipboard?	1.0.00.001	
+07/12/17	08/11/17	done	help docs	1.0.00.001	
+08/23/17	08/24/17	done	add Scallop Phase property	1.0.01.000	
+08/23/17	08/24/17	done	allow texture file to be loaded via drag and drop	1.0.01.000	
+08/23/17	08/24/17	done	add Load Texture command to File menu, so it's more obvious how to load texture	1.0.01.000	
+08/24/17	08/24/17	done	renumbering resources corrupts application look; store application look as index instead of resource ID	1.0.01.000	
+08/24/17	08/24/17	done	renumbering resources corrupts docking bar placement; use hard-coded bar IDs instead of resource IDs	1.0.01.000	
+07/12/17	08/25/17	done	add check for updates	1.0.01.000	
+08/24/17	08/25/17	done	GetTexture is needlessly called again for inner wall vertices; copy texture from outer to inner wall	1.0.01.000	
+09/01/17	09/05/17	done	optionally update view during spline dragging	1.0.01.000	
+09/07/17	09/07/17	done	modulation property change doesn't update oscilloscope; introduced in 1.0.01 OnUpdate refactor	1.0.02.000	
+09/28/17	10/05/17	done	add scalllop range, power, and operation properties	1.0.03.000	
+10/06/17	10/06/17	done	in spline editor, adding node to line segment unexpectedly produces curves; zero control vector lengths	1.0.03.000	
+09/08/17	10/09/17	done	record status dialog should show remaining time	1.0.03.000	
+10/05/17	10/09/17	done	add pulse and rounded pulse waveforms, with variable pulse width and slew	1.0.03.000	
+10/05/17	10/09/17	done	recording should save and restore pre-record state of auto-rotate and animation settings	1.0.03.000	
+10/12/17	10/12/17	done	large palettes (more than 80 colors) can crash app, depending on sharpness; check lock rect pitch	1.0.03.000	
+10/17/17	10/17/17	done	add sine cubed and flame waveforms	1.0.03.000	
+04/01/17	10/19/17	done	waveform selection for scallops	1.0.03.000	
+05/02/17	10/19/17	done	pinwheel; doable via triangular pulse waveform with power	1.0.03.000	
+10/19/17	10/19/17	done	add scallop waveform, pulse width, and slew	1.0.03.000	
+10/17/17	10/20/17	done	add triangular pulse waveform; map slew to skew	1.0.03.000	
+10/20/17	10/20/17	done	modulation properties should be disabled at startup because default property (Rings) can't be modulated	1.0.03.000	
+10/26/17	10/26/17	done	spline window's grid spacing wasn't being saved in document	1.0.03.001	
+10/27/17	11/01/17	done	scallop waveform, pulse width, and slew needlessly rebuild mesh when scallops and depth are zero	1.0.04.000	
+11/01/17	11/01/17	done	add polygon properties	1.0.04.000	
+11/01/17	11/03/17	done	organize mesh properties into subgroups	1.0.04.000	
+09/22/17	11/06/17	done	configurable lighting	1.0.04.000	
+11/10/17	11/10/17	done	add power type; asymmetric versus symmetric	1.0.04.000	
+11/13/17	11/14/17	done	allocate outer radius array as a single buffer and make it a member to reduce allocation overhead	1.0.04.000	
+04/05/17	11/15/17	done	import/export palette	1.0.04.000	
+11/13/17	11/15/17	done	add radius color pattern	1.0.04.000	
+11/16/17	11/16/17	done	optimize modulo one wrapping; x - floor(x) instead of fmod(x, 1)	1.0.04.000	
+11/16/17	11/16/17	done	in UpdateTextureCoords, get coords to local variable to avoid unintended video memory read; x16 speedup	1.0.04.000	
+11/16/17	11/17/17	done	PLY export with vertex color doesn't handle texture file	1.0.04.000	
+11/22/17	11/23/17	done	non-animated mesh property modulation causes needless rebuilding of mesh during animation	1.0.05.000	
+11/23/17	11/23/17	done	single-step animation forward or backward one frame	1.0.05.000	
+06/05/17	11/24/17	done	undo animation start should restore modulation phases	1.0.05.000	
+11/23/17	11/25/17	done	random phase; jump to random location in animation's phase space	1.0.05.000	
+06/23/17	12/12/17	done	transparency	1.0.05.000	
+11/25/17	12/12/17	done	standard view selection isn't restored when document is opened	1.0.05.000	
+12/09/17	12/12/17	done	for ripple and bend, add operation, power, and power type	1.0.05.000	
+12/12/17	12/12/17	done	move render style commands from view menu to new render menu	1.0.05.000	
+11/30/17	12/13/17	done	normal color patterns: azimuthal deviation, inclinational deviation, combination of both	1.0.05.000	
+12/14/17	12/14/17	done	for mesh-dependent color patterns, rebuilding mesh computes texture coords twice, wasting time	1.0.05.000	
+12/14/17	12/15/17	done	edge detection color pattern, based on standard deviation of face normals	1.0.05.000	
+12/30/17	01/03/18	done	add ring phase to allow more complex twisting effects	1.0.06.000	
+12/30/17	01/02/18	done	add ruffle properties to bend effect; modulating phase of vertical LFO	1.0.06.000	
+01/12/18	01/15/18	done	auto zoom	1.0.06.000	
+03/16/17		hold	inner wall generation overcompensates at extreme slope changes		
+03/23/17		hold	show axis arrows		
+03/23/17		hold	show normals		
+03/23/17		hold	spin controls in property grid; default implementation only supports integer properties		
+03/23/17		hold	properties window's column widths should persist; good luck with that		
+03/24/17		hold	shape tweening		
+03/31/17		hold	weird context menu appeared and locked up app; can't reproduce it		
+03/31/17		hold	delete palette entry by dragging it outside palette; possibly unexpected and confusing		
+04/01/17		hold	waveform selection for ripple and other periodic effects		
+04/07/17		hold	error message box can be annoying esp. while resizing; don't report same error more than once a second?		
+04/13/17		hold	print fails for paper sizes larger than A3; could downsample		
+04/17/17		hold	video texture		
+04/23/17		hold	property sliders		
+04/23/17		hold	MIDI mapping of properties for VJ style		
+05/22/17		hold	File/New occasionally crashes in CFrameImpl::AddFrame; pListFrame points to invalid memory; occurs in Release only, framework bug?		
+06/23/17		hold	alternate materials		
+07/12/17		hold	portable version; not truly portable since registry redirect no longer works		
+07/14/17		hold	custom colors in spline window		
+09/08/17		hold	AM and FM modulation of modulation; also power, pulse width, slew modulation?		
+09/22/17		hold	background image		
+09/22/17		hold	transparent background		
+09/22/17		hold	shadows		
+10/09/17		hold	scroll numeric property values by dragging mouse, MAX-style		
+10/15/17		hold	palette animation		
+12/14/17		hold	master speed control for animation; rarely needed and possibly confusing (zero would act like a bug)		
+12/21/17		hold	Shift accelerators (Shift+A etc.) prevent upper case letters from being typed in properties grid edit boxes		
+12/24/17		hold	adjacency and face normal arrays should be sized before vertex loop; avoids range check in edges case		
+12/30/17		hold	modulations based on angle (fSide) rather than height (fRing), for asymmetric shapes; complicates interface		
+12/30/17		hold	organic, flower-like shapes; explore modulations of theta in final polar to rectangular conversion		
+03/23/17		punt	more preset shapes; no need once splines are implemented, use documents as presets		
+03/23/17		punt	command to validate mesh; requires generating adjaceny which is slow		
+03/23/17		punt	resizing properties window resets its column widths; behavior is in OnSize and it's a pain to change		
+03/23/17		punt	if inactive view's click handler calls track rubber band, releasing mouse without moving gives false positive		
+03/24/17		punt	in non-tabbed MDI, dragging one child window in front of another corrupts frame; no clue		
+03/28/17		punt	MeshLab shows incorrect tweened colors if color sharpness = 100; seems to be a MeshLab bug		
+03/31/17		punt	in palette bar, include color bar in tab order; tab works from color bar to picker but not vice versa		
+04/06/17		punt	PLY export reverses direction of stripes and palette; negative stripe frequency and color cycles fixes it		
+04/06/17		punt	MeshLab vertically flips texture of PLY export with texture map; negative V Cycles fixes it		
+06/19/17		punt	sluggish startup is due to slowness of Direct3D CreateDevice when no device instances exist		

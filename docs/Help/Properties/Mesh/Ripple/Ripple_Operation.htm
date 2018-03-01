@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Ripple Operation</title>
+<link rel=stylesheet href="../../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Ripple Operation</h3>
+
+<p>This determines how the ripple waveform operates on the radius of each of the pot's <a href="../../../Properties/Mesh/Rings.htm">rings</a>. The available operations are listed below. If you want the ripples to scale proportionally with the pot's radius, use Exponentiate, typically with a much smaller <a href="../../../Properties/Mesh/Ripple/Ripple_Depth.htm">Ripple Depth</a>.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Operation</th><th>Description</th></tr>
+<tr><td>Add</td><td>The ripple waveform is added to the radius.</td></tr>
+<tr><td>Exponentiate</td><td>The waveform is used as an exponent, and the radius is multiplied by two raised to that exponent. </td></tr>
+</table>
+
+<p>If the pot's radius varies considerably, the Add operation may be unsatisfactory, because the ripples may be too deep in the pot's narrower portions, and too shallow in its wider portions. In such cases the Exponentiate operation may be preferable, because it proportionally scales the radius rather than offsetting it. Note that the reasonable range of Ripple Depth is much smaller for Exponentiate than it is for Add. With Add, a Ripple Depth of one is subtle, but with Exponentiate it produces ripples that extend from half the radius to double the radius, which is extreme. This is further explained below.
+
+<p>The ripple waveform is <em>bipolar</em>, meaning it ranges from negative to positive Ripple Depth. Hence when it's used as an exponent, the resulting ripple multiplier ranges from a fraction to its reciprocal. For example, if Ripple Depth is one, the multiplier ranges from 2<sup>&minus;1</sup> to 2<sup>1</sup> (&frac12; to 2), whereas if Ripple Depth is two, the multiplier ranges from 2<sup>&minus;2</sup> to 2<sup>2</sup> (&frac14; to 4). A more moderate depth of 0.5 scales the radius by 2<sup>&minus;0.5</sup> to 2<sup>0.5</sup>, or 0.707 to 1.414.
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

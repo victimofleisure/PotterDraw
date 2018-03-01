@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Lighting</title>
+<link rel=stylesheet href="../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Lighting</h3>
+
+<p>This command displays the Lighting dialog, which lets you edit the lighting properties. When you're done editing them, press the OK button to save your changes. The properties are explained below. To restore the default lighting, press the Reset button.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Property</th><th>Description</th></tr>
+<tr><td>Direction</td><td>This is the direction that the light source is pointing, as a vector in view coordinates. Positive X lights the model's left side, positive Y lights its bottom, and positive Z lights its front, from the user's point of view. Only the vector's direction matters; its length is ignored. The vector needn't be normalized, but at least one of its coordinates must be non-zero. Negative Z causes back-lighting, which is usually unhelpful.</td></tr>
+<tr><td>Diffuse</td><td>This value specifies the brightness of the diffuse lighting. It generally ranges from zero to one.</td></tr>
+<tr><td>Ambient</td><td>This value specifies the brightness of the ambient lighting. It generally ranges from zero to one. Ambient lighting is unaffected by direction.</td></tr>
+<tr><td>Specular</td><td>This value specifies the brightness of the specular lighting. It generally ranges from zero to one. Specular lighting only has an effect if <a href="../../Menus/Render/Highlights.htm">Highlights</a> are enabled.</td></tr>
+<tr><td>Power</td><td>This value specifies the sharpness of specular highlights. The higher the value, the sharper the highlight.</td></tr>
+</table>
+
+
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

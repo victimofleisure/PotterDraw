@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Ruffles</title>
+<link rel=stylesheet href="../../../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Ruffles</h3>
+
+<p>This sets the number of ruffles. Ruffles are essentially wavy ripples, and they're an optional feature of the <a href="../../../../Properties/Mesh/Bend/Bends.htm">Bend</a> effect. The Bend effect consists of three LFOs (Low Frequency Oscillators), which interact to change the pot's radius, as follows:
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>LFO</th><th>Function</th></tr>
+<tr><td>Bend</td><td>This LFO varies the radius periodically with vertical position; by itself it's identical to <a href="../../../../Properties/Mesh/Ripple/Ripples.htm">Ripples</a>.</td></tr>
+<tr><td>Pole</td><td>This LFO varies the radius periodically with angle, similarly to <a href="../../../../Properties/Mesh/Scallop/Scallops.htm">Scallops</a>; in combination with the Bend LFO, it creates honeycomb-like effects.</td></tr>
+<tr><td>Ruffle</td><td>This LFO also varies with angle, but instead of changing the radius, it changes the <em>phase</em> of the Bend LFO. This produces wavy ripples, also known as ruffles.</td></tr>
+</table>
+
+<p>You can have poles without ruffles, or ruffles without poles, but the Pole and Ruffle LFOs both depend on the Bend LFO. To enable ruffles, the <a href="../../../../Properties/Mesh/Bend/Bends.htm">Bends</a>, <a href="../../../../Properties/Mesh/Bend/Bend_Depth.htm">Bend Depth</a>, Ruffles, and <a href="../../../../Properties/Mesh/Bend/Ruffle/Ruffle_Depth.htm">Ruffle Depth</a> properties must all be non-zero.
+
+<p><img src="../../../../images/ruffles.jpg" width=192 height=256 title="Ruffles">
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

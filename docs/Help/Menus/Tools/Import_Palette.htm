@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Import Palette</title>
+<link rel=stylesheet href="../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Import Palette</h3>
+
+<p>This command imports a palette from a file. The file must be plain text. Each line is expected to contain an RGB color value, consisting of three decimal numbers, separated by tabs or spaces. These numbers are the color's red, green, and blue values, and they should be in the range 0 to 255. Any other information in the file is ignored. The palette size is inferred from the number of colors found in the file.
+
+<p>Note that large palettes may cause the error message "Texture is too wide." To avoid this error, try reducing <a href="../../Properties/Texture/Color_Sharpness.htm">Color Sharpness</a> to ten or less. The issue is that during <a href="../../Palette/Texture_synthesis.htm">texture synthesis</a>, the texture width is determined by multiplying the palette's number of colors by Color Sharpness. Texture width is typically limited to 8,192 pixels, though the actual limit is platform-dependent.
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

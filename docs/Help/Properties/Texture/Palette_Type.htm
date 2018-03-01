@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Palette Type</title>
+<link rel=stylesheet href="../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Palette Type</h3>
+
+<p>This selects a palette type, which determines how the <a href="../../Palette/Palette.htm">palette</a> is used for <a href="../../Palette/Texture_synthesis.htm">texture synthesis</a>.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Type</th><th>Description</th></tr>
+<tr><td>Linear</td><td>The palette colors are mapped into a one-dimensional texture. The texture is one pixel high, forming a single row which is divided into linear swatches, one for each of the palette's <a href="../../Properties/Texture/Colors.htm">colors</a>. The size of each swatch is determined by the <a href="../../Properties/Texture/Color_Sharpness.htm">Color Sharpness</a>, thus the texture's width equals the color sharpness times the number of colors.</td></tr>
+<tr><td>Complement</td><td>The palette colors and their complements are mapped into a two-dimensional texture. The texture is two pixels high, and its width is the number of colors times the Color Sharpness. The first row contains the palette colors, and the second row contains their complements, in reverse order. In other words, if the palette consists of red, green and blue, the second row will be yellow, magenta, and cyan.</td></tr>
+<tr><td>Split</td><td>The palette colors are mapped into a two-dimensional texture. The texture is two pixels high, and its width is half the number of colors times the Color Sharpness. The first row contains the first half of the palette, and the second row contains the second half. The palette should contain an even number of colors, otherwise its last color will be skipped.</td></tr>
+</table>
+
+<p><img src="../../images/palette type complement.jpg" width=192 height=256 title="Complement">
+<img src="../../images/palette type split.jpg" width=192 height=256 title="Split">
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

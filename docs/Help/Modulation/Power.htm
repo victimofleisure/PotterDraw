@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Power</title>
+<link rel=stylesheet href="../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Power</h3>
+
+<p>This is the base used for exponential <a href="../Modulation/Modulation.htm">modulation</a>. If it's zero, exponential modulation is disabled. Otherwise, the modulation's curvature becomes more extreme as the power diverges from one, as shown in the table below. This property supports a huge range of values, so it's usually best to change it by large amounts, e.g. powers of ten.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Value</th><th>Description</th></tr>
+<tr><td>&lt;&nbsp;0</td><td>Not allowed.</td></tr>
+<tr><td>0</td><td>Linear (disabled).</td></tr>
+<tr><td>0&nbsp;&lt;&nbsp;x&nbsp;&lt;&nbsp;1</td><td>Starts out curving more steeply and then levels off; the smaller the value, the more extreme the curvature.</td></tr>
+<tr><td>1</td><td>Linear. Use zero instead to avoid needless computations.</td></tr>
+<tr><td>&gt;&nbsp;1</td><td>Starts out curving more gradually and then gets steeper; the larger the value, the more extreme the curvature.</td></tr>
+</table>
+
+<p>Exponential modulation is also affected by <a href="../Modulation/Power_Type.htm">Power Type</a>. If the power type is <em>asymmetric</em>, the wave's upper and lower halves are affected differently, in which case a given power and its reciprocal (e.g. 10 and 0.1) produce mirror images of each other. If the power type is <em>symmetric</em>, the wave's upper and lower halves are affected equally, and the wave's vertical symmetry (if any) is preserved. The image below shows how a range of powers affect a sine wave, for both power types. Other <a href="../Modulation/Waveform.htm">waveforms</a> respond similarly.
+
+<p><img src="../images/powertypes.png" width=474 height=434 title="Power Types">
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

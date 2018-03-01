@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PotterDraw - Release Notes</title>
+<meta content="text/html; charset=windows-1252" http-equiv=Content-Type>
+<link href="./style.css" rel=stylesheet title=default type=text/css>
+</head>
+<body>
+<div class=menu>
+<a href="./index.html"><img src="./images/PotterDraw-32.png" width="32" height="32" alt="icon"></a>
+<div class=title>PotterDraw</div><p>
+<div class=menuitem0 title="Overview"><a href="./index.html">Home</a></div>
+<div class=menuitem0 title="Screenshots"><a href="./screenshots.html">Screenshots</a></div>
+<div class=menuitem0 title="Features"><a href="./features.html">Features</a></div>
+<div class=menuitem0 title="Download"><a href="./download.html">Download</a></div>
+<div class=menuitem0 title="Documentation"><a href="./helpframe.html">Documentation</a></div>
+<div class=menuitem0 title="Development"><a href="./development.html">Development</a></div>
+<div class=menuitem0 title="FAQ"><a href="./faq.html">FAQ</a></div>
+<div class=menuitem0 title="Gallery"><a href="./gallery.html">Gallery</a></div>
+<div class=menuitem0 title="Videos"><a href="./videos.html">Videos</a></div>
+<div class=menuitem0 title="Forums"><a href="./forums.html">Forums</a></div>
+<div class=menuitem0 title="Links"><a href="./links.html">Links</a></div>
+<div class=menuitem0 title="Contact"><a href="./contact.html">Contact</a></div><br>
+<div class=images><br><a href="https://sourceforge.net/p/chordease/donate"><img src="./images/project-support.jpg" width="88" height="32" border="0" alt="Support This Project"></a></div>
+<div class=images><br><a href="http://sourceforge.net/"><img src="./images/sflogo.png" width="88" height="31" alt="SourceForge Logo"></a></div>
+</div>
+<div id=body>
+<!--  content goes HERE  -->
+
+<h1>Release Notes</h1>
+
+<h3>1.0.07.001 &emsp;<small>03/??/2018</small></h3>
+<ol>
+<li>Secondary modulation was added, allowing modulations to be modulated; types include amplitude modulation (AM), frequency modulation (FM), pulse width modulation, etc.
+<li>The Semicircle and Circular Pulse waveforms were added.
+<li>The Invert motif was added.
+<li>Vertex rotation was optimized, increasing render speed by ~4% and improving precision.
+<li>Editing a drop list in the Modulation bar via left-click didn't update the toolbar's undo/redo icons until the focus was changed; fixed.
+</ol>
+
+<h3>1.0.06.002 &emsp;<small>01/20/2018</small></h3>
+
+<ol>
+<li>A Ring Phase property was added, to allow more complex twisting effects.
+<li>A Ruffle oscillator was added to the Bend effect; it phase modulates the Bend oscillator to create wavy ripples.
+<li>Optional auto-zoom was added to the auto-rotate effect.
+</ol>
+
+<h3>1.0.05.000 &emsp;<small>12/23/2017</small></h3>
+
+<ol>
+<li>Four new color patterns were added: Azimuth, Incline, Azimuth & Incline, and Edges.
+<li>For Ripple and Bend, Operation, Power, and Power Type and properties were added.
+<li>Transparency is now supported, via the Transparent render style (Render/Transparent).
+<li>The render style (Wireframe, Gouraud, etc.) and Lighting commands were moved from the View menu to the new Render menu.
+<li>Step Forward and Step Backward commands were added to the View menu. They let you move to a precise position within an animation by stepping one frame at a time.
+<li>The Random Phase command was added to the View menu. It lets you explore an animation's phase space, by randomizing the phases of animated modulations.
+<li>In previous versions, a non-animated modulation of a mesh property would slow texture-only animation, by causing the mesh to be needlessly rebuilt for every frame; fixed.
+</ol>
+
+<h3>1.0.04.000 &emsp;<small>11/21/2017</small></h3>
+
+<ol>
+<li>Polygonal shapes are now supported, via a new group of polygon mesh properties.
+<li>The radius color pattern was added; it uses the pot's radius as the U coordinate, so that the texture mapping illustrates the pot's contours.
+<li>Exponential power can now be applied to waveforms asymmetrically or symmetrically, selectable via the new Power Type property.
+<li>The mesh properties are now organized into subgroups that can be hidden.
+<li>The 3D view's lighting is now configurable, via the Lighting command on the View menu.
+<li>The palette can now be imported from or exported to a file, via Tools menu commands.
+<li>The PLY export with vertex color wasn't handling texture from an image file; fixed.
+<li>Texture updates are 16x faster, due to eliminating an unintended video memory read.
+<li>Some scallop properties were needlessly rebuilding the mesh in certain cases; fixed.
+</ol>
+
+<h3>1.0.03.001 &emsp;<small>10/26/2017</small></h3>
+
+<ol>
+<li>New scallop properties were added: Scallop Waveform, Operation, Range, and Power.
+<li>New waveforms were added: Pulse, Rounded Pulse, Triangular Pulse, Sine Cubed, and Flame. The new pulse waveforms have variable Pulse Width and Slew.
+<li>Recording now saves and restores the pre-record state of the auto-rotate and animation settings.
+<li>The record status dialog now includes an estimate of the remaining render time.
+<li>In the spline window, adding a node to a line segment unexpectedly produces curves; fixed.
+<li>The spline window's grid spacing wasn't being saved in the document; fixed.
+</ol>
+
+<h3>1.0.02.000 &emsp;<small>09/07/2017</small></h3>
+
+<ol>
+<li>Add Scallop Phase property; modulating it produces wavy scallops.
+<li>Add Load Texture command to File menu, so it's more obvious how to load texture.
+<li>Allow texture file to be loaded via drag and drop from Explorer.
+<li>Add check for updates feature.
+<li>Optimize texture mapping, by copying texture from outer to inner wall.
+<li>Add option to continuously update view during spline dragging.
+<li>Modulation property change wasn't updating oscilloscope, fixed.
+</ol>
+
+<h3>1.0.00.001 &emsp;<small>08/16/2017</small></h3>
+
+<p>This is the initial release.
+
+<!--  content stops HERE  -->
+</div>
+</body>
+</html>

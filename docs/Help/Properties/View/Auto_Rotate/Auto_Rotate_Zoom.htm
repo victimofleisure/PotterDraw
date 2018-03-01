@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Auto Rotate Zoom</title>
+<link rel=stylesheet href="../../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Auto Rotate Zoom</h3>
+
+<p>This sets the zoom speed when <a href="../../../Menus/View/Rotation.htm#Auto_Rotate">auto-rotating</a> the <a href="../../../View/View.htm">view</a>, in percent per second. Use a positive percentage to zoom in, or a negative percentage to zoom out. Automatic zoom can be useful for demos or when <a href="../../../Menus/File/Record.htm">recording</a> a video.
+
+<p>If you're making a video, you may want to know what auto-zoom percentage will reach a given scaling by the end of the video. The calculation is as follows:
+
+<p>AutoZoom = (exp(log(Scaling) / Duration)) - 1) * 100
+
+<p>For example to zoom by 5x (500%) over 30 seconds:
+
+<p>AutoZoom = (exp(log(5) / 30) - 1) * 100
+<br>AutoZoom = 5.5113
+
+
+
+
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

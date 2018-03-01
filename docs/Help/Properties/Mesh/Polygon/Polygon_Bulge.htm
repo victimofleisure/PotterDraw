@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Polygon Bulge</title>
+<link rel=stylesheet href="../../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Polygon Bulge</h3>
+
+<p>For polygonal pots, this is how much the polygon's sides are bulged or pinched. If this value is zero, the polygon has straight sides. Positive values bulge them out, whereas negative values pinch them in. Note that this property has no effect unless <a href="../../../Properties/Mesh/Polygon/Polygon_Sides.htm">Polygon Sides</a> is at least two. This property combines with <a href="../../../Properties/Mesh/Polygon/Polygon_Roundness.htm">Polygon Roundness</a> to determine the polygon's shape.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Value</th><th>Description</th></tr>
+<tr><td>&lt;&nbsp;0</td><td>Sides pinch in as value decreases.</td></tr>
+<tr><td>0</td><td>Straight sides.</td></tr>
+<tr><td>0&nbsp;&lt;&nbsp;x&nbsp;&lt;&nbsp;1</td><td>Sides bulge out as value increases.</td></tr>
+<tr><td>1</td><td>Circumscribed circle.</td></tr>
+<tr><td>&gt;&nbsp;1</td><td>Sides continue to bulge out, forming curved petals.</td></tr>
+</table>
+
+<p><img src="../../../images/polygon bulge = 0.5.jpg" width=192 height=256 title="Polygon bulge = 0.5">
+<img src="../../../images/polygon bulge = -0.5.jpg" width=192 height=256 title="Polygon bulge = -0.5">
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

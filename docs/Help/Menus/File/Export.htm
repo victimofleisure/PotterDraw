@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Export</title>
+<link rel=stylesheet href="../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Export</h3>
+
+<p>Use this command to export the active document as a 2D image or a 3D model. The command displays a standard file dialog. Navigate to the desired location, enter a filename if necessary, and use the "Save as type" drop list to select the desired export type. The export types are explained below.
+
+<a name="2D_exports"><p><b>2D exports</b></a>
+<p>The 2D exports output an image with the same dimensions as the current <a href="../../View/View.htm">view</a>, unless <a href="../../Options/Use_Custom_Image_Size.htm">Use Custom Image Size</a> is set to true in the <a href="../../Menus/Tools/Options.htm">Options</a> dialog. In the latter case the dimensions are specified by <a href="../../Options/Custom_Image_Width.htm">Custom Image Width</a> and <a href="../../Options/Custom_Image_Height.htm">Custom Image Height</a>, also in the Options dialog, regardless of the view's size. This is useful for exporting images with specific dimensions, or high-resolution images bigger than the view.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Format</th><th>Comments</th></tr>
+<tr><td>BMP</td><td>Outputs a Device-Independent Bitmap file with 24-bit color.</td></tr>
+<tr><td>PNG</td><td>Outputs a Portable Network Graphics file with 24-bit color. The resulting file may be significantly smaller than the equivalent bitmap, with no loss of quality.</td></tr>
+</table>
+
+<a name="3D_exports"><p><b>3D exports</b></a>
+<p>The 3D exports have been tested using MeshLab. If you need a 3D format that PotterDraw doesn't support, it's recommended to export PLY or OBJ and use MeshLab to convert to the desired format.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Format</th><th>Comments</th></tr>
+<tr><td>OBJ</td><td>Outputs a Wavefront OBJ file, along with its corresponding MTL file specifying material properties. This export handles texture mapping. The texture file is automatically copied to the destination folder, and renamed if necessary to avoid spaces in the filename. OBJ is an ASCII format, which is potentially less accurate than a binary format, depending on the numeric precision used. The default precision is six digits after the decimal point, but this can be changed via <a href="../../Options/Floating-Point_Precision.htm">Floating-Point Precision</a> in the Options dialog.</td></tr>
+<tr><td>PLY</td><td>Outputs a PLY file. This export handles texture mapping. The texture file is automatically copied to the destination folder, and renamed if necessary to avoid spaces in the filename. Not all applications support texture mapping in PLY files, but vertex color is widely supported. To output a PLY with vertex color instead of texture mapping, set <a href="../../Options/Use_Vertex_Color.htm">Use Vertex Color</a> to true in the Options dialog. PLY is a binary format, so numeric precision doesn't apply.</td></tr>
+<tr><td>STL</td><td>Outputs a binary Stereo Lithography (STL) file. This export doesn't handle texture mapping or color. STL format doesn't support vertex indices, and consequently STL files contain large numbers of duplicate vertices.</td></tr>
+</table>
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

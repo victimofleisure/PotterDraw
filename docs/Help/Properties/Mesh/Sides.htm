@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Sides</title>
+<link rel=stylesheet href="../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Sides</h3>
+
+<p>This sets the number of sides in each of the pot's polygonal <a href="../../Properties/Mesh/Rings.htm">rings</a>. It's a tradeoff between smoothness and performance: the more sides there are, the smoother the pot's surface is, but the longer it takes to render the pot. Too few sides gives the pot a jagged, faceted appearance; excessive values make the application sluggish. The default value of 100 is a reasonable starting point.
+
+<p>The Rings and Sides properties together determine the total number of facets, which is approximately Rings &times; Sides &times; 4. The exact number can be displayed via <a href="../../Menus/Tools/Mesh_Information.htm">Mesh Information</a>.
+
+<p>Don't use the Sides property to create polygonal pots, because the resulting facet count will be too low to resolve other mesh effects. To create polygonal pots, use <a href="../../Properties/Mesh/Polygon/Polygon_Sides.htm">Polygon Sides</a> and the other polygon properties instead.
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

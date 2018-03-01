@@ -1,0 +1,23 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Edge Gain</title>
+<link rel=stylesheet href="../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Edge Gain</h3>
+
+<p>This sets the sensitivity of the Edges <a href="../../Properties/Texture/Color_Pattern.htm">color pattern</a>. The larger its value, the more edges are amplified. In other words, the larger its value, the less variation it takes for an area to be considered an edge. The edge detection algorithm computes the standard deviation of the adjacent face normals at each vertex. The deviation is then logarithmically scaled, in order to amplify small differences. Edge Gain controls the amount of scaling. It's a base ten exponent, so each successive integer is ten times more gain, i.e. 1 is x10, 2 is x100, 3 is x1000, etc.
+
+<p>Edge sensitivity is also affected by the mesh density, which is determined by <a href="../../Properties/Mesh/Rings.htm">Rings</a> and <a href="../../Properties/Mesh/Sides.htm">Sides</a>. If either of these properties are changed significantly, the edge areas may grow or shrink, and you may need to adjust Edge Gain to compensate.
+
+
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

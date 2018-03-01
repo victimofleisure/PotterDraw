@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Modulation</title>
+<link rel=stylesheet href="../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Modulation</h3>
+
+<p>PotterDraw <a href="../Properties/Properties.htm">properties</a> can be modified by oscillators, a process called <em>modulation</em>. Most mesh and texture properties can be modulated, with a few <a href="../Modulation/Target.htm">exceptions</a>. Each property has its own Low-Frequency Oscillator (LFO), allowing multiple properties to be modulated at once. The LFO outputs a periodic <a href="../Modulation/Waveform.htm">waveform</a> having a user-specified <a href="../Modulation/Frequency.htm">frequency</a> and <a href="../Modulation/Amplitude.htm">amplitude</a>. This waveform is applied to the property using an <a href="../Modulation/Operation.htm">operation</a> such as addition, subtraction, multiplication, or division.
+
+<p>The waveform's cycle is synchronized with vertical position on the pot. In other words, if the modulation frequency is one, the waveform completes one cycle from the bottom to the top of the pot. The waveform's cycle can also be varied over <em>time</em> during <a href="../Properties/View/Animation.htm">animation</a>; this is accomplished by setting the modulation's <a href="../Modulation/Phase_Speed.htm">phase speed</a>.
+
+<p>Modulation can be used as an <em>envelope</em> that incrementally increases or decreases the strength of an effect. This lets you limit the scope of a property, so that instead of affecting the entire pot, it only affects a given subset of the pot's <a href="../Properties/Mesh/Rings.htm">rings</a>.
+
+<a name="Creating_modulations"><p><b>Creating modulations</b></a>
+<p>To create a <a href="../Modulation/Modulation.htm">modulation</a>, first show the Modulation bar, via <span class="cmd">View/Toolbars and Docking Windows/Modulation</span>. Then select the desired <a href="../Modulation/Target.htm">target</a> property, by left-clicking its name in the Properties bar, or by selecting it in the Modulation bar's Target drop-list. Now make the modulation active by setting its Waveform to a value other than None. You may also want to change the other modulation parameters.
+
+<p>A modulated property has an upward-pointing triangle to the left of its name in the Properties bar. The triangle's color indicates the property's <a href="../Properties/View/Animation.htm">animation</a> state: green or orange if the property is animating or ready to animate, otherwise blue.
+
+<p>It may be helpful to also show the <a href="../Oscilloscope/Oscilloscope.htm">Oscilloscope</a> bar, which draws a plot of the currently selected property's modulation.
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

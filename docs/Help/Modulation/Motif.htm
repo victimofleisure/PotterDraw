@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Motif</title>
+<link rel=stylesheet href="../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Motif</h3>
+
+<p>This selects a motif and applies it to the <a href="../Modulation/Modulation.htm">modulation</a> oscillator. A <em>motif</em> is a decorative embellishment of a periodic waveform. It can emulate various types of <em>gadrooning</em>&mdash;specifically <em>reeding</em> and <em>fluting</em>&mdash;commonly seen in classical architecture and furniture design. The table below explains the available motifs.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Motif</th><th>Appearance</th><th>Method</th><th>Expression</th></tr>
+<tr><td>Reeds</td><td>Convex ridges</td><td>Negative values are made positive; full-wave rectification</td><td>abs(x)</td></tr>
+<tr><td>Flutes</td><td>Concave grooves</td><td>Positive values are made negative; inverted full-wave rectification</td><td>&minus;abs(x)</td></tr>
+<tr><td>Parted Reeds</td><td>Convex ridges separated by gaps</td><td>Negative values are zeroed; half-wave rectification</td><td>max(x,&nbsp;0)</td></tr>
+<tr><td>Parted Flutes</td><td>Concave grooves separated by gaps</td><td>Positive values are zeroed; inverted half-wave rectification</td><td>min(x,&nbsp;0)</td></tr>
+</table>
+
+<p><img src="../images/motifs.png" width=326 height=298 title="Motifs">
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

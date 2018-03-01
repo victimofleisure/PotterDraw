@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Color Pattern</title>
+<link rel=stylesheet href="../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Color Pattern</h3>
+
+<p>This selects a color pattern, which determines how the current texture is mapped onto the pot. Color patterns are trigonometric mapping functions that generate a two-dimensional texture coordinate for each of the pot's vertices. The mapping affects both <a href="../../Palette/Texture_synthesis.htm">synthesized</a> and <a href="../../Properties/Texture/Texture_Path.htm">user-specified</a> textures. By convention the two texture coordinate axes are named U and V, to avoid confusion with the Cartesian axes. The color pattern selection affects which texture properties are applicable; see <a href="../../Properties/Texture/Color_Pattern.htm#Texture_Property_Usage">Texture Property Usage</a>.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Pattern</th><th>Description</th></tr>
+<tr><td>Stripes</td><td>This function generates vertical stripes. The stripes can be made wavy by setting <a href="../../Properties/Texture/Stripe_Frequency.htm">Stripe Frequency</a> and <a href="../../Properties/Texture/Stripe_Amplitude.htm">Stripe Amplitude</a> non-zero. More complex waviness can be achieved by applying <a href="../../Modulation/Modulation.htm">modulations</a> to the Stripe properties. The Stripes function is also useful for typical cylindrical texture mapping, in which an image is wrapped around the cylinder like a sheet of paper. In this case, to minimize distortion, set stripe amplitude to zero.
+<p><img src="../../images/color pattern stripes.jpg" width=192 height=256 title="Stripes">
+</td></tr>
+<tr><td>Rings</td><td>This function generates horizontal rings. The rings can be made wavy by setting Stripe Frequency and Stripe Amplitude non-zero.
+<p><img src="../../images/color pattern rings.jpg" width=192 height=256 title="Rings">
+</td></tr>
+<tr><td>Petals</td><td>This function generates petal-like shapes. It's affected by the stripe frequency and amplitude. The <a href="../../Properties/Texture/Petals.htm">Petals</a> property determines the number of petals.
+<p><img src="../../images/color pattern petals.jpg" width=192 height=256 title="Petals">
+</td></tr>
+<tr><td>Polar</td><td>This function uses polar coordinates to map a circular image onto the pot, such that the center of the image is mapped to the center of the pot's bottom. This function is primarily intended for use with a square <a href="../../Properties/Texture/Texture_Path.htm">user-specified texture</a> containing a circular, radially symmetrical pattern that's centered within the square. Note that for typical polar mapping, both Stripe Frequency and Stripe Amplitude should be one. Use Stripe Phase to rotate the texture around the center, and V Offset to shift it vertically. The V axis is alternately flipped for smooth wrapping.
+<p><img src="../../images/color pattern polar.jpg" width=192 height=256 title="Polar">
+</td></tr>
+<tr><td>Radius</td><td>This function uses the radius as the U coordinate, resulting in a texture mapping that illustrates the contours of the pot. It's more interesting if the pot isn't circular, e.g. if it's <a href="../../Properties/Mesh/Polygon/Polygon_Sides.htm">polygonal</a> or has <a href="../../Properties/Mesh/Scallop/Scallops.htm">scallops</a>. The radius is normalized so that when Color Cycles is one, the pot's range of radius matches the range of the U coordinate. Use <a href="../../Properties/Texture/U_Offset.htm">U Offset</a> to shift the radius mapping. This function doesn't use Stripe Frequency or Stripe Amplitude.
+<p><img src="../../images/color pattern radius.jpg" width=192 height=256 title="Radius">
+</td></tr>
+<tr><td>Azimuth</td><td>This function sets the U coordinates according to how non-round the surface is. The azimuthal portion of each vertex normal is compared to a circular reference, yielding an angle of deviation from circular, in normalized degrees. The azimuthal deviation is multiplied by Color Cycles and has U Offset added to it. This function is only useful if some portion of the pot isn't round.
+<p><img src="../../images/color pattern azimuth.jpg" width=192 height=256 title="Azimuth">
+</td></tr>
+<tr><td>Incline</td><td>This function sets the U coordinates according to how non-vertical the surface is. The inclinational portion of each vertex normal is compared to a vertical reference, yielding an angle of deviation from vertical, in normalized degrees. The inclinational deviation is multiplied by Color Cycles and has U Offset added to it. This function is only useful if some portion of the pot isn't vertical.
+<p><img src="../../images/color pattern incline.jpg" width=192 height=256 title="Incline">
+</td></tr>
+<tr><td>Azimuth & Incline</td><td>This function combines the Azimuth and Incline functions described above. Azimuthal deviation (non-roundness) controls the U coordinate, while inclinational deviation (non-verticalness) controls the V coordinate. The resulting texture mapping fully illustrates the pot's 3D curvature.</td></tr>
+<tr><td>Edges</td><td>This function sets the U coordinates according to how much the curvature varies. This causes edges to be highlighted in proportion to how sharp they are. Specifically, for each vertex, the standard deviation of the adjacent face normals is computed. The more the normals deviate, the larger the corresponding U coordinate value is. The sensitivity of the edge detection is adjustable via the <a href="../../Properties/Texture/Edge_Gain.htm">Edge Gain</a> property.
+<p><img src="../../images/color pattern edges.jpg" width=192 height=256 title="Edges">
+</td></tr>
+</table>
+
+<a name="Texture_Property_Usage"><p><b>Texture Property Usage</b></a>
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>&nbsp;</th><th>Color Cycles</th><th>Stripe Frequency</th><th>Stripe Amplitude</th><th>Stripe Phase</th><th>Petals</th><th>U Offset</th><th>V Offset</th><th>V Cycles</th><th>Edge Gain</th></tr>
+<tr><th>Stripes</th><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+<tr><th>Rings</th><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+<tr><th>Petals</th><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+<tr><th>Polar</th><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td><td>No</td><td>Yes</td><td>No</td><td>No</td></tr>
+<tr><th>Radius</th><td>Yes</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+<tr><th>Azimuth</th><td>Yes</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+<tr><th>Incline</th><td>Yes</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+<tr><th>Azimuth & Incline</th><td>Yes</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>No</td></tr>
+<tr><th>Edges</th><td>Yes</td><td>No</td><td>No</td><td>No</td><td>No</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+</table>
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

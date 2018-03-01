@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Polygon Roundness</title>
+<link rel=stylesheet href="../../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Polygon Roundness</h3>
+
+<p>For polygonal pots, this is the roundness of the polygon's corners. If this value is zero, the polygon has sharp corners. Positive values increase their roundness, up to one, which produces the circumscribed circle. Negative values also increase their roundness, but by shrinking instead of expanding the polygon, down to &minus;1, which produces the inscribed circle. Values outside the range &minus;1 to 1 are clamped. Note that this property has no effect unless <a href="../../../Properties/Mesh/Polygon/Polygon_Sides.htm">Polygon Sides</a> is at least two. This property combines with <a href="../../../Properties/Mesh/Polygon/Polygon_Bulge.htm">Polygon Bulge</a> to determine the polygon's shape.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Value</th><th>Description</th></tr>
+<tr><td>&minus;1</td><td>Inscribed circle.</td></tr>
+<tr><td>&minus;1&nbsp;&lt;&nbsp;x&nbsp;&lt;&nbsp;0</td><td>Corners get rounder as value decreases; polygon shrinks.</td></tr>
+<tr><td>0</td><td>Sharp corners.</td></tr>
+<tr><td>0&nbsp;&lt;&nbsp;x&nbsp;&lt;&nbsp;1</td><td>Corners get rounder as value increases; polygon expands.</td></tr>
+<tr><td>1</td><td>Circumscribed circle.</td></tr>
+</table>
+
+<p><img src="../../../images/polygon roundness = 0.4.jpg" width=192 height=256 title="Polygon roundness = 0.4">
+<img src="../../../images/polygon roundness = 0.6.jpg" width=192 height=256 title="Polygon roundness = 0.6">
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

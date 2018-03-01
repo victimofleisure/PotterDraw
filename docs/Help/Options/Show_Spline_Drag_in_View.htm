@@ -1,0 +1,21 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Show Spline Drag in View</title>
+<link rel=stylesheet href="../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Show Spline Drag in View</h3>
+
+<p>This determines how the <a href="../View/View.htm">view</a> responds to <a href="../Spline/Spline.htm#Dragging_segments_and_nodes">dragging segments and nodes</a> in the <a href="../Spline/Spline.htm">spline</a> window. If this option is false, the view isn't updated until dragging is complete, i.e. until the left mouse button is released. If this option is true, the view is updated continuously while the spline is being dragged. This option is false by default, because view updates are potentially time-consuming and doing them frequently can degrade performance.
+
+<p>Continuously updating the view gives useful feedback and makes the spline editor more intuitive and fun to use, but it can also make the user interface sluggish, jerky or unresponsive, particularly if the pot has a large number of facets (<a href="../Properties/Mesh/Rings.htm">rings</a> and <a href="../Properties/Mesh/Sides.htm">sides</a>) or a large <a href="../Menus/Render/Texture.htm">texture</a>. As a safer alternative, the spline editor can show the pot's <a href="../Menus/Spline/Opposite_Wall.htm">opposite wall</a>, which is always updated continuously during dragging and doesn't impact performance.
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

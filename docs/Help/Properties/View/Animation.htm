@@ -1,0 +1,29 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Animation</title>
+<link rel=stylesheet href="../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Animation</h3>
+
+<p>This enables or disables the animation of any mesh or texture <a href="../../Properties/Properties.htm">properties</a> that are ready to animate. A property is ready to animate if has an active <a href="../../Modulation/Modulation.htm">modulation</a> with a non-zero <a href="../../Modulation/Phase_Speed.htm">Phase Speed</a>. Modulation and animation readiness are indicated by the presence and color of an upward-pointing triangle to the left of the property's name in the Properties bar, as shown in the table below.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Triangle</th><th>Meaning</th></tr>
+<tr><td>None</td><td>The property isn't modulated. To modulate it, set its <a href="../../Modulation/Waveform.htm">Waveform</a> to a value other than None, and configure other modulation parameters as needed.</td></tr>
+<tr><td>Blue</td><td>The property is modulated, but not ready to animate. To make it ready, set its Phase Speed to a non-zero value.</td></tr>
+<tr><td>Orange</td><td>The property is ready to animate, but animation is disabled.</td></tr>
+<tr><td>Green</td><td>The property is animating.</td></tr>
+</table>
+
+<p>To enable animation, set the Animation property to true, or use the <a href="../../Menus/View/Enable_Animation.htm">View/Animation</a> main menu command. Enabling animation causes the <a href="../../View/View.htm">view</a> to automatically update itself at the current <a href="../../Properties/View/Frame_Rate.htm">frame rate</a>. For every frame, PotterDraw iterates through the animated properties and advances their oscillators by the appropriate amount.
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

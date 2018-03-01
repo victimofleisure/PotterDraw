@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Operation</title>
+<link rel=stylesheet href="../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Operation</h3>
+
+<p>This lets you specify how the <a href="../Modulation/Modulation.htm">modulation</a> affects the <a href="../Modulation/Target.htm">target</a> property. The following operations are available:
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Operation</th><th>Description</th></tr>
+<tr><td>Add</td><td>The modulation output is added to the target property.</td></tr>
+<tr><td>Subtract</td><td>The modulation output is subtracted from the target property.</td></tr>
+<tr><td>Multiply</td><td>The target property is multiplied by the modulation output.</td></tr>
+<tr><td>Divide</td><td>The target property is divided by the modulation output. The user is responsible for ensuring that the modulation doesn't output zero.</td></tr>
+<tr><td>Exponentiate</td><td>The waveform is used as an exponent, and the target property is multiplied by two raised to that exponent.</td></tr>
+</table>
+
+<p>Exponentiate is optimal for proportional scaling. For example if the waveform ranges from &minus;1 to 1, Exponentiate produces values ranging from 2<sup>&minus;1</sup> to 2<sup>1</sup>, i.e. from &frac12; to 2. Thus the effect ranges from halving to doubling. Note that this assumes <a href="../Modulation/Amplitude.htm">Amplitude</a> is one. If Amplitude were two, Exponentiate would produce values ranging from 2<sup>&minus;2</sup> to 2<sup>2</sup>, i.e. from &frac14; to 4 instead.
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

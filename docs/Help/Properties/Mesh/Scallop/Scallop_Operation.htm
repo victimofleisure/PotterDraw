@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Scallop Operation</title>
+<link rel=stylesheet href="../../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Scallop Operation</h3>
+
+<p>This determines how the <a href="../../../Properties/Mesh/Scallop/Scallop_Waveform.htm">scallop waveform</a> operates on the radius of each of the pot's <a href="../../../Properties/Mesh/Rings.htm">rings</a>. The following operations are available:
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Operation</th><th>Description</th></tr>
+<tr><td>Add</td><td>The scallop waveform is added to the radius.</td></tr>
+<tr><td>Subtract</td><td>The scallop waveform is subtracted from the radius.</td></tr>
+<tr><td>Multiply</td><td>The radius is multiplied by the scallop waveform. If the waveform is positive, the radius is multiplied by the waveform plus one, otherwise it's multiplied by the waveform minus one.</td></tr>
+<tr><td>Divide</td><td>The radius is divided by scallop waveform. If the waveform is positive, the radius is divided by the waveform plus one, otherwise it's divided by the waveform minus one.</td></tr>
+<tr><td>Exponentiate</td><td>The waveform is used as an exponent, and the radius is multiplied by two raised to that exponent.</td></tr>
+</table>
+
+<p>For Add and Subtract, the scallop depth doesn't scale with radius. This may be undesirable if the pot's radius varies widely, because the scallops may appear too shallow where the pot is wide, or too deep where the pot is narrow. If you want the scallops to scale proportionally with radius, use Multiply, Divide, or Exponentiate.
+
+<p>Exponentiate is optimal for proportional scaling. For example if the waveform ranges from &minus;1 to 1, Exponentiate produces values ranging from 2<sup>&minus;1</sup> to 2<sup>1</sup>, i.e. from &frac12; to 2. Thus the effect ranges from halving to doubling. Note that this assumes <a href="../../../Properties/Mesh/Scallop/Scallop_Depth.htm">Scallop Depth</a> is one. If Scallop Depth were two, Exponentiate would produce values ranging from 2<sup>&minus;2</sup> to 2<sup>2</sup>, i.e. from &frac14; to 4 instead.
+
+<p><img src="../../../images/scallops that scale proportionally with radius (exponentiate operation).jpg" width=192 height=256 title="Proportionally scaled scallops">
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

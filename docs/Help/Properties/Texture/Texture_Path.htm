@@ -1,0 +1,46 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Texture Path</title>
+<link rel=stylesheet href="../../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Texture Path</h3>
+
+<p>This is the path to an image file containing a texture to display on the pot. Supported image formats include bitmap (BMP), PNG, and JPEG; for a complete list, see below. If this property is blank, a texture is <a href="../../Palette/Texture_synthesis.htm">synthesized</a> using the current palette and color properties.
+
+<p>To load a texture, left-click the property to display a browse button on the right; then left-click the browse button to display a file dialog, navigate to the desired folder, select the image file, and press OK. You can also type or paste a path if you prefer.
+
+<p>You can also load a texture via the File menu's <a href="../../Menus/File/Load_Texture.htm">Load Texture</a> command, or by dragging and dropping a suitable file from Explorer onto PotterDraw's main window.
+
+<p>How the texture is mapped onto the pot is determined by various properties, most importantly the <a href="../../Properties/Texture/Color_Pattern.htm">color pattern</a>. To minimize image distortion, use either Stripes or Polar mapping, with specific values for certain properties, as shown below.
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Color Pattern</th><th>Color Cycles</th><th>Stripes Frequency</th><th>Stripes Amplitude</th><th>Cycles V</th></tr>
+<tr><td>Stripes</td><td>1</td><td>1</td><td>0</td><td>&minus;1</td></tr>
+<tr><td>Polar</td><td>N/A</td><td>1</td><td>1</td><td>N/A</td></tr>
+</table>
+
+<p>The following file formats can be used as texture:
+
+<p><table border=1 cellpadding=2 cellspacing=0>
+<tr><th>Type</th><th>Description</th></tr>
+<tr><td>BMP</td><td>Windows bitmap (BMP) file format.</td></tr>
+<tr><td>DDS</td><td>DirectDraw surface (DDS) file format.</td></tr>
+<tr><td>DIB</td><td>Windows device-independent bitmap (DIB) file format.</td></tr>
+<tr><td>HDR</td><td>High dynamic range (HDR) file format.</td></tr>
+<tr><td>JPG</td><td>Joint Photographics Experts Group (JPEG) compressed file format.</td></tr>
+<tr><td>PFM</td><td>Portable float map file format.</td></tr>
+<tr><td>PNG</td><td>Portable Network Graphics (PNG) file format.</td></tr>
+<tr><td>PPM</td><td>Portable pixmap (PPM) file format.</td></tr>
+<tr><td>TGA</td><td>Truevision (Targa, or TGA) image file format.</td></tr>
+</table>
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>
