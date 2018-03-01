@@ -1,0 +1,31 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html>
+<head>
+<title>Secondary modulation</title>
+<link rel=stylesheet href="../content.css" type="text/css">   
+</head>
+
+<body>
+
+<!--  content goes HERE  -->
+
+<h3>Secondary modulation</h3>
+
+<b>Example</b>
+
+<p>Suppose you're <a href="../Modulation/Modulation.htm">modulating</a> the <a href="../Properties/Mesh/Scallop/Scallop_Depth.htm">Scallop Depth</a> property with a sine wave, so that the scallops undulate as they progress vertically up the pot. Now suppose you also want to vary the intensity of that undulation, so that it's strong at the bottom of the pot, and gradually weakens to nonexistent at the top of the pot. In other words, you want to apply an amplitude <em>envelope</em> to the undulation. More specifically, you want to modulate the amplitude of the Scallop Depth modulation with a descending ramp wave. You could do this as follows:
+
+<ol>
+<li>In a new document, set the number of <a href="../Properties/Mesh/Scallop/Scallops.htm">scallops</a> to 5, and the scallop depth to 10. Also disable <a href="../Menus/Render/Texture.htm">Texture</a> so you can see the shape more clearly.
+<li>In the Modulation bar, make sure the selected <a href="../Modulation/Target.htm">target</a> is "Scallop Depth". Now set the <a href="../Modulation/Waveform.htm">waveform</a> to "Sine", and the <a href="../Modulation/Operation.htm">operation</a> to "Multiply". You should see undulations in your scallops.
+<li>Change the modulation <a href="../Modulation/Type.htm">type</a> from "Property" to "Amplitude". You're now editing a secondary modulation (amplitude modulation), and the Amplitude row is highlighted in red to remind you of this. Notice that the modulation properties and <a href="../Oscilloscope/Oscilloscope.htm">oscilloscope</a> no longer reflect the edits you made in step 2, because you're no longer editing the primary modulation.
+<li>Change the waveform to "Ramp Down", the operation to "Multiply", and the <a href="../Modulation/Range.htm">range</a> to "Unipolar". The oscilloscope should show a ramp wave descending from one to zero. A blue triangle appears to the left of the Amplitude row to indicate that amplitude is modulated.
+<li>Change the modulation type back to "Property". The edits you made in step 2 reappear, and the oscilloscope and the <a href="../View/View.htm">view</a> should now show an amplitude-modulated scallop depth modulation.
+</ol>
+
+
+
+<!--  content stops HERE  -->
+			
+</body>
+</html>

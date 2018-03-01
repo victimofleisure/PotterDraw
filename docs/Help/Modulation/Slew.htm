@@ -17,13 +17,12 @@
 <tr><th>Waveform</th><th>Description</th></tr>
 <tr><td>Pulse</td><td>Slew determines the portion of the pulse spent rising and falling. As slew increases, the pulse becomes less rectangular and more beveled. If slew is zero, the pulse is rectangular, because it rises and falls instantaneously. If slew is one, the pulse is an isosceles triangle, because it's entirely rise and fall, with no sustain. Otherwise, the pulse is an isosceles trapezoid. At the default slew of 0.5, the pulse is half rise and fall, and half sustain, i.e. 25% attack, 50% sustain, 25% decay.</td></tr>
 <tr><td>Rounded Pulse</td><td>Slew determines the portion of the pulse spent rising and falling, but the rise and fall are curved rather than linear. As slew increases, the pulse becomes less rectangular and more sinusoidal.  The rounded pulse is useful for smoothly fading effects in and out, because it avoids banding artifacts caused by sudden slope changes. If slew is zero, the pulse is rectangular. If slew is one, the pulse is the positive half of a sine wave. Otherwise, the pulse is an isosceles trapezoid, but with sinusoids replacing the beveled sides.</td></tr>
-<tr><td>Triangular Pulse</td><td>Slew determines how skewed the triangle is. If it's zero, the pulse is a ramp (sawtooth). If it's one, the pulse is also a ramp, but sloping up instead of down. At the default value of 0.5, the pulse is an isosceles triangle. The pulse can be curved via the <a href="../Modulation/Power.htm">Power</a> property.</td></tr>
+<tr><td>Circular Pulse</td><td>Slew determines the portion of the pulse spent rising and falling, but the rise and fall are circular quadrants rather than linear. As slew increases, the pulse becomes less rectangular and more semicircular. If slew is zero, the pulse is rectangular. If slew is one, the pulse is a semicircle or semiellipse.</td>
+</tr><tr><td>Triangular Pulse</td><td>Slew determines how skewed the triangle is. If it's zero, the pulse is a ramp (sawtooth). If it's one, the pulse is also a ramp, but sloping up instead of down. At the default value of 0.5, the pulse is an isosceles triangle. The pulse can be curved via the <a href="../Modulation/Power.htm">Power</a> property.</td></tr>
 <tr><td>Ramp Pulse</td><td>Slew determines how skewed the ramp is. If it's zero, the pulse is a typical ramp. If it's one, the pulse has a lightning bolt shape. At the default value of 0.5, the pulse is a triangle wave. The lightning bolt shape slopes from the center to one rail, and then slopes from the other rail back to the center.</td></tr>
 </table>
 
 <p><img src="../images/pulseslew.png" width=646 height=260 title="Pulse Slew">
-
-
 
 <!--  content stops HERE  -->
 			

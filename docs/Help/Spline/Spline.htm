@@ -14,7 +14,7 @@
 <p>The spline lets you to draw the pot's outer wall using a series of curves or lines. The spline determines the radius of each of the pot's <a href="../Properties/Mesh/Rings.htm">rings</a>.
 
 <a name="Segments_and_nodes"><p><b>Segments and nodes</b></a>
-<p>The spline consists of one or more segments. Each segment can be a Bézier curve or a straight line. The segments join at <em>nodes</em>. When a segment is selected, its nodes are displayed as small hollow squares. A Bézier segment also has two <em>control points</em>, which can be moved to adjust the curve. The control points are displayed as small solid squares, connected to their corresponding nodes by lines called <em>curve vectors</em>. To change the shape of a Bézier segment, drag its control points and/or its nodes.
+<p>The spline consists of one or more segments. Each segment can be a B&eacute;zier curve or a straight line. The segments join at <em>nodes</em>. When a segment is selected, its nodes are displayed as small hollow squares. A B&eacute;zier segment also has two <em>control points</em>, which can be moved to adjust the curve. The control points are displayed as small solid squares, connected to their corresponding nodes by lines called <em>curve vectors</em>. To change the shape of a B&eacute;zier segment, drag its control points and/or its nodes.
 
 <p>There are three types of nodes. A node's type determines how the two curve vectors sharing that node are constrained.
 
@@ -30,7 +30,7 @@
 
 <p>The spline should also continuously increase in the y-axis. Put another way, the spline should intersect any given y-coordinate no more than once. If this isn't so, PotterDraw will simplify the spline as needed.
 
-<p>Note that only a subset of the possible Bézier curves can be faithfully translated into a 3D mesh. For example, curves that loop or cross themselves won't work properly. For each Bézier segment, if its lower control point is below its lower node, or its upper control point is above its upper node, the segment crosses a y-coordinate more than once and will be simplified.
+<p>Note that only a subset of the possible B&eacute;zier curves can be faithfully translated into a 3D mesh. For example, curves that loop or cross themselves won't work properly. For each B&eacute;zier segment, if its lower control point is below its lower node, or its upper control point is above its upper node, the segment crosses a y-coordinate more than once and will be simplified.
 
 <p>To check your spline's conformance with the above constraints, use the <a href="../Menus/Tools/Mesh_Information.htm">Mesh Information</a> command.
 
@@ -44,9 +44,9 @@
 <p>To select all segments, use <span class="cmd">Edit/Select All</span> or <span class="key">Ctrl+A</span>. To deselect all segments, left-click in the spline window's background, i.e. somewhere not on the spline.
 
 <a name="Changing_segment_and_node_types"><p><b>Changing segment and node types</b></a>
-<p>To change a single segment’s type, right-click the segment and select the desired type from the context menu. To change the type of multiple segments at once, first select the segments and then change their type via <span class="cmd">Spline/Segment Type</span> in the main menus, or by right-clicking somewhere not on the spline and using the context menu.
+<p>To change a single segment's type, right-click the segment and select the desired type from the context menu. To change the type of multiple segments at once, first select the segments and then change their type via <span class="cmd">Spline/Segment Type</span> in the main menus, or by right-clicking somewhere not on the spline and using the context menu.
 
-<p>Node type works similarly. To change a single node’s type, right-click the node and select the desired type from the context menu. To change the type of multiple nodes at once, first select the segments and then change their node type via <span class="cmd">Spline/Node Type</span> in the main menus, or by right-clicking somewhere not on the spline and using the context menu.
+<p>Node type works similarly. To change a single node's type, right-click the node and select the desired type from the context menu. To change the type of multiple nodes at once, first select the segments and then change their node type via <span class="cmd">Spline/Node Type</span> in the main menus, or by right-clicking somewhere not on the spline and using the context menu.
 
 <a name="Adding_and_removing_nodes"><p><b>Adding and removing nodes</b></a>
 <p>To add a node, double-click where the node should go. To delete a node, double-click it. You can also add and delete nodes by right-clicking and using the context menu.
@@ -71,7 +71,7 @@
 <a name="Spline_import-export"><p><b>Spline import/export</b></a>
 <p>Splines can be <a href="../Menus/Spline/Export_Spline.htm">exported</a> or <a href="../Menus/Spline/Import_Spline.htm">imported</a> as text files containing a series of 2D points which constitute the spline. This allows splines to be generated by or processed by an external program. The format of the spline text file is explained below. For an example, use the export command and then examine the resulting file.
 
-<p>Each line of a spline text file must contain exactly one 2D point. The point’s X and Y values must be separated by one or more tabs or spaces. The first point is the start point of the entire spline. Each subsequent group of three points describes a Bézier curve, specified by its first control point, its second control point, and its end point. After the first curve, each subsequent curve starts at the previous curve's end point. The total number of 2D points in the file must be a multiple of three, plus one for the start point.
+<p>Each line of a spline text file must contain exactly one 2D point. The point's X and Y values must be separated by one or more tabs or spaces. The first point is the start point of the entire spline. Each subsequent group of three points describes a B&eacute;zier curve, specified by its first control point, its second control point, and its end point. After the first curve, each subsequent curve starts at the previous curve's end point. The total number of 2D points in the file must be a multiple of three, plus one for the start point.
 
 
 
