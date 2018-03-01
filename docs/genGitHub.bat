@@ -26,14 +26,14 @@ md printable
 cd printable
 move C:\Chris\MyProjects\PotterDraw\info\PotterDrawHelp.htm .
 ren PotterDrawHelp.htm prnhelp.htm
-echo y | C:\Chris\tools\fsr prnhelp.htm "../../../images/" "https://potterdraw.sourceforge.io/Help/images/"
-echo y | C:\Chris\tools\fsr prnhelp.htm "../../images/" "https://potterdraw.sourceforge.io/Help/images/"
-echo y | C:\Chris\tools\fsr prnhelp.htm "../images/" "https://potterdraw.sourceforge.io/Help/images/"
+echo y | C:\Chris\tools\fsr prnhelp.htm "../../../images/" "https://victimofleisure.github.io/PotterDraw/Help/images/"
+echo y | C:\Chris\tools\fsr prnhelp.htm "../../images/" "https://victimofleisure.github.io/PotterDraw/Help/images/"
+echo y | C:\Chris\tools\fsr prnhelp.htm "../images/" "https://victimofleisure.github.io/PotterDraw/Help/images/"
 ren prnhelp.htm PotterDrawHelp.htm
 cd ..
 cd ..
 ren issues.html issues.htm
-echo y | fsr issues.htm "<div id=body>" "<div id=widebody>"
+echo y | C:\Chris\tools\fsr issues.htm "<div id=body>" "<div id=widebody>"
 ren issues.htm issues.html
 goto exit
 :err

@@ -25,9 +25,9 @@ md printable
 cd printable
 move C:\Chris\MyProjects\PotterDraw\info\PotterDrawHelp.htm .
 ren PotterDrawHelp.htm prnhelp.htm
-echo y | fsr prnhelp.htm "../../../images/" "https://potterdraw.sourceforge.io/Help/images/"
-echo y | fsr prnhelp.htm "../../images/" "https://potterdraw.sourceforge.io/Help/images/"
-echo y | fsr prnhelp.htm "../images/" "https://potterdraw.sourceforge.io/Help/images/"
+echo y | C:\Chris\tools\fsr prnhelp.htm "../../../images/" "https://potterdraw.sourceforge.io/Help/images/"
+echo y | C:\Chris\tools\fsr prnhelp.htm "../../images/" "https://potterdraw.sourceforge.io/Help/images/"
+echo y | C:\Chris\tools\fsr prnhelp.htm "../images/" "https://potterdraw.sourceforge.io/Help/images/"
 ren prnhelp.htm PotterDrawHelp.htm
 cd ..
 cd ..
