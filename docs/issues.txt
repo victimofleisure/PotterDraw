@@ -136,13 +136,11 @@ open	close	type	description	rev	user
 11/30/17	12/13/17	done	normal color patterns: azimuthal deviation, inclinational deviation, combination of both	1.0.05.000	
 12/14/17	12/14/17	done	for mesh-dependent color patterns, rebuilding mesh computes texture coords twice, wasting time	1.0.05.000	
 12/14/17	12/15/17	done	edge detection color pattern, based on standard deviation of face normals	1.0.05.000	
-12/30/17	01/03/18	done	add ring phase to allow more complex twisting effects	1.0.06.000	
-12/30/17	01/02/18	done	add ruffle properties to bend effect; modulating phase of vertical LFO	1.0.06.000	
-01/12/18	01/15/18	done	auto zoom	1.0.06.000	
 03/16/17		hold	inner wall generation overcompensates at extreme slope changes		
 03/23/17		hold	show axis arrows		
 03/23/17		hold	show normals		
 03/23/17		hold	spin controls in property grid; default implementation only supports integer properties		
+03/23/17		hold	more preset shapes; no need once splines are implemented, use documents as presets		
 03/23/17		hold	properties window's column widths should persist; good luck with that		
 03/24/17		hold	shape tweening		
 03/31/17		hold	weird context menu appeared and locked up app; can't reproduce it		
@@ -165,10 +163,6 @@ open	close	type	description	rev	user
 10/15/17		hold	palette animation		
 12/14/17		hold	master speed control for animation; rarely needed and possibly confusing (zero would act like a bug)		
 12/21/17		hold	Shift accelerators (Shift+A etc.) prevent upper case letters from being typed in properties grid edit boxes		
-12/24/17		hold	adjacency and face normal arrays should be sized before vertex loop; avoids range check in edges case		
-12/30/17		hold	modulations based on angle (fSide) rather than height (fRing), for asymmetric shapes; complicates interface		
-12/30/17		hold	organic, flower-like shapes; explore modulations of theta in final polar to rectangular conversion		
-03/23/17		punt	more preset shapes; no need once splines are implemented, use documents as presets		
 03/23/17		punt	command to validate mesh; requires generating adjaceny which is slow		
 03/23/17		punt	resizing properties window resets its column widths; behavior is in OnSize and it's a pain to change		
 03/23/17		punt	if inactive view's click handler calls track rubber band, releasing mouse without moving gives false positive		

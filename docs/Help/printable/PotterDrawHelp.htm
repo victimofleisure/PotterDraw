@@ -1082,7 +1082,7 @@
 <tr><td>Ramp Pulse</td><td>A ramp pulse with variable Pulse Width and Slew.</td></tr>
 <tr><td>Sine Cubed</td><td>A sine wave raised to the third power.</td></tr>
 <tr><td>Flame</td><td>A flame-like wave, similar to the Flame stitch in needlepoint, resulting from: squarewave(x) - squarewave(x * 2) * cos(x * PI * 2).</td></tr>
-<tr><td>Semicircle</td><td>A semicircle wave.</td></tr>
+<tr><td>Semicircle</td><td>A semicircle wave, consisting of alternating half-circles.</td></tr>
 </table>
 
 <p><img src="https://victimofleisure.github.io/PotterDraw/Help/images/waveforms.png" width=346 height=646 title="Waveforms">
@@ -1195,14 +1195,22 @@
 
 <a name="Secondary_modulation"><h2>Secondary modulation</h2></a>
 
-<b>Example</b>
+<p>Each of PotterDraw's <a href="#Properties">properties</a> can be <a href="#Modulation">modulated</a> by an oscillator. Each of these oscillators has its own properties, such as <a href="#Waveform">waveform</a>, <a href="#Frequency">frequency</a>, <a href="#Amplitude">amplitude</a> and so on, and these properties can also be modulated. In other words, you can modulate a modulation. This means there are two levels of modulation in PotterDraw: <em>primary</em> modulation, in which an oscillator directly modulates one of the pot's properties, and <em>secondary</em> modulation, in which an oscillator modulates a property of a primary modulation.
+
+<p>Secondary modulation is an <b>advanced feature</b> that lets you create more complex effects. Its most common applications are amplitude modulation (AM) and frequency modulation (FM). For example you might want to apply a waveform to a property, but only on part of the pot. This is amplitude modulation, and it can be visualized as applying an amplitude <em>envelope</em> to a waveform. For another example, you might want the waveform's frequency to vary over the range of the pot. This is frequency modulation.
+
+<p>Other more esoteric types of modulation are supported, such as <a href="#Pulse_Width">pulse width</a> modulation (PWM), <a href="#Phase">phase</a> modulation, etc. Mutiple-choice (drop list) properties such as waveform or <a href="#Motif">motif</a> can also be modulated, but note that because they're integers they will modulate in discrete steps rather than continuously. Multiple types of secondary modulation can be applied to the same primary modulation, for example you could modulate a primary modulation's amplitude AND its frequency.
+
+<p>Secondary modulations are accessed via the modulation <a href="#Type">type</a> drop list. This setting affects what's shown in both the modulation and <a href="#Oscilloscope">oscilloscope</a> bars. When modulation type is set to "Property", you're accessing the <a href="#Target">target</a> property's primary modulation, but if it's set to any other value, you're accessing a secondary modulation. Note that for a secondary modulation to have any effect, the primary modulation it applies to must be enabled, i.e. its waveform must be set to something other than "None".
+
+<p><b>Example</b>
 
 <p>Suppose you're <a href="#Modulation">modulating</a> the <a href="#Scallop_Depth">Scallop Depth</a> property with a sine wave, so that the scallops undulate as they progress vertically up the pot. Now suppose you also want to vary the intensity of that undulation, so that it's strong at the bottom of the pot, and gradually weakens to nonexistent at the top of the pot. In other words, you want to apply an amplitude <em>envelope</em> to the undulation. More specifically, you want to modulate the amplitude of the Scallop Depth modulation with a descending ramp wave. You could do this as follows:
 
 <ol>
-<li>In a new document, set the number of <a href="#Scallops">scallops</a> to 5, and the scallop depth to 10. Also disable <a href="#Texture">Texture</a> so you can see the shape more clearly.
-<li>In the Modulation bar, make sure the selected <a href="#Target">target</a> is "Scallop Depth". Now set the <a href="#Waveform">waveform</a> to "Sine", and the <a href="#Operation">operation</a> to "Multiply". You should see undulations in your scallops.
-<li>Change the modulation <a href="#Type">type</a> from "Property" to "Amplitude". You're now editing a secondary modulation (amplitude modulation), and the Amplitude row is highlighted in red to remind you of this. Notice that the modulation properties and <a href="#Oscilloscope">oscilloscope</a> no longer reflect the edits you made in step 2, because you're no longer editing the primary modulation.
+<li>In a new document, set the number of <a href="#Scallops">scallops</a> to 5, and the scallop depth to 10. Also disable <a href="#Texture">Texture</a> so you can see the pot's shape more clearly.
+<li>In the modulation bar, make sure the selected <a href="#Target">target</a> is "Scallop Depth". Now set the <a href="#Waveform">waveform</a> to "Sine", and the <a href="#Operation">operation</a> to "Multiply". You should see undulations in your scallops.
+<li>Change the modulation <a href="#Type">type</a> from "Property" to "Amplitude". You're now editing a secondary modulation (amplitude modulation), and the Amplitude row is highlighted in red to remind you of this. Notice that the modulation properties and <a href="#Oscilloscope">oscilloscope</a> no longer reflect the edits you made in step 2, because you're no longer accessing the primary modulation.
 <li>Change the waveform to "Ramp Down", the operation to "Multiply", and the <a href="#Range">range</a> to "Unipolar". The oscilloscope should show a ramp wave descending from one to zero. A blue triangle appears to the left of the Amplitude row to indicate that amplitude is modulated.
 <li>Change the modulation type back to "Property". The edits you made in step 2 reappear, and the oscilloscope and the <a href="#View">view</a> should now show an amplitude-modulated scallop depth modulation.
 </ol>
