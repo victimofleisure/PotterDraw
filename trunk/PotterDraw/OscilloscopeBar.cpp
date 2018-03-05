@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      30mar17	initial version
+		01		20feb18	refactor Update to allow secondary modulation
 		
 */
 
@@ -58,7 +59,7 @@ void COscilloscopeBar::Update(bool bFitToData)
 		if (pView != NULL) {	// if active view exists
 			CPotterDrawDoc	*pDoc = pView->GetDocument();
 			CBoundArray<int, CPotProperties::PROPERTIES>	arrModIdx;
-			pDoc->GetModulations(arrModIdx);
+			pView->GetModulations(arrModIdx);
 			int	iModTarget = pDoc->m_iModTarget;
 			// if current target isn't modulated, plot it anyway
 			if (iModTarget >= 0 && !pDoc->IsModulated(iModTarget))
@@ -74,8 +75,12 @@ void COscilloscopeBar::Update(bool bFitToData)
 				else
 					pRange = NULL;
 				pView->PlotProperty(iProp, m_Plot.GetSeries(iMod).m_Point, pRange);
-				if (bFitToData)	// if active view exists
-					range.Union(range, rangeMod);	// accumulate range for all series
+				if (bFitToData) {	// if active view exists
+					if (range.IsNull())
+						range = rangeMod;
+					else
+						range.Include(rangeMod);
+				}
 			}
 		} else {	// no active view
 			m_Plot.SetSeriesCount(1);
@@ -84,20 +89,28 @@ void COscilloscopeBar::Update(bool bFitToData)
 	} else {	// showing current modulation target only; optimized case
 		if (pView != NULL) {	// if active view exists
 			CPotterDrawDoc	*pDoc = pView->GetDocument();
-			int	iProp = pDoc->m_iModTarget;
-			if (iProp >= 0) {	// if valid modulation target
+			int	iModTarget = pDoc->m_iModTarget;
+			if (iModTarget >= 0) {	// if valid modulation target
 				CDblRange	*pRange;
 				if (bFitToData)	// if computing range
 					pRange = &range;
 				else
 					pRange = NULL;
-				pView->PlotProperty(iProp, m_Plot.GetSeries(0).m_Point, pRange);
+				int	iModObj = CPotProperties::MakeModulationIdx(iModTarget, pDoc->m_iModType);
+				pView->PlotProperty(iModObj, m_Plot.GetSeries(0).m_Point, pRange);
 			}
 		} else {	// no active view
 			m_Plot.GetSeries(0).m_Point.SetSize(0);	// empty series
 		}
 	}
 	if (bFitToData) {	// if computing range
+		double	fMargin, fMarginFrac = 0.05;
+		if (range.IsEmpty())
+			fMargin = 1;
+		else
+			fMargin = range.Length() * fMarginFrac;
+		range.Start -= fMargin;
+		range.End += fMargin;
 		m_Plot.SetRange(CPlotCtrl::RULER_BOTTOM, range);
 		m_Plot.Update();
 	} else	// using existing range

@@ -17,6 +17,7 @@
 		07		05sep17	fix pSender to match tests in OnUpdate
 		08		07sep17	fix modulation property change not updating oscilloscope
 		09		09oct17	add render frame rate
+		10		20feb18	add secondary modulation
 
 */
 
@@ -482,21 +483,25 @@ void CMainFrame::UpdateOptions()
 	m_wndSplineBar.m_wndSpline.SetZoomStep(theApp.m_Options.m_fSplineZoomStep / 100 + 1);
 }
 
-void CMainFrame::UpdateModulationBar(const CPotterDrawDoc *pDoc)
+void CMainFrame::UpdateModulationBar(CPotterDrawDoc *pDoc)
 {
 	CModulationProps	props;
 	CString	sTargetName;
-	int	iProp = pDoc->m_iModTarget;
-	if (iProp < 0) {	// if document doesn't specify a modulation target
+	int	iModTarget = pDoc->m_iModTarget;
+	if (iModTarget < 0) {	// if document doesn't specify a modulation target
 		m_wndModulationBar.GetProperties(props);
-		iProp = props.m_iTarget;	// use modulation bar's current target
+		iModTarget = props.m_iTarget;	// use modulation bar's current target
 	}
-	if (iProp >= 0) {	// if valid target
-		props = pDoc->m_Mod[iProp];
-		props.m_iTarget = iProp;
+	if (iModTarget >= 0) {	// if valid target
+		int	iModType = pDoc->m_iModType;
+		int	iModObj = CPotProperties::MakeModulationIdx(iModTarget, iModType);
+		props = pDoc->m_Mod[iModObj];
+		props.m_iTarget = iModTarget;
+		props.m_iModType = iModType;
 		m_wndModulationBar.SetProperties(props);
 	}
-	m_wndModulationBar.EnableModulation(CPotProperties::CanModulate(iProp));
+	pDoc->UpdatePlotAnimationState(iModTarget);	// modifies flag in doc's pot properties
+	m_wndModulationBar.EnableModulation(CPotProperties::CanModulate(iModTarget));
 	if (m_wndOscilloscopeBar.IsWindowVisible())
 		m_wndOscilloscopeBar.Update();
 }
@@ -914,16 +919,33 @@ LRESULT CMainFrame::OnPropertyChange(WPARAM wParam, LPARAM lParam)
 			pDoc->UpdateAllViews(pSender, CPotterDrawDoc::HINT_PROPERTY, &hint);
 			pDoc->SetModifiedFlag();
 		} else if (pWnd == &m_wndModulationBar) {	// if notifier is modulation bar
-			if (iProp == CModulationProps::PROP_iTarget) {	// if target changed
-				CModulationProps	props;
-				m_wndModulationBar.GetProperties(props);
-				pDoc->m_iModTarget = props.m_iTarget;
-				UpdateModulationBar(pDoc);
-			} else {	// ordinary modulation property changed
+			switch (iProp) {
+			case CModulationProps::PROP_iTarget:	// if target changed
+			case CModulationProps::PROP_iModType:	// or modulation type changed
+				{
+					CModulationProps	props;
+					m_wndModulationBar.GetProperties(props);
+					pDoc->m_iModTarget = props.m_iTarget;
+					pDoc->m_iModType = props.m_iModType;
+					UpdateModulationBar(pDoc);
+				}
+				break;
+			default:	// ordinary modulation property changed
 				int	iTarget = pDoc->m_iModTarget;
 				if (iTarget >= 0) {	// if current target is valid
-					pDoc->NotifyUndoableEdit(MAKELONG(iProp, iTarget), UCODE_MODULATION);
-					m_wndModulationBar.GetProperties(pDoc->m_Mod[iTarget]);	// after undo notification
+					int	iModObj = CPotProperties::MakeModulationIdx(iTarget, pDoc->m_iModType);
+					pDoc->NotifyUndoableEdit(MAKELONG(iProp, iModObj), UCODE_MODULATION);
+					m_wndModulationBar.GetProperties(pDoc->m_Mod[iModObj]);	// after undo notification
+					if (pDoc->m_iModType) {	// if secondary modulation selected
+						switch (iProp) {
+						case CModulationProps::PROP_iWaveform:
+						case CModulationProps::PROP_fPhaseSpeed:
+							UpdateModulationBar(pDoc);	// update modulation bar's modulation indicators
+							break;
+						}
+					} else {	// primary modulation selected
+						pDoc->UpdatePlotAnimationState(iTarget);	// plot animation may be affected
+					}
 					CPotterDrawDoc::CModulationHint	hint(iTarget, iProp);
 					CView	*pSender = reinterpret_cast<CView *>(&m_wndModulationBar);
 					pDoc->UpdateAllViews(pSender, CPotterDrawDoc::HINT_MODULATION, &hint);

@@ -17,7 +17,9 @@
 		07		12dec17	bump file version to 3 for app version 1.0.5
 		08		02jan18	bump file version to 4 for app version 1.0.6
 		09		15jan18	add view subgroup for auto rotate
-		
+		10		20feb18	bump file version to 5 for app version 1.0.7
+		11		20feb18	add secondary modulation
+
 */
 
 #include "stdafx.h"
@@ -29,7 +31,7 @@
 #include "PotGraphics.h"	// for style bits
 
 #define FILE_ID			_T("PotterDraw")
-#define	FILE_VERSION	4
+#define	FILE_VERSION	5
 
 #define RK_FILE_ID		_T("sFileID")
 #define RK_FILE_VERSION	_T("nFileVersion")
@@ -41,11 +43,13 @@
 #define RK_ZOOM			_T("fZoom")
 #define RK_LIGHT_DIR	_T("vLightDir")
 #define RK_POT_MATERIAL	_T("mtrlPot")
-#define RK_MOD_TARGET	_T("sModTarget")
+#define RK_CUR_MOD_TARGET	_T("sModTarget")
+#define RK_CUR_MOD_TYPE	_T("sModType")
 
 #define	RK_MOD_SECTION	_T("Modulation\\")
 #define	RK_MOD_COUNT	_T("nModulations")
-#define	RK_TARGET_NAME	_T("sTarget")
+#define	RK_MOD_TARGET	_T("sTarget")
+#define	RK_MOD_TYPE		_T("sType")
 
 #define SUBGROUP_NONE	-1
 
@@ -121,8 +125,10 @@ CPotProperties::CPotProperties()
 	m_mtrlPot = m_mtrlPotDefault;
 	m_fZoom = 1;
 	m_iModTarget = 0;
-	for (int iProp = 0; iProp < PROPERTIES; iProp++)	// for each property
-		m_Mod[iProp].SetDefault();	// set modulation to default values
+	m_iModType = 0;
+	m_bIsPlotAnimated = false;
+	for (int iModObj = 0; iModObj < MODULATIONS; iModObj++)	// for each modulation object
+		m_Mod[iModObj].SetDefault();	// set modulation to default values
 }
 
 void CPotProperties::SetDefaultPalette()
@@ -245,19 +251,34 @@ void CPotProperties::ReadProperties(LPCTSTR szPath)
 	RdReg(RK_ZOOM, m_fZoom);
 	RdReg(RK_LIGHT_DIR, m_vLightDir);
 	RdReg(RK_POT_MATERIAL, m_mtrlPot);
-	CString	sModTarget;
-	RdReg(RK_MOD_TARGET, sModTarget);
+	// read current modulation target and type
+	CString	sModTarget, sModType;
+	RdReg(RK_CUR_MOD_TARGET, sModTarget);
+	RdReg(RK_CUR_MOD_TYPE, sModType);
 	m_iModTarget = FindProperty(sModTarget);
+	if (!sModType.IsEmpty())	// if modulation type specified
+		m_iModType = max(CModulationProps::FindProperty(sModType) - 1, 0);
+	else	// default to primary modulation
+		m_iModType = 0;
 	// read modulations
 	CString	sModIdx;
 	int	nMods = CPersist::GetInt(REG_SETTINGS, RK_MOD_COUNT, 0);
 	for (int iMod = 0; iMod < nMods; iMod++) {	// for each modulation
 		sModIdx.Format(_T("%d"), iMod);
 		CString	sSection(RK_MOD_SECTION + sModIdx);
-		CString	sTarget(CPersist::GetString(sSection, RK_TARGET_NAME));	// read target name
-		int	iProp = FindProperty(sTarget);
-		if (iProp >= 0)	// if target property found
-			m_Mod[iProp].ReadProperties(sSection);
+		CString	sTarget(CPersist::GetString(sSection, RK_MOD_TARGET));	// read target name
+		int	iModTarget = FindProperty(sTarget);
+		if (iModTarget >= 0) {	// if target property found
+			CString	sModType(CPersist::GetString(sSection, RK_MOD_TYPE));	// read modulation type
+			int	iModObj;
+			if (sModType.IsEmpty()) {	// if modulation type not specified
+				iModObj = iModTarget;	// default to primary modulation
+			} else {	// modulation type specified
+				int	iModType = max(CModulationProps::FindProperty(sModType) - 1, 0);
+				iModObj = MakeModulationIdx(iModTarget, iModType);
+			}
+			m_Mod[iModObj].ReadProperties(sSection);
+		}
 	}
 	m_arrSpline.ReadProfile();	// read spline
 }
@@ -290,19 +311,26 @@ void CPotProperties::WriteProperties(LPCTSTR szPath) const
 	WrReg(RK_ZOOM, m_fZoom);
 	WrReg(RK_LIGHT_DIR, m_vLightDir);
 	WrReg(RK_POT_MATERIAL, m_mtrlPot);
-	CString	sModTarget;
+	// write current modulation target and type
+	CString	sModTarget, sModType;
 	if (m_iModTarget >= 0)
 		sModTarget = GetPropertyInternalName(m_iModTarget);
+	if (m_iModType > 0)	// if secondary modulation selected
+		sModType = m_Mod[0].GetPropertyInternalName(m_iModType + 1);
+	WrReg(RK_CUR_MOD_TARGET, sModTarget);
+	WrReg(RK_CUR_MOD_TYPE, sModType);
 	// write modulations
-	WrReg(RK_MOD_TARGET, sModTarget);
 	CString	sModIdx;
 	int	nMods = 0;	// count of non-default modulations
-	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
-		const CModulationProps&	mod = m_Mod[iProp];
+	for (int iModObj = 0; iModObj < MODULATIONS; iModObj++) {	// for each modulation object
+		const CModulationProps&	mod = m_Mod[iModObj];
 		if (!mod.IsDefault()) {	// if property's modulation has non-default values
 			sModIdx.Format(_T("%d"), nMods);
 			CString	sSection(RK_MOD_SECTION + sModIdx);
-			CPersist::WriteString(sSection, RK_TARGET_NAME, GetPropertyInternalName(iProp));
+			int	iModTarget, iModType = GetModulationType(iModObj, iModTarget);
+			CPersist::WriteString(sSection, RK_MOD_TARGET, GetPropertyInternalName(iModTarget));
+			if (iModType)	// if secondary modulation, write modulation type
+				CPersist::WriteString(sSection, RK_MOD_TYPE, mod.GetPropertyInternalName(iModType + 1));
 			mod.WriteProperties(sSection);
 			nMods++;
 		}
@@ -328,26 +356,6 @@ int CPotProperties::FindRenderStyle(UINT nStyle)
 			return iStyle;
 	}
 	return -1;
-}
-
-UINT CPotProperties::GetModulations(CBoundArray<int, PROPERTIES>& arrModIdx) const
-{
-	UINT	nModType = 0;
-	arrModIdx.SetSize(PROPERTIES);
-	int	nMods = 0;
-	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
-		if (IsModulated(iProp)) {	// if property is modulated
-			arrModIdx[nMods] = iProp;
-			nMods++;
-			if (IsAnimated(iProp)) {	// if property is animated
-				nModType |= MOD_ANIMATED;
-				if (m_Info[iProp].iGroup == GROUP_MESH)	// if mesh property
-					nModType |= MOD_ANIMATED_MESH;
-			}
-		}
-	}
-	arrModIdx.SetSize(nMods);
-	return nModType;
 }
 
 bool CPotProperties::HasModulations() const
@@ -388,6 +396,53 @@ int CPotProperties::GetAnimatedModulationCount() const
 	return nAnimMods;
 }
 
+int CPotProperties::GetAnimatedModulationCountEx() const
+{
+	int	nAnimMods = 0;
+	for (int iProp = 0; iProp < MODULATIONS; iProp++) {	// include secondary modulations
+		if (IsAnimatedModulation(iProp))
+			nAnimMods++;
+	}
+	return nAnimMods;
+}
+
+int CPotProperties::GetSecondaryModulationCount(int iProp) const
+{
+	ASSERT(IsValidProperty(iProp));
+	int	nMod2s = 0;
+	for (int iModType = 1; iModType < CModulationProps::MOD_TYPES; iModType++) {	// for each secondary modulation type
+		iProp += PROPERTIES;	// skip to specified property's next potential secondary modulation
+		if (IsModulated(iProp))
+			nMod2s++;
+	}
+	return nMod2s;
+}
+
+bool CPotProperties::IsAnimatedModulationEx(int iProp) const
+{
+	if (iProp < 0)	// if no property selected
+		return false;
+	ASSERT(iProp < PROPERTIES);	// must be property index
+	if (!IsModulated(iProp))	// if property not modulated
+		return false;
+	if (IsAnimated(iProp))	// if property is animated
+		return true;
+	for (int iModType = 1; iModType < CModulationProps::MOD_TYPES; iModType++) {	// for each secondary modulation type
+		iProp += PROPERTIES;	// skip to target property's next potential secondary modulation
+		if (IsAnimatedModulation(iProp))	// if secondary modulation exists and is animated
+			return true;
+	}
+	return false;
+}
+
+void CPotProperties::UpdatePlotAnimationState(int iProp)
+{
+	if (m_iModType)	// if showing secondary modulation
+		m_bIsPlotAnimated = IsAnimatedModulation(MakeModulationIdx(iProp, m_iModType));
+	else	// showing primary modulation
+		m_bIsPlotAnimated = IsAnimatedModulationEx(iProp);	// accounts for secondary modulations
+}
+
 bool CPotProperties::CanModulate(int iProp)
 {
 	if (iProp < 0 || iProp >= PROPERTIES)	// if index out of range
@@ -405,4 +460,3 @@ bool CPotProperties::CanModulate(int iProp)
 	}
 	return true;
 }
-

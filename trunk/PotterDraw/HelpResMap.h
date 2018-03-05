@@ -85,6 +85,7 @@
 {IDS_PDR_NAME_fAutoRotateRoll,		IDH_Properties_View_Auto_Rotate_Auto_Rotate_Roll},
 {IDS_PDR_NAME_fAutoRotateZoom,		IDH_Properties_View_Auto_Rotate_Auto_Rotate_Zoom},
 {IDS_MOD_NAME_iTarget,				IDH_Modulation_Target},
+{IDS_MOD_NAME_iModType,				IDH_Modulation_Type},
 {IDS_MOD_NAME_iWaveform,			IDH_Modulation_Waveform},
 {IDS_MOD_NAME_iOperation,			IDH_Modulation_Operation},
 {IDS_MOD_NAME_iRange,				IDH_Modulation_Range},

@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      23mar17	initial version
+		01		20feb18	make modulated properties grid control reusable
 		
 */
 
@@ -15,6 +16,27 @@
 
 #include "PropertiesGrid.h"
 #include "PotProperties.h"
+
+class CModulatedPropertiesGridCtrl : public CPropertiesGridCtrl {
+public:
+	CModulatedPropertiesGridCtrl();
+	enum {	// modulation indicators
+		MI_NONE,
+		MI_MODULATED,
+		MI_PAUSED,
+		MI_ANIMATED,
+		MODULATION_STATES
+	};
+	void	SetIndicatorCount(int nProps);
+	void	SetIndicators(const BYTE *pbaModInd);
+	void	SetHighlight(int iProp);
+
+protected:
+	CByteArrayEx	m_baModInd;	// array of modulation indicator shadows
+	int		m_iHighlight;	// index of highlighted property, or -1 if none
+	void	DrawModulationIndicator(CDC* pDC, int iProp, int iModInd) const;
+	virtual int OnDrawProperty(CDC* pDC, CMFCPropertyGridProperty* pProp) const;
+};
 
 class CPropertiesBar : public CDockablePane
 {
@@ -33,24 +55,10 @@ public:
 
 protected:
 // Types
-	class CMyPropertiesGridCtrl : public CPropertiesGridCtrl {
+	class CMyPropertiesGridCtrl : public CModulatedPropertiesGridCtrl {
 	public:
-		CMyPropertiesGridCtrl();
 		virtual void OnPropertyChanged(CMFCPropertyGridProperty* pProp) const;
 		virtual void OnChangeSelection(CMFCPropertyGridProperty* pNewSel, CMFCPropertyGridProperty* pOldSel);
-		virtual int OnDrawProperty(CDC* pDC, CMFCPropertyGridProperty* pProp) const;
-		void	UpdateModulationIndicators();
-
-	protected:
-		enum {	// modulation indicators
-			MI_NONE,
-			MI_MODULATED,
-			MI_PAUSED,
-			MI_ANIMATED,
-			MODULATION_STATES
-		};
-		BYTE	m_iModInd[CPotProperties::PROPERTIES];	// modulation indicator shadows
-		void	DrawModulationIndicator(CDC* pDC, int iProp, int iModInd) const;
 	};
 	typedef CArrayEx<CMFCPropertyGridProperty *, CMFCPropertyGridProperty *> CPropertyPtrArray;
 
@@ -66,6 +74,7 @@ protected:
 // Helpers
 	void	InitPropList(const CProperties& Props);
 	void	AdjustLayout();
+	void	UpdateModulationIndicators();
 
 // Generated message map functions
 	DECLARE_MESSAGE_MAP()

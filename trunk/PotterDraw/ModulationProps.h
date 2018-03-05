@@ -12,6 +12,7 @@
 		02		10nov17	add power types
 		03		24nov17	add animated modulation accessor
 		04		03jan18	change target enum's prefix to avoid conflicts
+		05		20feb18	add modulation types for secondary modulation
 		
 */
 
@@ -63,8 +64,16 @@ public:
 		#include "ModulationPropsDef.h"
 		PROPERTIES
 	};
+	enum {	// modulation types
+		MOD_TYPE_PROPERTY,	// primary modulation
+		#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) MOD_TYPE_##name,
+		#define EXCLUDETARGETPROP	// exclude target property
+		#include "ModulationPropsDef.h"
+		MOD_TYPES
+	};
 	static const OPTION_INFO	m_Group[GROUPS];	// group names
 	static const OPTION_INFO	m_Target[TARGETS];	// target names
+	static const OPTION_INFO	m_ModType[MOD_TYPES];	// modulation types
 	static const OPTION_INFO	m_Waveform[WAVEFORMS];	// waveform names
 	static const OPTION_INFO	m_Range[RANGES];	// range names
 	static const OPTION_INFO	m_Operation[OPERATIONS];	// operation names
@@ -92,10 +101,13 @@ public:
 	bool	IsAnimatedModulation() const;
 	bool	operator==(const CModulationProps& props) const;
 	bool	operator!=(const CModulationProps& props) const;
+	LPVOID	GetPropertyAddress(int iProp);
+	LPCVOID	GetPropertyAddress(int iProp) const;
 
 // Operations
 	void	ReadProperties(LPCTSTR szSection);
 	void	WriteProperties(LPCTSTR szSection) const;
+	static	int		FindProperty(LPCTSTR szInternalName);
 };
 
 inline CModulationProps::CModulationProps()
@@ -130,4 +142,16 @@ inline bool CModulationProps::IsAnimated() const
 inline bool CModulationProps::IsAnimatedModulation() const
 {
 	return IsModulated() && IsAnimated();
+}
+
+inline LPVOID CModulationProps::GetPropertyAddress(int iProp)
+{
+	ASSERT(IsValidProperty(iProp));
+	return LPBYTE(this) + m_Info[iProp].nOffset;
+}
+
+inline LPCVOID CModulationProps::GetPropertyAddress(int iProp) const
+{
+	ASSERT(IsValidProperty(iProp));
+	return LPBYTE(this) + m_Info[iProp].nOffset;
 }

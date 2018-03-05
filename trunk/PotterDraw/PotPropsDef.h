@@ -23,6 +23,7 @@
 		13		02jan18	add ruffle properties
 		14		03jan18	add ring phase
 		15		15jan18	add view subgroup for auto rotate; add auto zoom
+		16		27feb18	add invert motif
 		
 */
 
@@ -134,7 +135,6 @@ PROPDEF(	VIEW,		AUTOROTATE,	VAR,		double,		fAutoRotateZoom,	0,				0,			0,			NULL
 
 #ifdef PATTERNDEF
 
-// append only, to maintain compatibility with previously saved documents
 PATTERNDEF(	STRIPES)
 PATTERNDEF(	RINGS)
 PATTERNDEF(	PETALS)
@@ -150,7 +150,6 @@ PATTERNDEF(	EDGES)
 
 #ifdef PALTYPEDEF
 
-// append only, to maintain compatibility with previously saved documents
 PALTYPEDEF(	LINEAR)
 PALTYPEDEF(	COMPLEMENT)
 PALTYPEDEF(	SPLIT)
@@ -173,8 +172,8 @@ RENDERSTYLEDEF(	TRANSPARENT,	0)
 
 #ifdef MOTIFDEF
 
-// append only, to maintain compatibility with previously saved documents
 MOTIFDEF(	NONE)
+MOTIFDEF(	INVERT)
 MOTIFDEF(	REEDS)
 MOTIFDEF(	FLUTES)
 MOTIFDEF(	PARTED_REEDS)
@@ -185,7 +184,6 @@ MOTIFDEF(	PARTED_FLUTES)
 
 #ifdef OPERATIONDEF
 
-// append only, to maintain compatibility with previously saved documents
 OPERATIONDEF(	ADD)
 OPERATIONDEF(	EXPONENTIATE)
 

@@ -14,6 +14,7 @@
 		04		23nov17	add step animation
 		05		12dec17	add transparent render style
 		06		15jan18	add auto zoom
+		07		20feb18	add GetModulations
 
 */
 
@@ -48,6 +49,7 @@ public:
 	int		GetRecordFramesDone() const;
 	void	PlotProperty(int iProp, CArrayEx<DPoint, DPoint&>& arrPoint, CRange<double> *pRange);
 	void	GetAnimationState(CPotProperties& Props) const;
+	void	GetModulations(CBoundArray<int, CPotProperties::PROPERTIES>& arrModIdx) const;
 
 // Operations
 public:
@@ -277,4 +279,9 @@ inline void CPotterDrawView::PlotProperty(int iProp, CArrayEx<DPoint, DPoint&>& 
 inline void CPotterDrawView::GetAnimationState(CPotProperties& Props) const
 {
 	m_Graphics.GetAnimationState(Props);
+}
+
+inline void CPotterDrawView::GetModulations(CBoundArray<int, CPotProperties::PROPERTIES>& arrModIdx) const
+{
+	m_Graphics.GetModulations(arrModIdx);
 }

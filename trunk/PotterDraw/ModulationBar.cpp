@@ -10,12 +10,15 @@
         00      04may17	initial version
 		01		01sep17	call help directly
 		02		20oct17	in ctor, change enable modulation init to true
+		03		20feb18	add modulation indicators for secondary modulation
 		
 */
 
 #include "stdafx.h"
 #include "PotterDraw.h"
 #include "ModulationBar.h"
+#include "PotterDrawDoc.h"
+#include "MainFrm.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -53,6 +56,7 @@ void CModulationBar::GetProperties(CModulationProps& Props) const
 void CModulationBar::SetProperties(const CModulationProps& Props)
 {
 	m_Grid.SetProperties(Props);
+	UpdateModulationIndicators();
 }
 
 void CModulationBar::InitPropList(const CProperties& Props)
@@ -62,6 +66,41 @@ void CModulationBar::InitPropList(const CProperties& Props)
 	m_Grid.SetVSDotNetLook();
 //	m_Grid.MarkModifiedProperties();
 	m_Grid.InitPropList(Props);
+	m_Grid.SetIndicatorCount(CModulationProps::PROPERTIES);
+}
+
+void CModulationBar::UpdateModulationIndicators()
+{
+	CPotterDrawDoc	*pDoc = theApp.GetMainFrame()->GetActiveMDIDoc();
+	BYTE	baModInd[CModulationProps::PROPERTIES];
+	ZeroMemory(baModInd, sizeof(baModInd));
+	int	iHighlight = -1;
+	// if document exists and has valid modulation target
+	if (pDoc != NULL) {
+		if (pDoc->m_iModTarget >= 0) {
+			int	iTarget = pDoc->m_iModTarget;
+			// for each modulation property that can be modulated
+			for (int iModProp = CModulationProps::PROP_iWaveform; iModProp < CModulationProps::PROPERTIES; iModProp++) {
+				int	iModObj = CPotProperties::MakeModulationIdx(iTarget, iModProp - 1);
+				const CModulationProps&	mod = pDoc->m_Mod[iModObj];
+				if (mod.IsModulated()) {	// if property is modulated
+					BYTE	iModInd;
+					if (mod.IsAnimated()) {	// if property is animated
+						if (pDoc->m_bAnimation)	// if animation in progress
+							iModInd = CModulatedPropertiesGridCtrl::MI_ANIMATED;
+						else
+							iModInd = CModulatedPropertiesGridCtrl::MI_PAUSED;
+					} else	// property not animated
+						iModInd = CModulatedPropertiesGridCtrl::MI_MODULATED;
+					baModInd[iModProp] = iModInd;
+				}
+			}
+		}
+		if (pDoc->m_iModType)
+			iHighlight = pDoc->m_iModType + 1;
+	}
+	m_Grid.SetIndicators(baModInd);
+	m_Grid.SetHighlight(iHighlight);
 }
 
 void CModulationBar::CMyPropertiesGridCtrl::OnPropertyChanged(CMFCPropertyGridProperty* pProp) const
@@ -77,7 +116,7 @@ void CModulationBar::EnableModulation(bool bEnable)
 	CMFCPropertyGridProperty	*pGroup = m_Grid.GetProperty(0);
 	ASSERT(pGroup != NULL);
 	int	nProps = CModulationProps::PROPERTIES;
-	for (int iProp = 1; iProp < nProps; iProp++)	// for each property, excluding modulation target
+	for (int iProp = 2; iProp < nProps; iProp++)	// for each property, excluding modulation target and type
 		pGroup->GetSubItem(iProp)->Enable(bEnable);	// enable or disable property as requested
 	m_bEnableModulation = bEnable;	// update shadow
 }

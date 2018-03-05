@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      04may17	initial version
+		01		20feb18	add modulation indicators for secondary modulation
 		
 */
 
@@ -15,6 +16,7 @@
 
 #include "PropertiesGrid.h"
 #include "ModulationProps.h"
+#include "PropertiesBar.h"
 
 class CModulationBar : public CDockablePane
 {
@@ -34,7 +36,7 @@ public:
 
 protected:
 // Types
-	class CMyPropertiesGridCtrl : public CPropertiesGridCtrl {
+	class CMyPropertiesGridCtrl : public CModulatedPropertiesGridCtrl {
 	public:
 		virtual void OnPropertyChanged(CMFCPropertyGridProperty* pProp) const;
 	};
@@ -53,6 +55,7 @@ protected:
 // Helpers
 	void	InitPropList(const CProperties& Props);
 	void	AdjustLayout();
+	void	UpdateModulationIndicators();
 
 // Generated message map functions
 	DECLARE_MESSAGE_MAP()

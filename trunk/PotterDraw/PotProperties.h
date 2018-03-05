@@ -16,6 +16,7 @@
 		06		12dec17	add operations (subset of modulation operations)
 		07		02jan18	add ruffle properties
 		08		15jan18	add view subgroup for auto rotate
+		09		20feb18	add secondary modulation
 		
 */
 
@@ -97,9 +98,12 @@ public:
 		PROPERTIES
 	};
 	static const PROPERTY_INFO	m_Info[PROPERTIES];	// fixed info for each property
-	enum {	// modulation type flags
+	enum {	// modulation state flags
 		MOD_ANIMATED		= 0x01,	// at least one property is animated
 		MOD_ANIMATED_MESH	= 0x02,	// at least one mesh property is animated
+	};
+	enum {
+		MODULATIONS = PROPERTIES * CModulationProps::MOD_TYPES,	// total including secondary modulations
 	};
 
 // Data members
@@ -114,9 +118,11 @@ public:
 	D3DVECTOR	m_vLightDir;	// light direction vector
 	D3DMATERIAL9	m_mtrlPot;	// pot material properties
 	double	m_fZoom;			// zoom factor
-	CFixedArray<CModulationProps, PROPERTIES>	m_Mod;	// array of modulations
+	CFixedArray<CModulationProps, MODULATIONS>	m_Mod;	// array of modulations
 	int		m_iModTarget;		// property index of current modulation target
+	int		m_iModType;			// current modulation type; zero for target property, else modulation property index plus one
 	CSplineState	m_arrSpline;	// array of spline segments
+	bool	m_bIsPlotAnimated;	// true if modulations require animated plot
 
 // Overrides
 	virtual	int		GetGroupCount() const;
@@ -143,16 +149,22 @@ public:
 	bool	HasAnimatedModulations() const;
 	int		GetModulationCount() const;
 	int		GetAnimatedModulationCount() const;
+	int		GetAnimatedModulationCountEx() const;
+	int		GetSecondaryModulationCount(int iProp) const;
 	bool	IsPolygon() const;
 	LPVOID	GetPropertyAddress(int iProp);
 	LPCVOID	GetPropertyAddress(int iProp) const;
+	static	int		MakeModulationIdx(int iModTarget, int iModType);
+	static	int		GetModulationType(int iModObj, int& iModTarget);
+	int		IsModulated(int iModTarget, int iModType) const;
+	bool	IsAnimatedModulationEx(int iProp) const;
 
 // Operations
 	void	ReadProperties(LPCTSTR szPath);
 	void	WriteProperties(LPCTSTR szPath) const;
 	static	int		FindProperty(LPCTSTR szInternalName);
 	static	int		FindRenderStyle(UINT nStyle);
-	UINT	GetModulations(CBoundArray<int, PROPERTIES>& arrModIdx) const;
+	void	UpdatePlotAnimationState(int iProp);
 };
 
 inline bool CPotProperties::IsModulated(int iProp) const
@@ -210,4 +222,20 @@ inline LPCVOID CPotProperties::GetPropertyAddress(int iProp) const
 {
 	ASSERT(IsValidProperty(iProp));
 	return LPBYTE(this) + m_Info[iProp].nOffset;
+}
+
+inline int CPotProperties::MakeModulationIdx(int iModTarget, int iModType)
+{
+	return iModType * PROPERTIES + iModTarget;	// return index of modulation object
+}
+
+inline int CPotProperties::GetModulationType(int iModObj, int& iModTarget)
+{
+	iModTarget = iModObj % PROPERTIES;	// pass back index of modulation target property
+	return iModObj / PROPERTIES;	// and return index of modulation type
+}
+
+inline int CPotProperties::IsModulated(int iModTarget, int iModType) const
+{
+	return IsModulated(MakeModulationIdx(iModTarget, iModType));
 }

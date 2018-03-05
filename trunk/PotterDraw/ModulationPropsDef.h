@@ -15,6 +15,8 @@
 		05		03nov17	add property subgroup
 		06		10nov17	add ramp pulse wave
 		07		10nov17	add power type
+		08		20feb18	add modulation type
+		09		27feb18	add semicircle and circular pulse waves
 		
 */
 
@@ -30,6 +32,7 @@ GROUPDEF(	MAIN	)
 //			group		subgroup	proptype	type		name				initval			minval		maxval		itemname	items
 #ifndef EXCLUDETARGETPROP
 PROPDEF(	MAIN,		NONE,		ENUM,		int,		iTarget,			0,				0,			0,			m_Target,	_countof(m_Target))
+PROPDEF(	MAIN,		NONE,		ENUM,		int,		iModType,			0,				0,			0,			m_ModType,	_countof(m_ModType))
 #endif
 PROPDEF(	MAIN,		NONE,		ENUM,		int,		iWaveform,			0,				0,			0,			m_Waveform,	_countof(m_Waveform))
 PROPDEF(	MAIN,		NONE,		ENUM,		int,		iOperation,			0,				0,			0,			m_Operation,	_countof(m_Operation))
@@ -51,7 +54,6 @@ PROPDEF(	MAIN,		NONE,		VAR,		double,		fSlew,				0.5,			0,			0,			NULL,		0)
 
 #ifdef WAVEFORMDEF
 
-// append only, to maintain compatibility with previously saved documents
 WAVEFORMDEF(	NONE)
 WAVEFORMDEF(	SINE)
 WAVEFORMDEF(	TRIANGLE)
@@ -60,17 +62,18 @@ WAVEFORMDEF(	RAMP_DOWN)
 WAVEFORMDEF(	SQUARE)
 WAVEFORMDEF(	PULSE)
 WAVEFORMDEF(	ROUNDED_PULSE)
+WAVEFORMDEF(	CIRCULAR_PULSE)
 WAVEFORMDEF(	TRIANGULAR_PULSE)
 WAVEFORMDEF(	RAMP_PULSE)
 WAVEFORMDEF(	SINE_CUBED)
 WAVEFORMDEF(	FLAME)
+WAVEFORMDEF(	SEMICIRCLE)
 
 #undef WAVEFORMDEF
 #endif
 
 #ifdef RANGEDEF
 
-// append only, to maintain compatibility with previously saved documents
 RANGEDEF(	BIPOLAR)
 RANGEDEF(	UNIPOLAR)
 
@@ -79,7 +82,6 @@ RANGEDEF(	UNIPOLAR)
 
 #ifdef OPERATIONDEF
 
-// append only, to maintain compatibility with previously saved documents
 OPERATIONDEF(	ADD)
 OPERATIONDEF(	SUBTRACT)
 OPERATIONDEF(	MULTIPLY)
@@ -91,7 +93,6 @@ OPERATIONDEF(	EXPONENTIATE)
 
 #ifdef POWERTYPEDEF
 
-// append only, to maintain compatibility with previously saved documents
 POWERTYPEDEF(	ASYMMETRIC)
 POWERTYPEDEF(	SYMMETRIC)
 

@@ -15,6 +15,8 @@
 		05		09sep14	add CStringArrayEx
 		06		23dec15	in CStringArrayEx, add GetSize
 		07		28jun17	add GetAt and SetAt to CArrayEx
+		08		15feb18	optimize Swap to eliminate RemoveAll
+		09		16feb18	add FastSetSize
 
 		enhanced array with copy ctor, assignment, and fast const access
  
@@ -136,16 +138,19 @@ AFX_INLINE void CArrayEx<TYPE, ARG_TYPE>::Attach(TYPE *pData, W64INT nSize)
 	m_nMaxSize = nSize;
 }
 
+template<typename T> inline void CArrayEx_Swap(T& a, T& b)
+{
+	T tmp = a;
+	a = b;
+	b = tmp;
+}
+
 template<class TYPE, class ARG_TYPE>
 AFX_INLINE void CArrayEx<TYPE, ARG_TYPE>::Swap(CArrayEx& src)
 {
-	ASSERT_VALID(this);
-	TYPE	*pOurData, *pSrcData;
-	int	nOurSize, nSrcSize;
-	Detach(pOurData, nOurSize);	// detach our data
-	src.Detach(pSrcData, nSrcSize);	// detach source data
-	src.Attach(pOurData, nOurSize);	// attach our data to source
-	Attach(pSrcData, nSrcSize);	// attach source data to us
+	CArrayEx_Swap(m_pData, src.pData);
+	CArrayEx_Swap(m_nSize, src.nSize);
+	CArrayEx_Swap(m_nMaxSize, src.m_nMaxSize);
 }
 
 template<class TYPE, class ARG_TYPE>
@@ -193,6 +198,7 @@ public:
 	void	Detach(DWORD*& pData, W64INT& Size);
 	void	Attach(DWORD *pData, W64INT Size);
 	void	Swap(CDWordArrayEx& src);
+	void	FastSetSize(INT_PTR nNewSize, INT_PTR nGrowBy = -1);
 };
 
 AFX_INLINE CDWordArrayEx::CDWordArrayEx()
@@ -243,6 +249,21 @@ AFX_INLINE DWORD& CDWordArrayEx::operator[](W64INT nIndex)
 	return ElementAt(nIndex);
 }
 
+AFX_INLINE void CDWordArrayEx::Swap(CDWordArrayEx& src)
+{
+	CArrayEx_Swap(m_pData, src.m_pData);
+	CArrayEx_Swap(m_nSize, src.m_nSize);
+	CArrayEx_Swap(m_nMaxSize, src.m_nMaxSize);
+}
+
+AFX_INLINE void CDWordArrayEx::FastSetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
+{
+	if (nNewSize <= m_nMaxSize)	// if new size fits in allocated memory
+		m_nSize = nNewSize;	// set size without zeroing or freeing memory
+	else	// set size the usual way
+		SetSize(nNewSize, nGrowBy);
+}
+
 class CIntArrayEx : public CDWordArray
 {
 public:
@@ -260,6 +281,7 @@ public:
 	void	Detach(int*& pData, W64INT& Size);
 	void	Attach(int *pData, W64INT Size);
 	void	Swap(CIntArrayEx& src);
+	void	FastSetSize(INT_PTR nNewSize, INT_PTR nGrowBy = -1);
 };
 
 AFX_INLINE CIntArrayEx::CIntArrayEx()
@@ -320,6 +342,21 @@ AFX_INLINE int *CIntArrayEx::GetData()
 	return(reinterpret_cast<int *>(m_pData));
 }
 
+AFX_INLINE void CIntArrayEx::Swap(CIntArrayEx& src)
+{
+	CArrayEx_Swap(m_pData, src.m_pData);
+	CArrayEx_Swap(m_nSize, src.m_nSize);
+	CArrayEx_Swap(m_nMaxSize, src.m_nMaxSize);
+}
+
+AFX_INLINE void CIntArrayEx::FastSetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
+{
+	if (nNewSize <= m_nMaxSize)	// if new size fits in allocated memory
+		m_nSize = nNewSize;	// set size without zeroing or freeing memory
+	else	// set size the usual way
+		SetSize(nNewSize, nGrowBy);
+}
+
 class CByteArrayEx : public CByteArray
 {
 public:
@@ -335,6 +372,7 @@ public:
 	void	Detach(BYTE*& pData, W64INT& Size);
 	void	Attach(BYTE *pData, W64INT Size);
 	void	Swap(CByteArrayEx& src);
+	void	FastSetSize(INT_PTR nNewSize, INT_PTR nGrowBy = -1);
 };
 
 AFX_INLINE CByteArrayEx::CByteArrayEx()
@@ -383,6 +421,21 @@ AFX_INLINE BYTE CByteArrayEx::operator[](W64INT nIndex) const
 AFX_INLINE BYTE& CByteArrayEx::operator[](W64INT nIndex)
 { 
 	return ElementAt(nIndex);
+}
+
+AFX_INLINE void CByteArrayEx::Swap(CByteArrayEx& src)
+{
+	CArrayEx_Swap(m_pData, src.m_pData);
+	CArrayEx_Swap(m_nSize, src.m_nSize);
+	CArrayEx_Swap(m_nMaxSize, src.m_nMaxSize);
+}
+
+AFX_INLINE void CByteArrayEx::FastSetSize(INT_PTR nNewSize, INT_PTR nGrowBy)
+{
+	if (nNewSize <= m_nMaxSize)	// if new size fits in allocated memory
+		m_nSize = nNewSize;	// set size without zeroing or freeing memory
+	else	// set size the usual way
+		SetSize(nNewSize, nGrowBy);
 }
 
 class CStringArrayEx : public CStringArray

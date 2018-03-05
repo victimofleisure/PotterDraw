@@ -8,6 +8,7 @@
 		revision history:
 		rev		date	comments
         00      09oct13	initial version
+		01		15feb18	move Swap to header
 		
 		enhanced array with copy ctor, assignment, and fast const access
  
@@ -36,17 +37,6 @@ void CDWordArrayEx::Attach(DWORD *pData, W64INT nSize)
 	m_nMaxSize = nSize;
 }
 
-void CDWordArrayEx::Swap(CDWordArrayEx& src)
-{
-	ASSERT_VALID(this);
-	DWORD	*pOurData, *pSrcData;
-	W64INT	nOurSize, nSrcSize;
-	Detach(pOurData, nOurSize);	// detach our data
-	src.Detach(pSrcData, nSrcSize);	// detach source data
-	src.Attach(pOurData, nOurSize);	// attach our data to source
-	Attach(pSrcData, nSrcSize);	// attach source data to us
-}
-
 void CIntArrayEx::Detach(int*& pData, W64INT& nSize)
 {
 	ASSERT_VALID(this);
@@ -67,17 +57,6 @@ void CIntArrayEx::Attach(int *pData, W64INT nSize)
 	m_nMaxSize = nSize;
 }
 
-void CIntArrayEx::Swap(CIntArrayEx& src)
-{
-	ASSERT_VALID(this);
-	int	*pOurData, *pSrcData;
-	W64INT	nOurSize, nSrcSize;
-	Detach(pOurData, nOurSize);	// detach our data
-	src.Detach(pSrcData, nSrcSize);	// detach source data
-	src.Attach(pOurData, nOurSize);	// attach our data to source
-	Attach(pSrcData, nSrcSize);	// attach source data to us
-}
-
 void CByteArrayEx::Detach(BYTE*& pData, W64INT& nSize)
 {
 	ASSERT_VALID(this);
@@ -96,15 +75,4 @@ void CByteArrayEx::Attach(BYTE *pData, W64INT nSize)
 	m_pData = pData;
 	m_nSize = nSize;
 	m_nMaxSize = nSize;
-}
-
-void CByteArrayEx::Swap(CByteArrayEx& src)
-{
-	ASSERT_VALID(this);
-	BYTE	*pOurData, *pSrcData;
-	W64INT	nOurSize, nSrcSize;
-	Detach(pOurData, nOurSize);	// detach our data
-	src.Detach(pSrcData, nSrcSize);	// detach source data
-	src.Attach(pOurData, nOurSize);	// attach our data to source
-	Attach(pSrcData, nSrcSize);	// attach source data to us
 }

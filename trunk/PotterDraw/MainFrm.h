@@ -11,6 +11,8 @@
 		01		24aug17	add OnDropFiles handler to load texture files
 		02		25aug17	add check for updates
 		03		09oct17	add render frame rate
+		04		18feb18	in PropertiesBarHasFocus, check modulation bar too
+		05		20feb18	remove const from UpdateModulationBar's doc pointer
 		
 */
 
@@ -71,7 +73,7 @@ public:
 	void	OnRecord(bool bEnable);
 	void	ShowRecordStatusDlg(bool bShow);
 	bool	CheckForUpdates(bool Explicit);
-	void	UpdateModulationBar(const CPotterDrawDoc *pDoc);
+	void	UpdateModulationBar(CPotterDrawDoc *pDoc);
 
 // Overrides
 public:
@@ -184,7 +186,9 @@ inline int CMainFrame::GetPaletteCurSel() const
 
 inline bool CMainFrame::PropertiesBarHasFocus()
 {
-	return ::IsChild(m_wndPropertiesBar.m_hWnd, ::GetFocus()) != 0;
+	HWND	hFocusWnd = ::GetFocus();
+	return ::IsChild(m_wndPropertiesBar.m_hWnd, hFocusWnd) != 0 
+		|| ::IsChild(m_wndModulationBar.m_hWnd, hFocusWnd) != 0;
 }
 
 inline bool CMainFrame::GetDeferredSizing() const

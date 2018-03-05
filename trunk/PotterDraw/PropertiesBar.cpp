@@ -10,6 +10,7 @@
         00      23mar17	initial version
 		01		01sep17	call help directly
 		02		02jan18	in InitPropList, make ruffle child of bend
+		03		20feb18	add highlight to modulation grid control
 		
 */
 
@@ -55,7 +56,7 @@ void CPropertiesBar::SetProperties(const CPotProperties& Props)
 {
 	m_Grid.SetProperties(Props);
 	SetCurSel(Props.m_iModTarget);
-	m_Grid.UpdateModulationIndicators();
+	UpdateModulationIndicators();
 }
 
 void CPropertiesBar::InitPropList(const CProperties& Props)
@@ -65,6 +66,7 @@ void CPropertiesBar::InitPropList(const CProperties& Props)
 	m_Grid.SetVSDotNetLook();
 //	m_Grid.MarkModifiedProperties();
 	m_Grid.InitPropList(Props);
+	m_Grid.SetIndicatorCount(CPotProperties::PROPERTIES);
 	// ruffle wants to be child of bend, but we only support two-level hierarchy, hence this
 	// kludge, which changes grid control ONLY; otherwise ruffle remains a subgroup of mesh
 	CMFCPropertyGridProperty	*pMeshGroup = m_Grid.GetProperty(CPotProperties::GROUP_MESH);
@@ -77,9 +79,27 @@ void CPropertiesBar::InitPropList(const CProperties& Props)
 	VERIFY(pBendSubgroup->AddSubItem(pRuffleSubgroup));	// make ruffle child of bend
 }
 
-CPropertiesBar::CMyPropertiesGridCtrl::CMyPropertiesGridCtrl()
+void CPropertiesBar::UpdateModulationIndicators()
 {
-	ZeroMemory(m_iModInd, sizeof(m_iModInd));
+	CPotterDrawDoc	*pDoc = theApp.GetMainFrame()->GetActiveMDIDoc();
+	BYTE	baModInd[CPotProperties::PROPERTIES];
+	ZeroMemory(baModInd, sizeof(baModInd));
+	if (pDoc != NULL) {	// if document exists
+		for (int iProp = 0; iProp < CPotProperties::PROPERTIES; iProp++) {	// for each property
+			if (pDoc->IsModulated(iProp)) {	// if property is modulated
+				BYTE	iModInd;
+				if (pDoc->IsAnimated(iProp)) {	// if property is animated
+					if (pDoc->m_bAnimation)	// if animation in progress
+						iModInd = CModulatedPropertiesGridCtrl::MI_ANIMATED;
+					else
+						iModInd = CModulatedPropertiesGridCtrl::MI_PAUSED;
+				} else	// property not animated
+					iModInd = CModulatedPropertiesGridCtrl::MI_MODULATED;
+				baModInd[iProp] = iModInd;
+			}
+		}
+	}
+	m_Grid.SetIndicators(baModInd);
 }
 
 void CPropertiesBar::CMyPropertiesGridCtrl::OnPropertyChanged(CMFCPropertyGridProperty* pProp) const
@@ -99,34 +119,41 @@ void CPropertiesBar::CMyPropertiesGridCtrl::OnChangeSelection(CMFCPropertyGridPr
 	AfxGetMainWnd()->SendMessage(UWM_PROPERTY_SELECT, iProp, reinterpret_cast<LPARAM>(GetParent()));
 }
 
-void CPropertiesBar::CMyPropertiesGridCtrl::UpdateModulationIndicators()
+CModulatedPropertiesGridCtrl::CModulatedPropertiesGridCtrl()
 {
-	CPotterDrawDoc	*pDoc = theApp.GetMainFrame()->GetActiveMDIDoc();
+	m_iHighlight = -1;
+}
+
+void CModulatedPropertiesGridCtrl::SetIndicatorCount(int nProps)
+{
+	m_baModInd.SetSize(nProps);
+}
+
+void CModulatedPropertiesGridCtrl::SetIndicators(const BYTE *pbaModInd)
+{
 	CClientDC	dc(this);
 	CRgn rgnList;
 	rgnList.CreateRectRgnIndirect(&m_rectList);
 	dc.SelectClipRgn(&rgnList);	// clip to current list rectangle to avoid overwriting description
-	int	nProps = CPotProperties::PROPERTIES;
+	int	nProps = m_baModInd.GetSize();
 	for (int iProp = 0; iProp < nProps; iProp++) {	// for each property
-		int	iModInd;
-		if (pDoc != NULL && pDoc->IsModulated(iProp)) {
-			if (pDoc->IsAnimated(iProp)) {
-				if (pDoc->m_bAnimation)
-					iModInd = MI_ANIMATED;
-				else
-					iModInd = MI_PAUSED;
-			} else
-				iModInd = MI_MODULATED;
-		} else
-			iModInd = MI_NONE;
-		if (iModInd != m_iModInd[iProp]) {	// if modulation indicator changed
-			DrawModulationIndicator(&dc, iProp, iModInd);	// draw or erase indicator
-			m_iModInd[iProp] = static_cast<BYTE>(iModInd);	// update cached value
+		BYTE	bModInd = pbaModInd[iProp];
+		if (bModInd != m_baModInd[iProp]) {	// if modulation indicator changed
+			DrawModulationIndicator(&dc, iProp, bModInd);	// draw or erase indicator
+			m_baModInd[iProp] = bModInd;	// update cached value
 		}
 	}
 }
 
-void CPropertiesBar::CMyPropertiesGridCtrl::DrawModulationIndicator(CDC* pDC, int iProp, int iModInd) const
+void CModulatedPropertiesGridCtrl::SetHighlight(int iProp)
+{
+	if (iProp != m_iHighlight) {	// if different property highlighted
+		m_iHighlight = iProp;	// update shadow
+		Invalidate();	// redraw properties; overkill but easy
+	}
+}
+
+void CModulatedPropertiesGridCtrl::DrawModulationIndicator(CDC* pDC, int iProp, int iModInd) const
 {
 	enum {
 		TRI_PTS = 3,
@@ -159,13 +186,21 @@ void CPropertiesBar::CMyPropertiesGridCtrl::DrawModulationIndicator(CDC* pDC, in
 	}
 }
 
-int CPropertiesBar::CMyPropertiesGridCtrl::OnDrawProperty(CDC* pDC, CMFCPropertyGridProperty* pProp) const
+int CModulatedPropertiesGridCtrl::OnDrawProperty(CDC* pDC, CMFCPropertyGridProperty* pProp) const
 {
+	static const COLORREF	clrHighlight(RGB(255, 0, 0));
+	COLORREF	clrText;
+	if (m_iHighlight >= 0 && m_iHighlight == static_cast<int>(pProp->GetData()))	// if property is highlighted
+		clrText = pDC->SetTextColor(clrHighlight);	// set highlight text color
+	else	// property not highlighted
+		clrText = (COLORREF)-1;
 	int	iResult = CValidPropertyGridCtrl::OnDrawProperty(pDC, pProp);
+	if (clrText != -1)	// if text color changed
+		pDC->SetTextColor(clrText);	// restore previous text color
 	if (iResult) {
 		int	iProp = INT64TO32(pProp->GetData());
-		if (iProp >= 0 && m_iModInd[iProp])
-			DrawModulationIndicator(pDC, iProp, m_iModInd[iProp]);
+		if (iProp >= 0 && m_baModInd[iProp])
+			DrawModulationIndicator(pDC, iProp, m_baModInd[iProp]);
 	}
 	return iResult;
 }

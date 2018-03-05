@@ -36,6 +36,11 @@
 		26		15dec17	add edges color pattern
 		27		02jan18	add ruffle properties
 		28		03jan18	add ring phase
+		29		20feb18	add secondary modulation
+		30		22feb18	in CalcPotMesh, pitch mesh upright by swapping y and z
+		31		22feb18	in DrawBoundingBox, don't need to set world transform
+		32		27feb18	add semicircle and circular pulse waves
+		33		27feb18	add invert motif
 
 */
 
@@ -46,8 +51,6 @@
 #include "PathStr.h"
 #include "DPoint.h"
 #include "DPoint3.h"
-#include "Range.h"
-typedef CRange<double> CDblRange;
 
 #define _USE_MATH_DEFINES	// for trig constants
 #include <math.h>
@@ -69,7 +72,8 @@ CPotGraphics::CPotGraphics()
 	m_mtrlPot = m_mtrlPotDefault;
 	m_nAdjRings = 0;
 	m_nAdjSides = 0;
-	m_nModType = 0;
+	m_nModState = 0;
+	m_iCurPlotProp = -1;
 	m_fMinOuterRadius = 0;
 	m_fMaxOuterRadius = 0;
 	m_fOuterRadiusScale = 0;
@@ -167,7 +171,6 @@ void CPotGraphics::SetProperties(const CPotProperties& Props)
 {
 	CPotProperties::operator=(Props);
 	SetBkgndColor(CvtFromColorRef(m_clrBackground));
-	m_nModType = GetModulations(m_arrModIdx);
 }
 
 void CPotGraphics::GetViewState(CPotProperties& Props) const
@@ -339,8 +342,6 @@ void CPotGraphics::CalcPotMesh()
 	int	nFaces = nWallFaces + nBottomFaces + nNeckFaces;
 	m_nFaces = nFaces;
 	int	nIdxs = nFaces * 3;	// three indices per triangle
-	D3DXMATRIX	matRot;
-	D3DXMatrixRotationYawPitchRoll(&matRot, 0, -float(M_PI) / 2, 0);
 	m_arrVert.SetSize(nVerts);
 	m_arrIdx.SetSize(nIdxs);
 	int	iWall, iRing, iSide;
@@ -399,7 +400,7 @@ void CPotGraphics::CalcPotMesh()
 			if (bHasHelix) {	// if helix enabled
 				double	fHelixTheta = fRing * m_fHelixFrequency * M_PI * 2;
 				vOrigin.x = sin(fHelixTheta) * m_fHelixAmplitude;
-				vOrigin.y = cos(fHelixTheta) * m_fHelixAmplitude;
+				vOrigin.y = -cos(fHelixTheta) * m_fHelixAmplitude;	// negate for swapped y and z
 			}
 			if (bIsPolygon && m_fPolygonRoundness)	{	// if polygon roundness enabled
 				double	fMin = 1 - cos(M_PI / m_fPolygonSides);
@@ -500,8 +501,7 @@ void CPotGraphics::CalcPotMesh()
 				double	x = sin(fTheta) * m_fAspectRatio;
 				double	y = cos(fTheta);
 				double	z = (fRing - 0.5) * fHeight;
-				v.pt = D3DXVECTOR3(float(x * fRad + vOrigin.x), float(y * fRad + vOrigin.y), float(z));
-				D3DXVec3TransformCoord(&v.pt, &v.pt, &matRot);
+				v.pt = D3DXVECTOR3(float(x * fRad + vOrigin.x), float(z), float(vOrigin.y - y * fRad));
 				iVert++;
 			}
 			CVertex&	v = m_arrVert[iVert];	// ring's final vertex
@@ -515,15 +515,14 @@ void CPotGraphics::CalcPotMesh()
 		if (nMods)
 			ApplyModulations(0);	// in case helix amplitude is modulated
 		vOrigin.x = 0;
-		vOrigin.y = m_fHelixAmplitude;
+		vOrigin.y = -m_fHelixAmplitude;	// invert for swapped y and z
 	}
 	if (nMods)
 		RestoreModulatedProperties();
 	for (int iWall = 0; iWall < WALLS; iWall++) {
 		CVertex&	v = m_arrVert[iVert + iWall];
-		double	z = -fHeight / 2 + m_fWallThickness * iWall;
-		v.pt = D3DXVECTOR3(float(vOrigin.x), float(vOrigin.y), float(z));
-		D3DXVec3TransformCoord(&v.pt, &v.pt, &matRot);
+		double	z = m_fWallThickness * iWall - fHeight / 2;
+		v.pt = D3DXVECTOR3(float(vOrigin.x), float(z), float(vOrigin.y));
 	}
 //	printf("generating indices\n");
 	// indices for outer wall
@@ -753,13 +752,18 @@ __forceinline double CPotGraphics::GetIncline(const D3DXVECTOR3& vNormal)
 
 void CPotGraphics::UpdateAnimation()
 {
-	int	nMods = m_arrModIdx.GetSize();
-	if (nMods) {	// if at least one modulation
+	if (m_nModState) {	// if animation required
+		int	nMods = m_arrModIdx.GetSize();
 		for (int iMod = 0; iMod < nMods; iMod++) {	// for each modulation
 			int	iProp = m_arrModIdx[iMod];
 			m_Mod[iProp].m_fPhase += m_Mod[iProp].m_fPhaseSpeed / m_fFrameRate;
 		}
-		if (m_nModType & MOD_ANIMATED_MESH)	// if at least one mesh modulation is animated
+		int	nMod2s = m_arrMod2Idx.GetSize();
+		for (int iMod2 = 0; iMod2 < nMod2s; iMod2++) {	// for each secondary modulation
+			int	iProp = m_arrMod2Idx[iMod2];
+			m_Mod[iProp].m_fPhase += m_Mod[iProp].m_fPhaseSpeed / m_fFrameRate;
+		}
+		if (m_nModState & MOD_ANIMATED_MESH)	// if at least one mesh modulation is animated
 			MakeMesh();
 		else	// texture modulations only
 			UpdateTextureCoords();
@@ -771,6 +775,11 @@ void CPotGraphics::GetAnimationState(CPotProperties& Props) const
 	int	nMods = m_arrModIdx.GetSize();
 	for (int iMod = 0; iMod < nMods; iMod++) {	// for each modulation
 		int	iProp = m_arrModIdx[iMod];
+		Props.m_Mod[iProp].m_fPhase = m_Mod[iProp].m_fPhase;
+	}
+	int	nMod2s = m_arrMod2Idx.GetSize();
+	for (int iMod2 = 0; iMod2 < nMod2s; iMod2++) {	// for each secondary modulation
+		int	iProp = m_arrMod2Idx[iMod2];
 		Props.m_Mod[iProp].m_fPhase = m_Mod[iProp].m_fPhase;
 	}
 }
@@ -911,6 +920,11 @@ __forceinline double CPotGraphics::Wrap1(double x)
 	return x - floor(x);
 }
 
+__forceinline double CPotGraphics::Square(double x)
+{
+	return x * x;
+}
+
 __forceinline void CPotGraphics::CAdjacency::Add(int iFace)
 {
 	if (m_nFaces < _countof(m_arrFaceIdx))
@@ -930,6 +944,9 @@ void CPotGraphics::CAdjacency::Weld(CAdjacency& adj)
 __forceinline void CPotGraphics::ApplyMotif(int iMotif, double& r)
 {
 	switch (iMotif) {
+	case MOTIF_INVERT:
+		r = -r;
+		break;
 	case MOTIF_REEDS:
 		r = fabs(r);
 		break;
@@ -1027,6 +1044,19 @@ __forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase, double 
 			else	// low
 				return -1;
 		}
+	case CModulationProps::WAVE_CIRCULAR_PULSE:
+		{
+			double	r = Wrap1(fPhase);
+			double	a = fPulseWidth / 2 * fSlew;
+			if (r < a)	// if rising
+				return sqrt(1 - Square(1 - r / a)) * 2 - 1;
+			else if (r < fPulseWidth - a)	// if high
+				return 1;
+			else if (r < fPulseWidth)	// if falling
+				return sqrt(1 - Square((r - (fPulseWidth - a)) / a)) * 2 - 1;
+			else	// low
+				return -1;
+		}
 	case CModulationProps::WAVE_TRIANGULAR_PULSE:
 		{
 			double	r = Wrap1(fPhase);
@@ -1067,155 +1097,351 @@ __forceinline double CPotGraphics::GetWave(int iWaveform, double fPhase, double 
 			else
 				return -1 - s;
 		}
+	case CModulationProps::WAVE_SEMICIRCLE:
+		{
+			double	r = Wrap1(fPhase);
+			double	fSign;
+			if (r < 0.5) {
+				fSign = 1;
+			} else {
+				r = r - 0.5;
+				fSign = -1;
+			}
+			return sqrt(1 - Square(r * 4 - 1)) * fSign;
+		}
 	}
 	return 0;
+}
+
+__forceinline void CPotGraphics::Modulate(double fTheta, const PROPERTY_INFO& info, const CModulationProps& mod, LPCVOID pvSource, LPVOID pvTarget)
+{
+	double	r = GetWave(mod.m_iWaveform, fTheta * mod.m_fFrequency + mod.m_fPhase, 
+		mod.m_fPulseWidth, mod.m_fSlew);	// for pulse waveforms only
+	ApplyMotif(mod.m_iMotif, r);
+	ApplyPower(mod.m_iRange, mod.m_iPowerType, mod.m_fPower, r);
+	r = (r + mod.m_fBias) * mod.m_fAmplitude;	// apply bias and amplitude
+	if (info.pType == &typeid(double)) {	// if property type is double
+		const double	*pSource = static_cast<const double *>(pvSource);
+		double	*pTarget = static_cast<double *>(pvTarget);
+		switch (mod.m_iOperation) {
+		case CModulationProps::OPER_ADD:
+			*pTarget = *pSource + r;
+			break;
+		case CModulationProps::OPER_SUBTRACT:
+			*pTarget = *pSource - r;
+			break;
+		case CModulationProps::OPER_MULTIPLY:
+			*pTarget = *pSource * r;
+			break;
+		case CModulationProps::OPER_DIVIDE:
+			if (r)	// avoid divide by zero
+				*pTarget = *pSource / r;
+			break;
+		case CModulationProps::OPER_EXPONENTIATE:
+			*pTarget = *pSource * pow(2, r);
+			break;
+		}
+	} else {	// assume property type is int
+		ASSERT(info.pType == &typeid(int)); 
+		const int	*pSource = static_cast<const int *>(pvSource);
+		int	*pTarget = static_cast<int *>(pvTarget);
+		switch (mod.m_iOperation) {
+		case CModulationProps::OPER_ADD:
+			*pTarget = round(*pSource + r);
+			break;
+		case CModulationProps::OPER_SUBTRACT:
+			*pTarget = round(*pSource - r);
+			break;
+		case CModulationProps::OPER_MULTIPLY:
+			*pTarget = round(*pSource * r);
+			break;
+		case CModulationProps::OPER_DIVIDE:
+			if (r)	// avoid divide by zero
+				*pTarget = round(*pSource / r);
+			break;
+		case CModulationProps::OPER_EXPONENTIATE:
+			*pTarget = round(*pSource * pow(2, r));
+			break;
+		}
+	}
+}
+
+void CPotGraphics::OnModulationChange()
+{
+	UINT	nModState = 0;
+	m_arrModIdx.SetSize(PROPERTIES);	// allocate enough for worst case
+	int	nMods = 0;
+	int	nMod2s = 0;
+	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
+		if (IsModulated(iProp)) {	// if property is modulated
+			m_arrModIdx[nMods] = iProp;
+			nMods++;
+			if (IsAnimated(iProp)) {	// if property is animated
+				nModState |= MOD_ANIMATED;
+				if (m_Info[iProp].iGroup == GROUP_MESH)	// if mesh property
+					nModState |= MOD_ANIMATED_MESH;
+			}
+		}
+		nMod2s += GetSecondaryModulationCount(iProp);
+	}
+	m_arrModIdx.SetSize(nMods);	// resize primary modulation array
+	m_arrMod2Idx.SetSize(nMod2s);	// resize secondary modulation array
+	if (nMod2s) {	// if at least one secondary modulation
+		int	iMod2 = 0;
+		for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
+			int	iModTarget = iProp;	// get index of target property
+			int	iModObj = iModTarget;
+			for (int iModType = 1; iModType < CModulationProps::MOD_TYPES; iModType++) {	// for each secondary modulation type
+				iModObj += PROPERTIES;	// skip to target property's next potential secondary modulation
+				if (IsModulated(iModObj)) {	// if property is modulated
+					m_arrMod2Idx[iMod2] = iModObj;
+					iMod2++;
+					if (IsAnimated(iModObj)) {	// if property is animated
+						nModState |= MOD_ANIMATED;
+						if (m_Info[iModTarget].iGroup == GROUP_MESH)	// if mesh property
+							nModState |= MOD_ANIMATED_MESH;
+					}
+				}
+			}
+		}
+	}
+	m_nModState = nModState;
+	m_iCurPlotProp = -1;	// invalidate current plot property
 }
 
 void CPotGraphics::ApplyModulations(double fRing)
 {
 	const double	fEpsilon = 1e-9;
 	double	fTheta = min(fRing, 1.0 - fEpsilon);
+	int	nMod2s = m_arrMod2Idx.GetSize();
+	for (int iMod2 = 0; iMod2 < nMod2s; iMod2++) {	// for each secondary modulation
+		int	iModObj = m_arrMod2Idx[iMod2];
+		int	iModTarget, iModProp = GetModulationType(iModObj, iModTarget) + 1;
+		const PROPERTY_INFO&	info = CModulationProps::m_Info[iModProp];
+		const CModulationProps&	mod = m_Mod[iModObj];
+		LPCVOID	pvSource = &m_arrSrcMods[iModObj];
+		LPVOID	pvTarget = m_Mod[iModTarget].GetPropertyAddress(iModProp);
+		Modulate(fTheta, info, mod, pvSource, pvTarget);
+	}
 	int	nMods = m_arrModIdx.GetSize();
-	for (int iMod = 0; iMod < nMods; iMod++) {	// for each modulation
+	for (int iMod = 0; iMod < nMods; iMod++) {	// for each primary modulation
 		int	iProp = m_arrModIdx[iMod];
 		const PROPERTY_INFO&	info = m_Info[iProp];
 		const CModulationProps&	mod = m_Mod[iProp];
-		double	r = GetWave(mod.m_iWaveform, fTheta * mod.m_fFrequency + mod.m_fPhase, 
-			mod.m_fPulseWidth, mod.m_fSlew);	// for pulse waveforms
-		ApplyMotif(mod.m_iMotif, r);
-		ApplyPower(mod.m_iRange, mod.m_iPowerType, mod.m_fPower, r);
-		r = (r + mod.m_fBias) * mod.m_fAmplitude;	// apply bias and amplitude
-		if (info.pType == &typeid(double)) {	// if property type is double
-			double	*pSource = static_cast<double *>(m_arrSrcProps.GetPropertyAddress(iProp));
-			double	*pTarget = static_cast<double *>(GetPropertyAddress(iProp));
-			switch (mod.m_iOperation) {
-			case CModulationProps::OPER_ADD:
-				*pTarget = *pSource + r;
-				break;
-			case CModulationProps::OPER_SUBTRACT:
-				*pTarget = *pSource - r;
-				break;
-			case CModulationProps::OPER_MULTIPLY:
-				*pTarget = *pSource * r;
-				break;
-			case CModulationProps::OPER_DIVIDE:
-				if (r)	// avoid divide by zero
-					*pTarget = *pSource / r;
-				break;
-			case CModulationProps::OPER_EXPONENTIATE:
-				*pTarget = *pSource * pow(2, r);
-				break;
-			}
-		} else if (info.pType == &typeid(int)) {	// else if property type is int
-			int	*pSource = static_cast<int *>(m_arrSrcProps.GetPropertyAddress(iProp));
-			int	*pTarget = static_cast<int *>(GetPropertyAddress(iProp));
-			switch (mod.m_iOperation) {
-			case CModulationProps::OPER_ADD:
-				*pTarget = round(*pSource + r);
-				break;
-			case CModulationProps::OPER_SUBTRACT:
-				*pTarget = round(*pSource - r);
-				break;
-			case CModulationProps::OPER_MULTIPLY:
-				*pTarget = round(*pSource * r);
-				break;
-			case CModulationProps::OPER_DIVIDE:
-				if (r)	// avoid divide by zero
-					*pTarget = round(*pSource / r);
-				break;
-			case CModulationProps::OPER_EXPONENTIATE:
-				*pTarget = round(*pSource * pow(2, r));
-				break;
-			}
+		LPCVOID	pvSource = &m_arrSrcProps[iProp];
+		LPVOID	pvTarget = GetPropertyAddress(iProp);
+		Modulate(fTheta, info, mod, pvSource, pvTarget);
+	}
+}
+
+__forceinline void CPotGraphics::PropCopy(LPVOID pDst, LPCVOID pSrc, size_t nLen) 
+{
+	if (nLen == 8)
+		*static_cast<double*>(pDst) = *static_cast<const double*>(pSrc);
+	else
+		*static_cast<int*>(pDst) = *static_cast<const int*>(pSrc);
+}
+
+__forceinline void CPotGraphics::SaveModulatedProperties()
+{
+	int	nMods = m_arrModIdx.GetSize();
+	for (int iMod = 0; iMod < nMods; iMod++) {	// for each primary modulation
+		int	iProp = m_arrModIdx[iMod];
+		PropCopy(&m_arrSrcProps[iProp], GetPropertyAddress(iProp), m_Info[iProp].nLen);
+	}
+	int	nMod2s = m_arrMod2Idx.GetSize();
+	for (int iMod2 = 0; iMod2 < nMod2s; iMod2++) {	// for each secondary modulation
+		int	iModObj = m_arrMod2Idx[iMod2];
+		int	iModTarget, iModProp = GetModulationType(iModObj, iModTarget) + 1;
+		const CModulationProps&	mod = m_Mod[iModTarget];
+		PropCopy(&m_arrSrcMods[iModObj], mod.GetPropertyAddress(iModProp), mod.m_Info[iModProp].nLen);
+	}
+}
+
+__forceinline void CPotGraphics::RestoreModulatedProperties()
+{
+	int	nMods = m_arrModIdx.GetSize();
+	for (int iMod = 0; iMod < nMods; iMod++) {	// for each primary modulation
+		int	iProp = m_arrModIdx[iMod];
+		PropCopy(GetPropertyAddress(iProp), &m_arrSrcProps[iProp], m_Info[iProp].nLen);
+	}
+	int	nMod2s = m_arrMod2Idx.GetSize();
+	for (int iMod2 = 0; iMod2 < nMod2s; iMod2++) {	// for each secondary modulation
+		int	iModObj = m_arrMod2Idx[iMod2];
+		int	iModTarget, iModProp = GetModulationType(iModObj, iModTarget) + 1;
+		CModulationProps&	mod = m_Mod[iModTarget];
+		PropCopy(mod.GetPropertyAddress(iModProp), &m_arrSrcMods[iModObj], mod.m_Info[iModProp].nLen);
+	}
+}
+
+CPotGraphics::CDblRange CPotGraphics::CalcModulationRange(int iProp, UINT nFlags, const double *pfAmplitude) const
+{
+	const type_info *pType;
+	LPCVOID	pSrcProp;	// assume source properties already saved
+	if (iProp < PROPERTIES) {	// if primary modulation
+		pType = m_Info[iProp].pType;
+		pSrcProp = &m_arrSrcProps[iProp];
+	} else {	// secondary modulation
+		int	iModTarget, iModProp = GetModulationType(iProp, iModTarget) + 1;
+		pType = CModulationProps::m_Info[iModProp].pType;
+		pSrcProp = &m_arrSrcMods[iProp];
+	}
+	DPoint	pt;
+	const CModulationProps&	mod = m_Mod[iProp];
+	if (nFlags & CMR_FORCE_BIPOLAR) {
+		pt = DPoint(-1, 1);
+	} else {
+		switch (mod.m_iMotif) {
+		case CPotProperties::MOTIF_REEDS:
+		case CPotProperties::MOTIF_PARTED_REEDS:
+			pt = DPoint(0, 1);
+			break;
+		case CPotProperties::MOTIF_FLUTES:
+		case CPotProperties::MOTIF_PARTED_FLUTES:
+			pt = DPoint(-1, 0);
+			break;
+		default:
+			pt = DPoint(-1, 1);
 		}
+		ApplyPower(mod.m_iRange, mod.m_iPowerType, mod.m_fPower, pt.x);
+		ApplyPower(mod.m_iRange, mod.m_iPowerType, mod.m_fPower, pt.y);
 	}
-}
-
-void CPotGraphics::SaveModulatedProperties()
-{
-	int	nMods = m_arrModIdx.GetSize();
-	for (int iMod = 0; iMod < nMods; iMod++) {	// for each modulation
-		int	iProp = m_arrModIdx[iMod];
-		memcpy(m_arrSrcProps.GetPropertyAddress(iProp), GetPropertyAddress(iProp), m_Info[iProp].nLen);
+	double	fAmplitude;
+	if (pfAmplitude != NULL) 
+		fAmplitude = *pfAmplitude;
+	else
+		fAmplitude = mod.m_fAmplitude;
+	pt = (pt + mod.m_fBias) * fAmplitude;
+	double	fVal;
+	if (pType == &typeid(double))	// if property type is double
+		fVal = *(double *)pSrcProp;
+	else
+		fVal = *(int *)pSrcProp;
+	DPoint	ptDst(fVal, fVal);
+	switch (mod.m_iOperation) {
+	case CModulationProps::OPER_ADD:
+		ptDst += pt;
+		break;
+	case CModulationProps::OPER_SUBTRACT:
+		ptDst -= pt;
+		break;
+	case CModulationProps::OPER_MULTIPLY:
+		ptDst *= pt;
+		break;
+	case CModulationProps::OPER_DIVIDE:
+		ptDst /= pt;
+		break;
+	case CModulationProps::OPER_EXPONENTIATE:
+		ptDst *= DPoint(pow(2, pt.x), pow(2, pt.y));
+		break;
 	}
-}
-
-void CPotGraphics::RestoreModulatedProperties()
-{
-	int	nMods = m_arrModIdx.GetSize();
-	for (int iMod = 0; iMod < nMods; iMod++) {	// for each modulation
-		int	iProp = m_arrModIdx[iMod];
-		memcpy(GetPropertyAddress(iProp), m_arrSrcProps.GetPropertyAddress(iProp), m_Info[iProp].nLen);
-	}
+	CDblRange	range(ptDst.x, ptDst.y);
+	range.Normalize();
+	return range;
 }
 
 void CPotGraphics::PlotProperty(int iProp, CArrayEx<DPoint, DPoint&>& arrPoint, CRange<double> *pRange)
 {
+	int	iModTarget;
+	const type_info *pType;
+	LPVOID	pvProp;
+	if (iProp < PROPERTIES) {	// if plotting primary modulation
+		iModTarget = iProp;
+		pType = m_Info[iProp].pType;
+		pvProp = GetPropertyAddress(iProp);
+	} else {	// plotting secondary modulation
+		int	iModProp = GetModulationType(iProp, iModTarget) + 1;
+		pType = CModulationProps::m_Info[iModProp].pType;
+		pvProp = m_Mod[iModTarget].GetPropertyAddress(iModProp);
+	}
 	if (IsModulated(iProp)) {	// if desired property is modulated
+		LPVOID	pvTarget = GetPropertyAddress(iModTarget);
+		LPVOID	pvSource = &m_arrSrcProps[iModTarget];
+		int	nTargetLen = m_Info[iModTarget].nLen;
+		PropCopy(pvSource, pvTarget, nTargetLen);	// save target property
 		int	nMods = m_arrModIdx.GetSize();
-		ASSERT(nMods > 0);	// else logic error
-		int	iFirstMod = m_arrModIdx[0];	// save first modulation
-		m_arrModIdx.SetSize(1);	// only one modulation
-		m_arrModIdx[0] = iProp;	// set modulation index array to desired property
+		int	iFirstMod;
+		if (nMods) {	// if at least one primary modulation
+			iFirstMod = m_arrModIdx[0];	// save first modulation
+			m_arrModIdx.SetSize(1);	// only one modulation
+			m_arrModIdx[0] = iModTarget;	// set modulation index array to target property
+		} else {	// no primary modulations
+			iFirstMod = 0;	// avoid compiler warnings
+		}
+		if (iModTarget != m_iCurPlotProp) {	// if plotting different property than before
+			m_iCurPlotProp = iModTarget;	// update shadow
+			int	nMod2s = GetSecondaryModulationCount(iModTarget);	// count target's secondary modulations
+			m_arrPlotMod2Idx.FastSetSize(nMod2s);	// size array without zeroing or freeing memory
+			if (nMod2s) {	// if any secondary modulations for this target
+				int	iModObj = iModTarget;
+				int	iMod2 = 0;
+				for (int iModType = 1; iModType < CModulationProps::MOD_TYPES; iModType++) {	// for each secondary modulation type
+					iModObj += PROPERTIES;	// skip to specified property's next potential secondary modulation
+					if (IsModulated(iModObj)) {
+						m_arrPlotMod2Idx[iMod2] = iModObj;
+						iMod2++;
+					}
+				}
+			}
+		}
+		int	nMod2s = m_arrPlotMod2Idx.GetSize();
+		for (int iMod2 = 0; iMod2 < nMod2s; iMod2++) {	// for each of target's secondary modulations
+			int	iModObj = m_arrPlotMod2Idx[iMod2];
+			int	iModTarget, iModProp = GetModulationType(iModObj, iModTarget) + 1;
+			const CModulationProps&	mod = m_Mod[iModTarget];
+			PropCopy(&m_arrSrcMods[iModObj], mod.GetPropertyAddress(iModProp), mod.m_Info[iModProp].nLen);
+		}
+		m_arrMod2Idx.Swap(m_arrPlotMod2Idx);	// swap main secondary modulations array with plot's
 		int	nRings = m_nRings;
 		arrPoint.SetSize(nRings);
-		const type_info *pType = m_Info[iProp].pType;
-		int	nPropLen = m_Info[iProp].nLen;
-		LPVOID	pSrcProp = m_arrSrcProps.GetPropertyAddress(iProp);
-		LPVOID	pDstProp = GetPropertyAddress(iProp);
-		memcpy(pSrcProp, pDstProp, nPropLen);	// save target property
 		for (int iRing = 0; iRing < nRings; iRing++) {	// for each ring
 			double	fRing = double(iRing) / (nRings - 1);	// normalized ring
 			ApplyModulations(fRing);
-			arrPoint[iRing].x = ConvertPropertyToDouble(pDstProp, pType);
+			arrPoint[iRing].x = ConvertPropertyToDouble(pvProp, pType);
 			arrPoint[iRing].y = fRing;
 		}
-		if (pRange != NULL) {	// if caller requested range
-			CModulationProps&	mod = m_Mod[iProp];
-			int	iWaveform = mod.m_iWaveform;	// save modulation properties
-			double	fPhase = mod.m_fPhase;
-			double	fFrequency = mod.m_fFrequency;
-			mod.m_iWaveform = CModulationProps::WAVE_SQUARE;
-			mod.m_fFrequency = 1;	// normal frequency range
-			mod.m_fPhase = 0;	// no phase offset
-			CDblRange	range;
-			ApplyModulations(0);	// sample at negative rail
-			range.Start = ConvertPropertyToDouble(pDstProp, pType);
-			ApplyModulations(0.5);	// sample at positive rail
-			range.End = ConvertPropertyToDouble(pDstProp, pType);
-			range.Normalize();	// normalize range
-			mod.m_iWaveform = CModulationProps::WAVE_RAMP_UP;
-			ApplyModulations(0.5);	// sample at origin too; handles motifs
-			double	fOrg = ConvertPropertyToDouble(pDstProp, pType);
-			if (fOrg < range.Start)	// if origin sample below range
-				range.Start = fOrg;	// adjust range
-			else if (fOrg > range.End)	// if origin sample above range
-				range.End = fOrg;	// adjust range
-			double	fMargin, fMarginFrac = 0.05;
-			if (range.IsEmpty())
-				fMargin = 1;
-			else
-				fMargin = range.Length() * fMarginFrac;
-			range.Start -= fMargin;
-			range.End += fMargin;
-			*pRange = range;	// pass range back to caller
-			mod.m_iWaveform = iWaveform;	// restore modulation properties
-			mod.m_fPhase = fPhase;
-			mod.m_fFrequency = fFrequency;
+		m_arrMod2Idx.Swap(m_arrPlotMod2Idx);	// swap again to restore secondary modulation arrays
+		for (int iMod2 = 0; iMod2 < nMod2s; iMod2++) {	// for each of target's secondary modulations
+			int	iModObj = m_arrPlotMod2Idx[iMod2];
+			int	iModTarget, iModProp = GetModulationType(iModObj, iModTarget) + 1;
+			CModulationProps&	mod = m_Mod[iModTarget];
+			PropCopy(mod.GetPropertyAddress(iModProp), &m_arrSrcMods[iModObj], mod.m_Info[iModProp].nLen);
 		}
-		memcpy(pDstProp, pSrcProp, nPropLen);	// restore target property
-		m_arrModIdx.SetSize(nMods);	// restore modulation index array's size
-		m_arrModIdx[0] = iFirstMod;	// restore first modulation
+		if (nMods) {	// if at least one primary modulation
+			m_arrModIdx.SetSize(nMods);	// restore modulation index array's size
+			m_arrModIdx[0] = iFirstMod;	// restore first modulation
+		}
+		PropCopy(pvTarget, pvSource, nTargetLen);	// restore target property
+		if (pRange != NULL) {	// if caller requested range
+			CDblRange	range;
+			if (iProp < PROPERTIES) {	// if plotting primary modulation
+				UINT	nFlags;
+				if (IsModulated(iProp, CModulationProps::MOD_TYPE_iRange)
+				|| IsModulated(iProp, CModulationProps::MOD_TYPE_iMotif)
+				|| IsModulated(iProp, CModulationProps::MOD_TYPE_fPower)
+				|| IsModulated(iProp, CModulationProps::MOD_TYPE_iPowerType))
+					nFlags |= CMR_FORCE_BIPOLAR;
+				else	// plotting secondary modulation
+					nFlags = 0;
+				int	iAmpMod = MakeModulationIdx(iProp, CModulationProps::MOD_TYPE_fAmplitude);
+				if (IsModulated(iAmpMod)) {	// if amplitude modulated
+					CDblRange	rangeAmp(CalcModulationRange(iAmpMod));
+					range = CalcModulationRange(iProp, nFlags, &rangeAmp.Start);
+					CDblRange	range2(CalcModulationRange(iProp, nFlags, &rangeAmp.End));
+					range.Include(range2);
+				} else	// not amplitude modulated
+					range = CalcModulationRange(iProp, nFlags);
+			} else	// plotting secondary modulation
+				range = CalcModulationRange(iProp);
+			*pRange = range;	// pass range back to caller
+		}
 	} else {	// desired property not modulated; trivial case
-		const type_info *pType = m_Info[iProp].pType;
-		LPVOID	pDstProp = GetPropertyAddress(iProp);
-		double	fVal = ConvertPropertyToDouble(pDstProp, pType);
+		double	fVal = ConvertPropertyToDouble(pvProp, pType);
 		arrPoint.SetSize(2);
 		arrPoint[0] = DPoint(fVal, 0);
 		arrPoint[1] = DPoint(fVal, 1);
 		if (pRange != NULL) {	// if caller requested range
-			CDblRange	range(fVal - 1, fVal + 1);
-			*pRange = range;	// pass range back to caller
+			*pRange = CDblRange(fVal, fVal);	// pass range back to caller
 		}
 	}
 }
@@ -1488,15 +1714,6 @@ bool CPotGraphics::CreateBoundingBox()
 
 bool CPotGraphics::DrawBoundingBox()
 {
-	D3DXVECTOR3	vBoundsSize = m_vBounds[1] - m_vBounds[0];
-	D3DXVECTOR3	vBoundsOrg(m_vBounds[0] + vBoundsSize / 2);
-	D3DXVec3TransformCoord(&vBoundsOrg, &vBoundsOrg, &m_matRotation);
-	D3DXMATRIX	matWorld;
-	CHECK(m_pDevice->GetTransform(D3DTS_WORLD, &matWorld));	// save world transform
-	D3DXMATRIX	matBounds(matWorld), matPan;
-	D3DXMatrixTranslation(&matPan, vBoundsOrg.x, vBoundsOrg.y, vBoundsOrg.z);
-	D3DXMatrixMultiply(&matBounds, &matBounds, &matPan);
-	CHECK(m_pDevice->SetTransform(D3DTS_WORLD, &matBounds));	// set bounding box world transform
 	DWORD	nFillMode;
 	CHECK(m_pDevice->GetRenderState(D3DRS_FILLMODE, &nFillMode));	// save fill mode
 	CHECK(m_pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME));	// set wireframe mode
@@ -1507,7 +1724,6 @@ bool CPotGraphics::DrawBoundingBox()
 	CHECK(m_pDevice->GetTexture(0, &pTexture));	// save texture
 	CHECK(m_pDevice->SetTexture(0, NULL));	// disable texture
 	CHECK(m_pBounds->DrawSubset(0));	// draw bounding box
-	CHECK(m_pDevice->SetTransform(D3DTS_WORLD, &matWorld));	// restore world transform
 	CHECK(m_pDevice->SetRenderState(D3DRS_FILLMODE, nFillMode));	// restore fill mode
 	CHECK(m_pDevice->SetMaterial(&material));	// restore material
 	CHECK(m_pDevice->SetTexture(0, pTexture));	// restore texture

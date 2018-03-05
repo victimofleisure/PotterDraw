@@ -12,6 +12,7 @@
 		02		06nov17	add lighting
 		03		07nov17	in OnEditUndo and OnEditRedo, set modified flag
 		04		24nov17	add save/restore phase for animation undo
+		05		20feb18	add secondary modulation
 
 */
 
@@ -146,10 +147,10 @@ void CPotterDrawDoc::SavePhases(CUndoState& State)
 	}
 	CRefPtr<CUndoPhases>	pVal;
 	pVal.CreateObj();
-	int	nAnimMods = GetAnimatedModulationCount();	// extra iteration to get phase array size
+	int	nAnimMods = GetAnimatedModulationCountEx();	// extra iteration to get phase array size
 	pVal->m_arrPhase.SetSize(nAnimMods);	// allocate phase array
 	int	iPhase = 0;
-	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
+	for (int iProp = 0; iProp < MODULATIONS; iProp++) {	// for each potential primary or secondary modulation
 		if (IsAnimatedModulation(iProp)) {	// if property is animated modulation
 			pVal->m_arrPhase[iPhase] = m_Mod[iProp].m_fPhase;	// save modulation's phase
 			iPhase++;	// bump phase array index
@@ -162,7 +163,7 @@ void CPotterDrawDoc::RestorePhases(const CUndoState& State)
 {
 	CUndoPhases	*pVal = static_cast<CUndoPhases *>(State.GetObj());
 	int	iPhase = 0;
-	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
+	for (int iProp = 0; iProp < MODULATIONS; iProp++) {	// for each potential primary or secondary modulation
 		if (IsAnimatedModulation(iProp)) {	// if property is animated modulation
 			m_Mod[iProp].m_fPhase = pVal->m_arrPhase[iPhase];	// restore modulation's phase
 			iPhase++;	// bump phase array index
@@ -199,9 +200,9 @@ void CPotterDrawDoc::SaveUndoState(CUndoState& State)
 		break;
 	case UCODE_MODULATION:
 		{
-			int	iMod = LOWORD(State.GetCtrlID());
-			int	iProp = HIWORD(State.GetCtrlID());
-			m_Mod[iProp].GetValue(iMod, &State.m_Val, sizeof(State.m_Val));
+			int	iModProp = LOWORD(State.GetCtrlID());
+			int	iModObj = HIWORD(State.GetCtrlID());
+			m_Mod[iModObj].GetValue(iModProp, &State.m_Val, sizeof(State.m_Val));
 		}
 		break;
 	case UCODE_SPLINE:
@@ -260,11 +261,13 @@ void CPotterDrawDoc::RestoreUndoState(const CUndoState& State)
 		break;
 	case UCODE_MODULATION:
 		{
-			int	iMod = LOWORD(State.GetCtrlID());
-			int	iProp = HIWORD(State.GetCtrlID());
-			m_Mod[iProp].SetValue(iMod, &State.m_Val, sizeof(State.m_Val));
-			CModulationHint	hint(iProp, iMod);
-			m_iModTarget = iProp;
+			int	iModProp = LOWORD(State.GetCtrlID());
+			int	iModObj = HIWORD(State.GetCtrlID());
+			m_Mod[iModObj].SetValue(iModProp, &State.m_Val, sizeof(State.m_Val));
+			int	iModTarget, iModType = GetModulationType(iModObj, iModTarget);
+			m_iModTarget = iModTarget;
+			m_iModType = iModType;
+			CModulationHint	hint(iModTarget, iModProp);
 			UpdateAllViews(NULL, HINT_MODULATION, &hint);
 		}
 		break;
@@ -586,7 +589,7 @@ void CPotterDrawDoc::OnFileLoadTexture()
 void CPotterDrawDoc::OnViewRandomPhase()
 {
 	NotifyUndoableEdit(0, UCODE_RANDOM_PHASE);
-	for (int iProp = 0; iProp < PROPERTIES; iProp++) {	// for each property
+	for (int iProp = 0; iProp < MODULATIONS; iProp++) {	// for each potential primary or secondary modulation
 		if (IsAnimatedModulation(iProp))	// if property is animated modulation
 			m_Mod[iProp].m_fPhase = rand() / double(RAND_MAX);	// randomize its phase
 	}

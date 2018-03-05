@@ -24,6 +24,7 @@
 		14		12dec17	add transparent render style
 		15		02jan18	add ruffle properties
 		16		15jan18	add auto zoom
+		17		20feb18	in OnUpdate, add OnModulationChange
 
 */
 
@@ -185,6 +186,7 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	}
 	if (!m_Graphics.IsDeviceCreated()) {	// if device not created
 		m_Graphics.SetProperties(*pDoc);	// update graphics properties from document
+		m_Graphics.OnModulationChange();
 		theApp.GetMainFrame()->OnUpdate(pSender, lHint, pHint);	// relay update to main frame
 		m_Graphics.CalcSpline(pDoc->m_arrSpline);
 		CreateDevice();
@@ -193,6 +195,7 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 		bool	bMakeTexture = false;
 		bool	bMakeSpline = false;
 		bool	bResizing = false;
+		bool	bModulationChange = false;
 		switch (lHint) {
 		case CPotterDrawDoc::HINT_PROPERTY:
 			{
@@ -273,7 +276,7 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 						}
 						break;
 					case CPotProperties::PROP_bAnimation:
-						if ((m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED_MESH)	// if animating mesh
+						if ((m_Graphics.GetModulationState() & CPotProperties::MOD_ANIMATED_MESH)	// if animating mesh
 						&& (pDoc->IsUndoing() || pDoc->IsRedoing()))	// and undo/redo in progress
 							bMakeMesh = true;	// mesh animation phases were restored above
 						break;
@@ -293,6 +296,12 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 				if ((pDoc->IsModulated(iTarget) || m_Graphics.IsModulated(iTarget))	// if target will be or is modulated
 				&& CPotProperties::m_Info[iTarget].iGroup == CPotProperties::GROUP_MESH)	// and target is mesh property
 					bMakeMesh = true;
+				switch (pModHint->m_iModProp) {
+				case CModulationProps::PROP_iWaveform:
+				case CModulationProps::PROP_fPhaseSpeed:
+					bModulationChange = true;
+					break;
+				}
 			}
 			break;
 		case CPotterDrawDoc::HINT_SPLINE:
@@ -315,17 +324,20 @@ void CPotterDrawView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 			}
 			return;	// early out, to avoid needlessly updating texture
 		case CPotterDrawDoc::HINT_MOD_PHASE:
-			if (m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED_MESH)
+			if (m_Graphics.GetModulationState() & CPotProperties::MOD_ANIMATED_MESH)
 				bMakeMesh = true;
 			break;
 		default:	// no hint
 			bMakeMesh = true;
 			bMakeSpline = true;
+			bModulationChange = true;
 			UpdateAutoRotateSpeed();
 		}
 		printf("view %Ix OnUpdate mesh=%d texture=%d spline=%d resize=%d\n", 
 			this, bMakeMesh, bMakeTexture, bMakeSpline, bResizing);
 		m_Graphics.SetProperties(*pDoc);	// update graphics properties from document
+		if (bModulationChange)
+			m_Graphics.OnModulationChange();
 		theApp.GetMainFrame()->OnUpdate(pSender, lHint, pHint);	// relay update to main frame
 		if (bMakeSpline)
 			m_Graphics.CalcSpline(pDoc->m_arrSpline);
@@ -912,14 +924,12 @@ LRESULT CPotterDrawView::OnFrameTimer(WPARAM wParam, LPARAM lParam)
 				CPotterDrawDoc	*pDoc = GetDocument();
 				if (wndOscBar.GetShowAllModulations()) {	// if showing all modulations
 					// if at least one modulated property is animated
-					if (m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED)
+					if (m_Graphics.GetModulationState() & CPotProperties::MOD_ANIMATED)
 						wndOscBar.Update(false);	// don't refit to data to avoid ruler flicker
 				} else {	// showing current modulation target only
 					int	iProp = pDoc->m_iModTarget;
 					if (iProp >= 0) {	// if modulation target is valid property
-						const CModulationProps&	mod = pDoc->m_Mod[iProp];
-						// if target property is modulated and modulation is animated
-						if (mod.IsAnimatedModulation())
+						if (pDoc->m_bIsPlotAnimated)	// if target property requires animated plot
 							wndOscBar.Update(false);	// don't refit to data to avoid ruler flicker
 					}
 				}
@@ -1223,7 +1233,7 @@ void CPotterDrawView::OnViewStepForward()
 
 void CPotterDrawView::OnUpdateViewStepForward(CCmdUI *pCmdUI)
 {
-	pCmdUI->Enable(!IsAnimating() && (m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED));
+	pCmdUI->Enable(!IsAnimating() && (m_Graphics.GetModulationState() & CPotProperties::MOD_ANIMATED));
 }
 
 void CPotterDrawView::OnViewStepBackward()
@@ -1233,12 +1243,12 @@ void CPotterDrawView::OnViewStepBackward()
 
 void CPotterDrawView::OnUpdateViewStepBackward(CCmdUI *pCmdUI)
 {
-	pCmdUI->Enable(!IsAnimating() && (m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED));
+	pCmdUI->Enable(!IsAnimating() && (m_Graphics.GetModulationState() & CPotProperties::MOD_ANIMATED));
 }
 
 void CPotterDrawView::OnUpdateViewRandomPhase(CCmdUI *pCmdUI)
 {
-	pCmdUI->Enable(m_Graphics.GetModulationType() & CPotProperties::MOD_ANIMATED);
+	pCmdUI->Enable(m_Graphics.GetModulationState() & CPotProperties::MOD_ANIMATED);
 }
 
 void CPotterDrawView::OnRenderWireframe()

@@ -16,6 +16,7 @@
 		06		06dec17	add hit test and face and vertex accessors
 		07		06dec17	add optional showing of normals and face selection
 		08		10dec17	add azimuth and incline color patterns
+		09		20feb18	add secondary modulation
 		
 */
 
@@ -25,6 +26,7 @@
 #include "DibEx.h"
 #include "PotProperties.h"
 #include "Spline.h"
+#include "Range.h"
 
 #define	POT_GFX_SHOW_FACE_NORMALS 0		// non-zero to enable showing face normals
 #define	POT_GFX_SHOW_VERTEX_NORMALS 0	// non-zero to enable showing vertex normals
@@ -78,7 +80,8 @@ public:
 	static const D3DVECTOR&	GetDefaultLightDir();
 	void	GetOuterRadiusRange(double& fMinRadius, double& fMaxRadius) const;
 	int		GetModulationCount() const;
-	UINT	GetModulationType() const;
+	void	GetModulations(CBoundArray<int, PROPERTIES>& arrModIdx) const;
+	UINT	GetModulationState() const;
 	void	GetFace(int iFace, CFace& Face) const;
 	void	GetFaceNormal(int iFace, D3DXVECTOR3& vNormal) const;
 	void	GetVertex(int iVertex, CVertex& Vert) const;
@@ -101,6 +104,7 @@ public:
 	void	ComputeOuterRadiusRange(double& fMinRadius, double& fMaxRadius) const;
 	static	COLORREF	Interpolate(const CDibEx& dib, double x, double y);
 	int		HitTest(CPoint point) const;
+	void	OnModulationChange();
 
 protected:
 // Constants
@@ -108,6 +112,9 @@ protected:
 		WALL_OUTER,
 		WALL_INNER,
 		WALLS
+	};
+	enum {	// CalcModulationRange flags
+		CMR_FORCE_BIPOLAR	= 0x01,		// use bipolar regardless of modulation's properties
 	};
 
 // Types
@@ -134,6 +141,7 @@ protected:
 		void	Add(int iFace);
 		void	Weld(CAdjacency& adj);
 	};
+	typedef CRange<double> CDblRange;
 
 // Data members
 	CComPtr<ID3DXMesh>	m_pMesh;	// mesh
@@ -152,9 +160,13 @@ protected:
 	CArrayEx<CAdjacency, CAdjacency&>	m_arrAdjaceny;		// array of adjaceny lists
 	int		m_nAdjRings;		// number of rings in adjacency array
 	int		m_nAdjSides;		// number of sides in adjacency array
-	CPotProperties	m_arrSrcProps;	// source properties, used during modulation
+	CFixedArray<double, PROPERTIES>	m_arrSrcProps;	// source properties, used during modulation
+	CFixedArray<double, MODULATIONS>	m_arrSrcMods;	// secondary modulation source properties
 	CBoundArray<int, PROPERTIES>	m_arrModIdx;	// array of indices of properties to be modulated
-	UINT	m_nModType;			// modulation type; see enum in PotProperties.h
+	CIntArrayEx	m_arrMod2Idx;	// array of indices of secondary modulations
+	CIntArrayEx	m_arrPlotMod2Idx;	// array of indices of plotted secondary modulations
+	UINT	m_nModState;		// modulation state bitmask; flags defined in PotProperties.h
+	int		m_iCurPlotProp;		// index of property that's currently plotted, or -1 if none
 	CDoubleArray	m_arrSpline;	// spline as array of ring radii
 	DRect	m_rSplineBounds;	// spline bounds
 	CDoubleArray	m_faOuterRadius;	// 2D array of outer wall radii
@@ -176,14 +188,18 @@ protected:
 	static	void	AddQuad(CDWordArrayEx& arrIdx, int& iIdx, int iA0, int iA1, int iA2, int iB0, int iB1, int iB2);
 	static	double	Wrap(double x, double y);
 	static	double	Wrap1(double x);
+	static	double	Square(double x);
 	bool	CreateBoundingBox();
 	bool	DrawBoundingBox();
 	static	void	ApplyMotif(int iMotif, double& r);
 	static	void	ApplyPower(int iRange, int iPowerType, double fPower, double& r);
 	static	double	GetWave(int iWaveform, double fPhase, double fPulseWidth, double fSlew);
+	static	void	Modulate(double fTheta, const PROPERTY_INFO& info, const CModulationProps& mod, LPCVOID pvSource, LPVOID pvTarget);
+	CDblRange	CalcModulationRange(int iProp, UINT nFlags = 0, const double *pfAmplitude = NULL) const;
 	void	ApplyModulations(double fRing);
 	void	SaveModulatedProperties();
 	void	RestoreModulatedProperties();
+	static	void	PropCopy(LPVOID pDst, LPCVOID pSrc, size_t nLen);
 	bool	ExportTexture(LPCTSTR szPath, CString& sNewPath);
 	static	double	ConvertPropertyToDouble(LPCVOID pSrc, const type_info *pType);
 	int		GetVertexIdx(double fRing, double fSide) const;
@@ -250,9 +266,14 @@ inline int CPotGraphics::GetModulationCount() const
 	return m_arrModIdx.GetSize();
 }
 
-inline UINT CPotGraphics::GetModulationType() const
+inline void CPotGraphics::GetModulations(CBoundArray<int, PROPERTIES>& arrModIdx) const
 {
-	return m_nModType;
+	arrModIdx = m_arrModIdx;
+}
+
+inline UINT CPotGraphics::GetModulationState() const
+{
+	return m_nModState;
 }
 
 inline void CPotGraphics::GetFace(int iFace, CFace& Face) const

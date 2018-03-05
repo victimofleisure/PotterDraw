@@ -10,6 +10,8 @@
         00      04may17	initial version
 		01		03nov17	add property subgroup
 		02		10nov17	add power types
+		03		15feb18	fix bug in equals operator
+		04		20feb18	add modulation types for secondary modulation
 		
 */
 
@@ -28,6 +30,13 @@ const CProperties::OPTION_INFO CModulationProps::m_Group[GROUPS] = {
 const CProperties::OPTION_INFO CModulationProps::m_Target[TARGETS] = {
 	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) {NULL, IDS_PDR_NAME_##name},
 	#include "PotPropsDef.h"
+};
+
+const CProperties::OPTION_INFO CModulationProps::m_ModType[MOD_TYPES] = {
+	{NULL, IDS_MOD_TYPE_PROPERTY},
+	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) {NULL, IDS_MOD_NAME_##name},
+	#define EXCLUDETARGETPROP	// exclude target property
+	#include "ModulationPropsDef.h"
 };
 
 const CProperties::OPTION_INFO CModulationProps::m_Waveform[WAVEFORMS] = {
@@ -106,7 +115,7 @@ bool CModulationProps::operator==(const CModulationProps& props) const
 {
 	#define EXCLUDETARGETPROP	// exclude target property
 	#define PROPDEF(group, subgroup, proptype, type, name, initval, minval, maxval, itemname, items) \
-		if (m_##name != m_DefaultVals.m_##name) \
+		if (m_##name != props.m_##name) \
 			return false;
 	#include "ModulationPropsDef.h"
 	return true;
@@ -132,4 +141,13 @@ void CModulationProps::WriteProperties(LPCTSTR szSection) const
 		else \
 			WrReg(szSection, _T(#name), m_##name);
 	#include "ModulationPropsDef.h"
+}
+
+int CModulationProps::FindProperty(LPCTSTR szInternalName)
+{
+	for (int iProp = 0; iProp < PROPERTIES; iProp++) {
+		if (!_tcscmp(m_Info[iProp].pszName, szInternalName))
+			return iProp;
+	}
+	return -1;
 }

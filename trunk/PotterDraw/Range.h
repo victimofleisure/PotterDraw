@@ -10,6 +10,7 @@
         00		21nov12	initial version
         01		10jun17	overload multiply and divide
         02		10jun17	remove self-assignment check
+        03		13feb18	add IsNull and Include
 
 		range template
 
@@ -30,6 +31,7 @@ public:
 	T		Length() const;
 	void	SetEmpty();
 	bool	IsEmpty() const;
+	bool	IsNull() const;
 	bool	IsNormalized() const;
 
 // Operations
@@ -37,6 +39,7 @@ public:
 	bool	InRange(T Val) const;
 	bool	Intersect(const CRange& Range1, const CRange& Range2);
 	bool	Union(const CRange& Range1, const CRange& Range2);
+	void	Include(const CRange& Range);
 
 // Operators
 	bool	operator==(const CRange& Range) const;
@@ -109,6 +112,12 @@ template<class T>
 inline bool CRange<T>::IsEmpty() const
 {
 	return(Start == End);
+}
+
+template<class T>
+inline bool CRange<T>::IsNull() const
+{
+	return(!Start && !End);
 }
 
 template<class T>
@@ -272,6 +281,15 @@ inline bool CRange<T>::Union(const CRange& Range1, const CRange& Range2)
 		}
 	}
 	return(TRUE);	// success
+}
+
+template<class T>
+inline void CRange<T>::Include(const CRange& Range)
+{
+	if (Range.Start < Start)
+		Start = Range.Start;
+	if (Range.End > End)
+		End = Range.End;
 }
 
 template<class T>
