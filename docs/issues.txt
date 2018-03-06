@@ -136,11 +136,19 @@ open	close	type	description	rev	user
 11/30/17	12/13/17	done	normal color patterns: azimuthal deviation, inclinational deviation, combination of both	1.0.05.000	
 12/14/17	12/14/17	done	for mesh-dependent color patterns, rebuilding mesh computes texture coords twice, wasting time	1.0.05.000	
 12/14/17	12/15/17	done	edge detection color pattern, based on standard deviation of face normals	1.0.05.000	
+12/30/17	01/02/18	done	add ruffle properties to bend effect; modulating phase of vertical LFO	1.0.06.000	
+12/30/17	01/03/18	done	add ring phase to allow more complex twisting effects	1.0.06.000	
+01/12/18	01/15/18	done	auto zoom	1.0.06.000	
+02/15/18	02/18/18	done	editing drop list in modulation bar via left-click doesn't update toolbar's undo icon until focus changes	1.0.07.000	
+09/08/17	02/20/18	done	secondary modulation (modulation of modulation); AM, FM, pulse width, power, slew, etc.	1.0.07.000	
+02/21/18	02/22/18	done	for 90 degree rotation of vertices, replace matrix tranform with coordinate swap; faster and more precise	1.0.07.000	
+02/21/18	02/22/18	done	bounding box needlessly saves, sets and restores world transform	1.0.07.000	
+02/27/18	02/27/18	done	add semicircle and circular pulse waveforms	1.0.07.001	
+02/27/18	02/27/18	done	add invert motif	1.0.07.001	
 03/16/17		hold	inner wall generation overcompensates at extreme slope changes		
 03/23/17		hold	show axis arrows		
 03/23/17		hold	show normals		
 03/23/17		hold	spin controls in property grid; default implementation only supports integer properties		
-03/23/17		hold	more preset shapes; no need once splines are implemented, use documents as presets		
 03/23/17		hold	properties window's column widths should persist; good luck with that		
 03/24/17		hold	shape tweening		
 03/31/17		hold	weird context menu appeared and locked up app; can't reproduce it		
@@ -155,7 +163,6 @@ open	close	type	description	rev	user
 06/23/17		hold	alternate materials		
 07/12/17		hold	portable version; not truly portable since registry redirect no longer works		
 07/14/17		hold	custom colors in spline window		
-09/08/17		hold	AM and FM modulation of modulation; also power, pulse width, slew modulation?		
 09/22/17		hold	background image		
 09/22/17		hold	transparent background		
 09/22/17		hold	shadows		
@@ -163,6 +170,11 @@ open	close	type	description	rev	user
 10/15/17		hold	palette animation		
 12/14/17		hold	master speed control for animation; rarely needed and possibly confusing (zero would act like a bug)		
 12/21/17		hold	Shift accelerators (Shift+A etc.) prevent upper case letters from being typed in properties grid edit boxes		
+12/24/17		hold	adjacency and face normal arrays should be sized before vertex loop; avoids range check in edges case		
+12/30/17		hold	modulations based on angle (fSide) rather than height (fRing), for asymmetric shapes; complicates interface		
+12/30/17		hold	organic, flower-like shapes; explore modulations of theta in final polar to rectangular conversion		
+02/15/18		hold	undo should restore modulation type; or does it already, but behind by one? Insignificant edit?		
+03/23/17		punt	more preset shapes; no need once splines are implemented, use documents as presets		
 03/23/17		punt	command to validate mesh; requires generating adjaceny which is slow		
 03/23/17		punt	resizing properties window resets its column widths; behavior is in OnSize and it's a pain to change		
 03/23/17		punt	if inactive view's click handler calls track rubber band, releasing mouse without moving gives false positive		
@@ -172,3 +184,4 @@ open	close	type	description	rev	user
 04/06/17		punt	PLY export reverses direction of stripes and palette; negative stripe frequency and color cycles fixes it		
 04/06/17		punt	MeshLab vertically flips texture of PLY export with texture map; negative V Cycles fixes it		
 06/19/17		punt	sluggish startup is due to slowness of Direct3D CreateDevice when no device instances exist		
+01/23/18		punt	splines that intersect a given y-coordinate more than once aren't supported		

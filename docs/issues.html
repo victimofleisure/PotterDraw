@@ -1132,6 +1132,78 @@
 <TD>&nbsp;</TD>
 </TR>
 <TR VALIGN=TOP>
+<TD>12/30/17</TD>
+<TD>01/02/18</TD>
+<TD>done</TD>
+<TD>add ruffle properties to bend effect; modulating phase of vertical LFO</TD>
+<TD>1.0.06.000</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>12/30/17</TD>
+<TD>01/03/18</TD>
+<TD>done</TD>
+<TD>add ring phase to allow more complex twisting effects</TD>
+<TD>1.0.06.000</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>01/12/18</TD>
+<TD>01/15/18</TD>
+<TD>done</TD>
+<TD>auto zoom</TD>
+<TD>1.0.06.000</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>02/15/18</TD>
+<TD>02/18/18</TD>
+<TD>done</TD>
+<TD>editing drop list in modulation bar via left-click doesn't update toolbar's undo icon until focus changes</TD>
+<TD>1.0.07.000</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>09/08/17</TD>
+<TD>02/20/18</TD>
+<TD>done</TD>
+<TD>secondary modulation (modulation of modulation); AM, FM, pulse width, power, slew, etc.</TD>
+<TD>1.0.07.000</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>02/21/18</TD>
+<TD>02/22/18</TD>
+<TD>done</TD>
+<TD>for 90 degree rotation of vertices, replace matrix tranform with coordinate swap; faster and more precise</TD>
+<TD>1.0.07.000</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>02/21/18</TD>
+<TD>02/22/18</TD>
+<TD>done</TD>
+<TD>bounding box needlessly saves, sets and restores world transform</TD>
+<TD>1.0.07.000</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>02/27/18</TD>
+<TD>02/27/18</TD>
+<TD>done</TD>
+<TD>add semicircle and circular pulse waveforms</TD>
+<TD>1.0.07.001</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>02/27/18</TD>
+<TD>02/27/18</TD>
+<TD>done</TD>
+<TD>add invert motif</TD>
+<TD>1.0.07.001</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
 <TD>03/16/17</TD>
 <TD>&nbsp;</TD>
 <TD>hold</TD>
@@ -1160,14 +1232,6 @@
 <TD>&nbsp;</TD>
 <TD>hold</TD>
 <TD>spin controls in property grid; default implementation only supports integer properties</TD>
-<TD>&nbsp;</TD>
-<TD>&nbsp;</TD>
-</TR>
-<TR VALIGN=TOP>
-<TD>03/23/17</TD>
-<TD>&nbsp;</TD>
-<TD>hold</TD>
-<TD>more preset shapes; no need once splines are implemented, use documents as presets</TD>
 <TD>&nbsp;</TD>
 <TD>&nbsp;</TD>
 </TR>
@@ -1284,14 +1348,6 @@
 <TD>&nbsp;</TD>
 </TR>
 <TR VALIGN=TOP>
-<TD>09/08/17</TD>
-<TD>&nbsp;</TD>
-<TD>hold</TD>
-<TD>AM and FM modulation of modulation; also power, pulse width, slew modulation?</TD>
-<TD>&nbsp;</TD>
-<TD>&nbsp;</TD>
-</TR>
-<TR VALIGN=TOP>
 <TD>09/22/17</TD>
 <TD>&nbsp;</TD>
 <TD>hold</TD>
@@ -1344,6 +1400,46 @@
 <TD>&nbsp;</TD>
 <TD>hold</TD>
 <TD>Shift accelerators (Shift+A etc.) prevent upper case letters from being typed in properties grid edit boxes</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>12/24/17</TD>
+<TD>&nbsp;</TD>
+<TD>hold</TD>
+<TD>adjacency and face normal arrays should be sized before vertex loop; avoids range check in edges case</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>12/30/17</TD>
+<TD>&nbsp;</TD>
+<TD>hold</TD>
+<TD>modulations based on angle (fSide) rather than height (fRing), for asymmetric shapes; complicates interface</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>12/30/17</TD>
+<TD>&nbsp;</TD>
+<TD>hold</TD>
+<TD>organic, flower-like shapes; explore modulations of theta in final polar to rectangular conversion</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>02/15/18</TD>
+<TD>&nbsp;</TD>
+<TD>hold</TD>
+<TD>undo should restore modulation type; or does it already, but behind by one? Insignificant edit?</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>03/23/17</TD>
+<TD>&nbsp;</TD>
+<TD>punt</TD>
+<TD>more preset shapes; no need once splines are implemented, use documents as presets</TD>
 <TD>&nbsp;</TD>
 <TD>&nbsp;</TD>
 </TR>
@@ -1416,6 +1512,14 @@
 <TD>&nbsp;</TD>
 <TD>punt</TD>
 <TD>sluggish startup is due to slowness of Direct3D CreateDevice when no device instances exist</TD>
+<TD>&nbsp;</TD>
+<TD>&nbsp;</TD>
+</TR>
+<TR VALIGN=TOP>
+<TD>01/23/18</TD>
+<TD>&nbsp;</TD>
+<TD>punt</TD>
+<TD>splines that intersect a given y-coordinate more than once aren't supported</TD>
 <TD>&nbsp;</TD>
 <TD>&nbsp;</TD>
 </TR>
