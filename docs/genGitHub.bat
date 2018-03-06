@@ -1,5 +1,7 @@
 @echo off
 copy C:\Chris\MyProjects\PotterDraw\web\*.* .
+copy downloadGitHub.html download.html
+copy galleryGitHub.html gallery.html
 C:\Chris\MyProjects\tbl2web\release\tbl2web "..\PotterDraw ToDo.txt" issues.html issues.txt "PotterDraw Issues"
 if errorlevel 1 goto err
 C:\Chris\tools\navgen templateGitHub.html .
@@ -35,8 +37,6 @@ cd ..
 ren issues.html issues.htm
 echo y | C:\Chris\tools\fsr issues.htm "<div id=body>" "<div id=widebody>"
 ren issues.htm issues.html
-copy downloadGitHub.html download.html
-copy galleryGitHub.html gallery.html
 goto exit
 :err
 pause Error!
