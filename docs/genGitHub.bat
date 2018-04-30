@@ -42,7 +42,7 @@ echo y | C:\Chris\tools\fsr links.htm "\"http://chordease.sourceforge.net/\"" "\
 echo y | C:\Chris\tools\fsr links.htm "\"http://ffrend.sourceforge.net/\"" "\"https://victimofleisure.github.io/FFRend/\""
 echo y | C:\Chris\tools\fsr links.htm "\"http://fractice.sourceforge.net/\"" "\"https://victimofleisure.github.io/Fractice/\""
 echo y | C:\Chris\tools\fsr links.htm "\"http://mixere.sourceforge.net/\"" "\"https://victimofleisure.github.io/Mixere/\""
-echo y | C:\Chris\tools\fsr links.htm "\"http://polymeter.sourceforge.net/\"" "\"https://victimofleisure.github.io/Polymeter/\""
+echo y | C:\Chris\tools\fsr links.htm "\"https://polymeter.sourceforge.io/\"" "\"https://victimofleisure.github.io/Polymeter/\""
 echo y | C:\Chris\tools\fsr links.htm "\"http://potterdraw.sourceforge.net/\"" "\"https://victimofleisure.github.io/PotterDraw/\""
 echo y | C:\Chris\tools\fsr links.htm "\"http://sourceforge.net/projects/triplight/\"" "\"https://github.com/victimofleisure/TripLight/\""
 echo y | C:\Chris\tools\fsr links.htm "\"http://waveshop.sourceforge.net/\"" "\"https://victimofleisure.github.io/WaveShop/\""
