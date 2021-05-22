@@ -145,6 +145,7 @@ open	close	type	description	rev	user
 02/21/18	02/22/18	done	bounding box needlessly saves, sets and restores world transform	1.0.07.000	
 02/27/18	02/27/18	done	add semicircle and circular pulse waveforms	1.0.07.001	
 02/27/18	02/27/18	done	add invert motif	1.0.07.001	
+05/21/21	05/21/21	done	generated palette swaps red and blue channels in Windows 10; use ARGB format instead of ABGR	1.0.08.000	
 03/16/17		hold	inner wall generation overcompensates at extreme slope changes		
 03/23/17		hold	show axis arrows		
 03/23/17		hold	show normals		
