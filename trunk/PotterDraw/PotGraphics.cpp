@@ -41,6 +41,7 @@
 		31		22feb18	in DrawBoundingBox, don't need to set world transform
 		32		27feb18	add semicircle and circular pulse waves
 		33		27feb18	add invert motif
+		34		21may21	in MakeTexture, use ARGB format instead of ABGR
 
 */
 
@@ -850,7 +851,7 @@ bool CPotGraphics::MakeTexture()
 			return false;
 		}
 		m_pTexture = NULL;
-		CHECK(D3DXCreateTexture(m_pDevice, nWidth, nHeight, 0, 0, D3DFMT_A8B8G8R8, D3DPOOL_MANAGED, &m_pTexture));
+		CHECK(D3DXCreateTexture(m_pDevice, nWidth, nHeight, 0, 0, D3DFMT_A8R8G8B8, D3DPOOL_MANAGED, &m_pTexture));
 		D3DLOCKED_RECT	rect;
 		CHECK(m_pTexture->LockRect(0, &rect, 0, 0));
 		if (rect.Pitch < nWidth * 4) {	// if texture's pitch is less than a row
@@ -874,7 +875,7 @@ bool CPotGraphics::MakeTexture()
 					else
 						c = m_arrPalette[iColor];
 				}
-				*pBits++ = D3DCOLOR_RGBA(GetRValue(c), GetGValue(c), GetBValue(c), 0);
+				*pBits++ = D3DCOLOR_ARGB(0, GetRValue(c), GetGValue(c), GetBValue(c));
 				m_dibTexture.SetPixel(x, y, c);
 			}
 			pRow += rect.Pitch;	// advance to texture's next row
