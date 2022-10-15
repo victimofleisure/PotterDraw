@@ -358,7 +358,7 @@
 
 <p>The spline lets you to draw the pot's outer wall using a series of curves or lines. The spline determines the radius of each of the pot's <a href="#Rings">rings</a>.
 
-<a name="Segments_and_nodes"><h2>Segments and nodes</h2></a>
+<a name="Segments_and_nodes"><h3>Segments and nodes</h3></a>
 
 <p>The spline consists of one or more segments. Each segment can be a B&eacute;zier curve or a straight line. The segments join at <em>nodes</em>. When a segment is selected, its nodes are displayed as small hollow squares. A B&eacute;zier segment also has two <em>control points</em>, which can be moved to adjust the curve. The control points are displayed as small solid squares, connected to their corresponding nodes by lines called <em>curve vectors</em>. To change the shape of a B&eacute;zier segment, drag its control points and/or its nodes.
 
@@ -371,7 +371,7 @@
 <tr><td>Symmetrical</td><td>Similar to smooth, but the curve vectors are additionally constrained to be the same length.</td></tr>
 </table>
 
-<a name="Shape_limitations"><h2>Shape limitations</h2></a>
+<a name="Shape_limitations"><h3>Shape limitations</h3></a>
 
 <p>For normal operation, the entire spline must be positive in X, i.e. it should be entirely to the right of the x-axis. If the spline crosses the x-axis, the resulting pot will have a discontinuous surface, and won't be 3D-printable.
 
@@ -381,7 +381,7 @@
 
 <p>To check your spline's conformance with the above constraints, use the <a href="#Mesh_Information">Mesh Information</a> command.
 
-<a name="Navigation_and_selection"><h2>Navigation and selection</h2></a>
+<a name="Navigation_and_selection"><h3>Navigation and selection</h3></a>
 
 <p>To zoom in or out, position the cursor at the desired location and spin the mouse wheel. The <span class="key">Ctrl+=</span> and <span class="key">Ctrl+-</span> shortcuts also work, and <span class="key">Ctrl+0</span> resets the zoom.
 
@@ -391,13 +391,13 @@
 
 <p>To select all segments, use <span class="cmd">Edit/Select All</span> or <span class="key">Ctrl+A</span>. To deselect all segments, left-click in the spline window's background, i.e. somewhere not on the spline.
 
-<a name="Changing_segment_and_node_types"><h2>Changing segment and node types</h2></a>
+<a name="Changing_segment_and_node_types"><h3>Changing segment and node types</h3></a>
 
 <p>To change a single segment's type, right-click the segment and select the desired type from the context menu. To change the type of multiple segments at once, first select the segments and then change their type via <span class="cmd">Spline/Segment Type</span> in the main menus, or by right-clicking somewhere not on the spline and using the context menu.
 
 <p>Node type works similarly. To change a single node's type, right-click the node and select the desired type from the context menu. To change the type of multiple nodes at once, first select the segments and then change their node type via <span class="cmd">Spline/Node Type</span> in the main menus, or by right-clicking somewhere not on the spline and using the context menu.
 
-<a name="Adding_and_removing_nodes"><h2>Adding and removing nodes</h2></a>
+<a name="Adding_and_removing_nodes"><h3>Adding and removing nodes</h3></a>
 
 <p>To add a node, double-click where the node should go. To delete a node, double-click it. You can also add and delete nodes by right-clicking and using the context menu.
 
@@ -405,23 +405,23 @@
 
 <p>The spline must contain at least one segment, otherwise all the rings will have a radius of zero, resulting in an invisible pot.
 
-<a name="Dragging_segments_and_nodes"><h2>Dragging segments and nodes</h2></a>
+<a name="Dragging_segments_and_nodes"><h3>Dragging segments and nodes</h3></a>
 
 <p>To move a segment, left-click it anywhere but on its nodes, and drag it while holding down the left mouse button. To move a node or a control point, left-click it and drag it while holding down the left mouse button.
 
 <p>Selected segments can also be moved by left-clicking one of the selected segments anywhere but on its nodes, and then dragging while holding down the left mouse button.
 
-<a name="Editing_and_transformations"><h2>Editing and transformations</h2></a>
+<a name="Editing_and_transformations"><h3>Editing and transformations</h3></a>
 
 <p>Selected spline segments can be <a href="#Cut">cut</a>, <a href="#Copy">copied</a>, <a href="#Paste">pasted</a> and <a href="#Delete">deleted</a>, using the standard Windows editing commands, accessible via the main menu's Edit submenu. Selected spline segments can be also transformed in various ways. They can be <a href="#Translate">translated</a> (moved), <a href="#Scale">scaled</a>, <a href="#Rotate">rotated</a>, and flipped <a href="#Flip_Horizontal">horizontally</a> or <a href="#Flip_Vertical">vertically</a>. All of these transformations are accessible via the main menu's Spline submenu.
 
 <p>Scaling can be proportional (isotropic) or non-proportional (anisotropic). Scaling and rotation can be relative to the origin, or relative to the center of the selected segments. Scaling relative to the origin is useful for changing the size of the entire pot without otherwise changing its geometry.
 
-<a name="Grid_and_rulers"><h2>Grid and rulers</h2></a>
+<a name="Grid_and_rulers"><h3>Grid and rulers</h3></a>
 
 <p>The spline window can display a <a href="#Show_Grid">grid</a>, and the dragging of <a href="#Segments_and_nodes">segments and nodes</a> can be <a href="#Snap_to_Grid">snapped</a> to the grid. To change the grid spacing, use the <a href="#Grid_Setup">Grid Setup</a> command in the Spline submenu. The spline window can also display <a href="#Show_Rulers">rulers</a>. The <a href="#Opposite_Wall">opposite wall</a> of the shape can also be displayed. This is useful because the opposite wall is updated continuously during node or segment dragging, whereas the <a href="#View">view</a> is normally only updated when the dragging is completed (though this is <a href="#Show_Spline_Drag_in_View">configurable</a>).
 
-<a name="Spline_import-export"><h2>Spline import/export</h2></a>
+<a name="Spline_import-export"><h3>Spline import/export</h3></a>
 
 <p>Splines can be <a href="#Export_Spline">exported</a> or <a href="#Import_Spline">imported</a> as text files containing a series of 2D points which constitute the spline. This allows splines to be generated by or processed by an external program. The format of the spline text file is explained below. For an example, use the export command and then examine the resulting file.
 
@@ -925,7 +925,7 @@
 </td></tr>
 </table>
 
-<a name="Texture_Property_Usage"><h3>Texture Property Usage</h3></a>
+<a name="Texture_Property_Usage"><h4>Texture Property Usage</h4></a>
 
 <p><table border=1 cellpadding=2 cellspacing=0>
 <tr><th>&nbsp;</th><th>Color Cycles</th><th>Stripe Frequency</th><th>Stripe Amplitude</th><th>Stripe Phase</th><th>Petals</th><th>U Offset</th><th>V Offset</th><th>V Cycles</th><th>Edge Gain</th></tr>
@@ -1039,7 +1039,7 @@
 
 <p>You can also modulate your modulations; see <a href="#Secondary_modulation">secondary modulation</a>.
 
-<a name="Creating_modulations"><h2>Creating modulations</h2></a>
+<a name="Creating_modulations"><h3>Creating modulations</h3></a>
 
 <p>To create a <a href="#Modulation">modulation</a>, first show the Modulation bar, via <span class="cmd">View/Toolbars and Docking Windows/Modulation</span>. Then select the desired <a href="#Target">target</a> property, by left-clicking its name in the Properties bar, or by selecting it in the Modulation bar's Target drop-list. Now make the modulation active by setting its Waveform to a value other than None. You may also want to change the other modulation parameters.
 
@@ -1233,21 +1233,21 @@
 
 <p>The palette lets you choose the colors used for <a href="#Texture_synthesis">texture synthesis</a>. To show the Palette bar, use <span class="cmd">View/Toolbars and Docking Windows/Palette</span>. The palette bar has two components: a color picker on top, and underneath it a color bar, containing a row of square color swatches, one for each color in the palette. Note that if the pot's texture is a <a href="#Texture_Path">user-specified image file</a>, changing the palette has no effect.
 
-<a name="Editing_a_color"><h2>Editing a color</h2></a>
+<a name="Editing_a_color"><h3>Editing a color</h3></a>
 
 <p>One of the swatches in the color bar has a highlight around it. This highlight indicates which of your palette's colors is displayed and editable in the color picker. To change the selected color, left-click a different color swatch. You can also use the arrow keys to scroll through the color swatches.
 
 <p>To edit a color, first select it the color bar as explained above. Then use the color picker to change its value as desired, and press the Apply button to save your change and update the <a href="#View">view</a>. The color picker has two pages, Standard and Custom, which are explained below.
 
-<a name="Standard_color_picker"><h2>Standard color picker</h2></a>
+<a name="Standard_color_picker"><h3>Standard color picker</h3></a>
 
 <p>The Standard color picker limits you to the colors displayed on its hexagonal tiles. If one of these colors is acceptable, simply left-click it and press Apply. Pressing the <span class="key">Enter</span> key is equivalent to pressing Apply. You can also double-click one of the hexagonal tiles, which picks the color and applies the change immediately, in which case there's no need to press the Apply button.
 
-<a name="Custom_color_picker"><h2>Custom color picker</h2></a>
+<a name="Custom_color_picker"><h3>Custom color picker</h3></a>
 
 <p>The Custom color picker lets you pick any color, by adjusting the hue/saturation and lightness positions, or by entering numeric HLS or RGB values. The new and current colors are displayed on the right, below the buttons. When the new color is changed as desired, be sure to press Apply to save your change. Pressing the <span class="key">Enter</span> key is equivalent to pressing Apply.
 
-<a name="Palette_editing_commands"><h2>Palette editing commands</h2></a>
+<a name="Palette_editing_commands"><h3>Palette editing commands</h3></a>
 
 <p>The palette can be reordered by dragging the color bar's swatches. You can also <a href="#Copy">copy</a>, <a href="#Cut">cut</a> and <a href="#Paste">paste</a> individual swatches using the standard Windows editing keys <span class="key">Ctrl+C</span>, <span class="key">Ctrl+X</span>, and <span class="key">Ctrl+V</span>, or via the color bar's context menu. Use the Insert key to insert a swatch, or the Delete key to <a href="#Delete">delete</a> a swatch.
 
@@ -1286,7 +1286,7 @@
 
 <p>Use this command to export the active document as a 2D image or a 3D model. The command displays a standard file dialog. Navigate to the desired location, enter a filename if necessary, and use the "Save as type" drop list to select the desired export type. The export types are explained below.
 
-<a name="2D_exports"><h3>2D exports</h3></a>
+<a name="2D_exports"><h4>2D exports</h4></a>
 
 <p>The 2D exports output an image with the same dimensions as the current <a href="#View">view</a>, unless <a href="#Use_Custom_Image_Size">Use Custom Image Size</a> is set to true in the <a href="#Options">Options</a> dialog. In the latter case the dimensions are specified by <a href="#Custom_Image_Width">Custom Image Width</a> and <a href="#Custom_Image_Height">Custom Image Height</a>, also in the Options dialog, regardless of the view's size. This is useful for exporting images with specific dimensions, or high-resolution images bigger than the view.
 
@@ -1296,7 +1296,7 @@
 <tr><td>PNG</td><td>Outputs a Portable Network Graphics file with 24-bit color. The resulting file may be significantly smaller than the equivalent bitmap, with no loss of quality.</td></tr>
 </table>
 
-<a name="3D_exports"><h3>3D exports</h3></a>
+<a name="3D_exports"><h4>3D exports</h4></a>
 
 <p>The 3D exports have been tested using MeshLab. If you need a 3D format that PotterDraw doesn't support, it's recommended to export PLY or OBJ and use MeshLab to convert to the desired format.
 
@@ -1337,7 +1337,7 @@
 
 <p>Use this command to select a printer, page orientation, and paper size before <a href="#Print">printing</a> the active document.
 
-<a name="Print_Setup_Printer"><h3>Printer</h3></a>
+<a name="Print_Setup_Printer"><h4>Printer</h4></a>
 
 <p>Allows you to specify the printer. If you don't select a printer, PotterDraw prints to the Windows default printer.
 
@@ -1350,7 +1350,7 @@
 <li>Properties &mdash; Opens the Properties dialog box specific to the printer where you can choose additional options such as paper and the way graphics are printed.
 </ul>
 
-<a name="Print_Setup_Paper"><h3>Paper</h3></a>
+<a name="Print_Setup_Paper"><h4>Paper</h4></a>
 
 <p>Allows you to select the paper size and source (from among those available for the printer). The sizes and sources available depend on the printer you have selected and they change when you change printers.
 
@@ -1359,7 +1359,7 @@
 <li>Source &mdash; Displays the available source of paper for the printer you choose.
 </ul>
 
-<a name="Print_Setup_Orientation"><h3>Orientation</h3></a>
+<a name="Print_Setup_Orientation"><h4>Orientation</h4></a>
 
 <p>Allows you to specify whether the program is to print in Portrait or Landscape orientation.
 
@@ -1432,7 +1432,7 @@
 
 <p>This submenu allows you to customize PotterDraw's appearance. The different looks correspond to various versions of Windows.
 
-<a name="Tabs"><h3>Tabs</h3></a>
+<a name="Tabs"><h4>Tabs</h4></a>
 
 <p>This command enables or disables the tabbed MDI (Multiple Document Interface) look, which is common in newer applications. Tabbed MDI shows a row of tabs above the <a href="#View">view</a>. The tabs allow you to switch between different documents, and can also be reordered via dragging. However the disadvantage of tabbed MDI is that only one document can be shown at a time.
 
@@ -1455,15 +1455,15 @@
 
 <p>Note that you can also rotate the view by left-clicking in the view and then moving the cursor while keeping the left mouse button pressed.
 
-<a name="Auto_Rotate"><h3>Auto Rotate</h3></a>
+<a name="Auto_Rotate"><h4>Auto Rotate</h4></a>
 
 <p>This command enables or disables auto-rotation of the <a href="#View">view</a>. The rotation speed in each axis is specified by the View properties <a href="#Auto_Rotate_Yaw">Auto Rotate Yaw</a>, <a href="#Auto_Rotate_Pitch">Auto Rotate Pitch</a>, and <a href="#Auto_Rotate_Roll">Auto Rotate Roll</a>. At least one of these properties must be non-zero for auto-rotate to work. Use the command <span class="cmd">View/Rotate/Auto Rotate</span> or <span class="key">Shift+R</span>.
 
-<a name="Zero_Rotation"><h3>Zero Rotation</h3></a>
+<a name="Zero_Rotation"><h4>Zero Rotation</h4></a>
 
 <p>This command resets the <a href="#View">view</a>'s rotation to its default value. The <a href="#Pan">panning</a> is also reset. Use the command <span class="cmd">View/Rotate/Zero Rotation</span> or <span class="key">Shift+Z</span>.
 
-<a name="Edit_Rotation"><h3>Edit Rotation</h3></a>
+<a name="Edit_Rotation"><h4>Edit Rotation</h4></a>
 
 <p>This command lets you specify the <a href="#View">view</a>'s rotation numerically. The Rotate dialog is displayed, showing the view's current rotation in each axis, in degrees. The X, Y, and Z values correspond to pitch, yaw and roll. Edit the values as desired and press OK to save your changes.
 
@@ -1481,7 +1481,7 @@
 
 <p>Note that you can also pan the view by middle-clicking in the view and then moving the cursor while keeping the middle mouse button pressed.
 
-<a name="Edit_Panning"><h3>Edit Panning</h3></a>
+<a name="Edit_Panning"><h4>Edit Panning</h4></a>
 
 <p>This command lets you specify the <a href="#View">view</a>'s panning numerically. The Pan dialog is displayed, showing the view's current panning in each axis, in view coordinates. Edit the values as desired and press OK to save your changes.
 
